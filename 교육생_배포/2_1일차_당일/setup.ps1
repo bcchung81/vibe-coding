@@ -79,6 +79,26 @@ $CodexHome = Join-Path $HOME '.codex'
 if ($env:CODEX_HOME) { $CodexHome = $env:CODEX_HOME }
 $AntigravitySkillRoots = @((Join-Path $HOME '.gemini\config\skills'), (Join-Path $HOME '.gemini\antigravity-cli\skills'))
 $AntigravityMcpPath = Join-Path $HOME '.gemini\config\mcp_config.json'
+# Personal skill folders each agent reads (Codex reads .agents\skills)
+$SkillRoots = @{ codex = @(Join-Path $HOME '.agents\skills'); claude = @(Join-Path $HOME '.claude\skills'); antigravity = $AntigravitySkillRoots }
+
+# "think": a custom command as a skill, so all three agents get it (Claude Code runs it as /think).
+# AGENTS.global.md keeps sequential-thinking for user requests only; this skill is that request.
+$ThinkSkill = @'
+---
+name: think
+description: "Step-by-step analysis with the sequential-thinking MCP. Use only when the user types /think or asks to think a topic through step by step."
+---
+
+Analyze the user's topic step by step with the sequential-thinking MCP tool.
+
+- Topic: what the user wrote after /think. If it is empty, use the task under discussion. If that is unclear too, ask once.
+- First thought: restate the problem and estimate how many thoughts it needs. Change the estimate as you go.
+- One judgment per thought. Revise a thought that turned out wrong; branch to compare alternatives.
+- When a fact needs checking, check it with your other tools between thoughts. Keep checked facts apart from guesses.
+- Last thought: verify the answer, then stop.
+- Reply in Korean: the conclusion first, then the reasons and what is still uncertain, briefly. Do not paste the thought log.
+'@
 
 function Write-Log([string]$Text) {
     $line = '[{0}] {1}' -f (Get-Date -Format 'HH:mm:ss'), $Text
@@ -932,7 +952,7 @@ if ($Selected -contains 'antigravity') {
 $oc = $null
 
 # ---------------------------------------------------------------- 7
-Write-Step '7. Skills - impeccable, report tools, HyperFrames'
+Write-Step '7. Skills - impeccable, report tools, humanizer, think, HyperFrames'
 
 # impeccable: the installer knows Codex and Claude Code; Antigravity gets a copy of the skill folder
 $impPaths = @{ codex = (Join-Path $HOME '.agents\skills\impeccable'); claude = (Join-Path $HOME '.claude\skills\impeccable') }
@@ -973,11 +993,31 @@ if ($Selected -contains 'claude') {
     Install-ClaudePlugin $Harness
 }
 
-# HyperFrames: the same skill set for every selected agent (Codex reads .agents\skills)
+# humanizer (natural Korean wording) comes with the report-harness plugin for Claude Code; Codex and Antigravity get a copy
+$Humanizer = Join-Path $Harness 'skills\humanizer'
+foreach ($a in @($Selected | Where-Object { $_ -ne 'claude' })) {
+    if (Test-Path (Join-Path $Humanizer 'SKILL.md')) {
+        Copy-SkillFolder "humanizer ($a)" $Humanizer 'humanizer' $SkillRoots[$a]
+    } else {
+        Add-Result "humanizer ($a)" 'FAIL' 'report-harness not cloned'
+    }
+}
+
+foreach ($a in $Selected) {
+    $written = 0
+    foreach ($root in $SkillRoots[$a]) {
+        $f = Join-Path $root 'think\SKILL.md'
+        if ((Test-Path $f) -and ((Get-Content $f -Raw -Encoding UTF8) -eq $ThinkSkill)) { continue }
+        Write-Utf8 $f $ThinkSkill
+        $written++
+    }
+    if ($written -eq 0) { Add-Result "think ($a)" 'SKIP' 'already up to date' } else { Add-Result "think ($a)" 'OK' "written to $written folder(s)" }
+}
+
+# HyperFrames: the same skill set for every selected agent
 $HfSkills = Join-Path (Join-Path $Workspace $HyperframesRepo.Name) 'skills'
 if (Test-Path $HfSkills) {
-    $hfRoots = @{ codex = @(Join-Path $HOME '.agents\skills'); claude = @(Join-Path $HOME '.claude\skills'); antigravity = $AntigravitySkillRoots }
-    foreach ($a in $Selected) { Copy-SkillSet "HyperFrames skills ($a)" $HfSkills $hfRoots[$a] }
+    foreach ($a in $Selected) { Copy-SkillSet "HyperFrames skills ($a)" $HfSkills $SkillRoots[$a] }
     # Keep these skills as installed: "hyperframes init" would otherwise update them from GitHub (a ~500 MB clone)
     if ([Environment]::GetEnvironmentVariable('HYPERFRAMES_SKIP_SKILLS', 'User') -eq '1') {
         Add-Result 'HyperFrames skill updates' 'SKIP' 'already off'
