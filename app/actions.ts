@@ -6,7 +6,8 @@ import { after } from "next/server";
 import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
 import { captureProject } from "../lib/capture";
-import { addStudents, captureState, findStudent, listStudents, PIN_FAILURE_LIMIT, recentPinFailures, recordPinFailure, saveProject, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { addStudents, captureState, findStudent, listStudents, PIN_FAILURE_LIMIT, recentPinFailures, recordPinFailure, replaceSurvey, saveProject, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { readSurvey } from "../lib/survey";
 import { parseRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
@@ -93,7 +94,7 @@ export async function saveRoster(text: string) {
   return { added, kept: rows.length - added };
 }
 
-// Removes every trainee, project, like and capture image. The admin types 삭제 to confirm.
+// Removes every trainee, project, like, survey answer and capture image. The admin types 삭제 to confirm.
 export async function wipeEverything(confirm: string) {
   if (!(await signedIn("admin")) || confirm !== "삭제") return false;
   await wipeAll();
@@ -105,4 +106,14 @@ export async function wipeEverything(confirm: string) {
   } while (cursor);
   refresh();
   return true;
+}
+
+// The Google Forms CSV of the pre-course survey; replaces the previous upload. Only answers are kept, never names.
+export async function saveSurvey(csv: string) {
+  if (!(await signedIn("admin"))) return { error: "관리자 로그인이 풀렸습니다. 새로 고침 후 다시 들어오세요." };
+  const { responses, missing } = readSurvey(csv);
+  if (missing.includes(1)) return { error: "1번(어느 날 참여하나요?) 열을 찾지 못했습니다. 구글폼에서 받은 CSV인지 확인해 주세요." };
+  if (!responses.length) return { error: "응답이 없습니다" };
+  await replaceSurvey(responses);
+  return { count: responses.length, missing };
 }

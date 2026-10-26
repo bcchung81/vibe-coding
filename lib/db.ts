@@ -1,5 +1,6 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import type { RosterRow } from "./roster";
+import type { Response } from "./survey";
 
 // Neon over HTTP, created on first use so `next build` runs without DATABASE_URL. Tables: db/schema.sql
 let client: NeonQueryFunction<false, false> | null = null;
@@ -92,10 +93,22 @@ export async function toggleLike(studentId: number, projectId: number) {
   return { liked: !removed.length, likes: rows[0].n };
 }
 
-// End of the course: every trainee, project, like and PIN record (capture images are removed from Blob by the caller)
+// End of the course: every trainee, project, like, PIN record and survey answer (capture images are removed from Blob by the caller)
 export async function wipeAll() {
   await sql()`delete from students`;
   await sql()`delete from pin_failures`;
+  await sql()`delete from survey_responses`;
+}
+
+// A new CSV replaces the previous upload
+export async function replaceSurvey(responses: Response[]) {
+  await sql()`delete from survey_responses`;
+  await sql()`insert into survey_responses (answers) select * from jsonb_array_elements(${JSON.stringify(responses)}::jsonb)`;
+}
+
+export async function surveyResponses() {
+  const rows = (await sql()`select answers from survey_responses order by id`) as { answers: Response }[];
+  return rows.map((r) => r.answers);
 }
 
 export async function setTopic(studentId: number, slug: string | null) {

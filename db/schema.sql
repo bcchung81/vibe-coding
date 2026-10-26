@@ -36,3 +36,9 @@ create table if not exists pin_failures (
   at timestamptz not null default now()
 );
 create index if not exists pin_failures_ip_at on pin_failures (ip, at);
+
+-- 사전 수요조사 응답: 관리 화면에서 구글폼 CSV를 올리면 통째로 바꾼다. 이름 · 소속 · 제출 시각은 저장하지 않는다 (lib/survey.ts)
+create table if not exists survey_responses (
+  id serial primary key,
+  answers jsonb not null
+);

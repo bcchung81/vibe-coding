@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
-import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
+import { adminLogIn, saveRoster, saveSurvey, wipeEverything } from "../app/actions";
 import type { StatusRow } from "../lib/db";
 import { parseRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
@@ -54,11 +55,12 @@ export function AdminLogin() {
   );
 }
 
-export function AdminView({ status, titles }: { status: StatusRow[]; titles: Record<string, string> }) {
+export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]; titles: Record<string, string>; surveyCount: number }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
   const [onlyMissing, setOnlyMissing] = useState(false);
   const [confirm, setConfirm] = useState("");
+  const [survey, setSurvey] = useState({ ok: true, text: surveyCount ? `지금 ${surveyCount}명 응답이 올라가 있습니다` : "" });
   const [pending, start] = useTransition();
   const { rows, duplicates } = parseRoster(text);
   const teams = new Set(rows.map((r) => r.team).filter(Boolean)).size;
@@ -175,6 +177,42 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
           </div>
         </section>
 
+        <section className="panel" aria-labelledby="survey-title">
+          <div className="panel-head">
+            <h2 id="survey-title">사전 수요조사</h2>
+            <Link className="ghost" href="/survey">
+              결과 보기
+            </Link>
+          </div>
+          <label className="form">
+            <span>구글폼 응답 CSV — 연결된 스프레드시트에서 파일 → 다운로드 → CSV. 이름 · 소속 · 제출 시각은 저장하지 않고, 다시 올리면 바뀝니다.</span>
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              disabled={pending}
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (!file) return;
+                const text = await file.text();
+                start(async () => {
+                  const r = await saveSurvey(text);
+                  setSurvey(
+                    "error" in r
+                      ? { ok: false, text: r.error ?? "" }
+                      : { ok: true, text: `${r.count}명 응답을 올렸습니다${r.missing.length ? ` · 찾지 못한 문항: ${r.missing.join(", ")}번` : ""}` },
+                  );
+                });
+              }}
+            />
+          </label>
+          {survey.text && (
+            <p className={`hint ${survey.ok ? "ok" : "error"}`} role="status">
+              {survey.text}
+            </p>
+          )}
+        </section>
+
         <section className="panel" aria-labelledby="close-title">
           <h2 id="close-title">교육이 끝나면</h2>
           <div className="tools">
@@ -184,7 +222,7 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
             </button>
           </div>
           <label className="form danger">
-            <span>명단 · 프로젝트 · 좋아요 · 캡처를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받고, 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
+            <span>명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받고, 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
             <span className="tools">
               <input value={confirm} onChange={(e) => setConfirm(e.target.value)} aria-label="확인 문구" />
               <button
