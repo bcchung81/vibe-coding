@@ -169,6 +169,9 @@ button { font: inherit; color: inherit; }
 .topic h3 a:hover { text-decoration: underline; }
 .topic p { flex: 1; font-size: var(--fs-label); color: var(--muted); }
 .topic-foot { display: flex; flex-wrap: wrap; gap: 8px; }
+.topic-count { font-size: var(--fs-meta); color: var(--muted); font-variant-numeric: tabular-nums; }
+.topic-count[data-top="true"] { color: var(--accent); font-weight: 700; }
+.topic-live { margin-bottom: 14px; font-size: var(--fs-label); font-weight: 700; }
 .topic-foot .ghost, .topic-foot .pick { min-height: 40px; font-size: var(--fs-label); }
 .pick { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-size: var(--fs-label); font-weight: 700; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; }
 .pick:hover { background: var(--soft); border-color: var(--accent); }
@@ -300,9 +303,6 @@ td.num { text-align: right; }
 .chip { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: var(--radius); font-size: var(--fs-meta); font-weight: 700; white-space: nowrap; }
 .chip.done { background: var(--soft); }
 .chip.todo { background: var(--paper); color: var(--muted); outline: 1px dashed var(--muted); outline-offset: -1px; }
-.danger input { width: 120px; }
-.danger-btn { min-height: 44px; padding: 0 16px; border: 1px solid var(--red); border-radius: var(--radius); background: var(--red); color: var(--paper); font-size: var(--fs-label); font-weight: 700; cursor: pointer; }
-.danger-btn:disabled { border-style: dashed; border-color: var(--muted); background: transparent; color: var(--muted); cursor: not-allowed; }
 
 /* reduced motion: state changes stay, the travel goes */
 @media (prefers-reduced-motion: reduce) {

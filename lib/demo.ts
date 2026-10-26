@@ -1,4 +1,4 @@
-// 예시 데이터 — 이름 · 앱 · 주소는 모두 가짜다. S2에서 DB(students · projects · likes)로 바뀐다.
+// 갤러리 예시 데이터 — 이름 · 앱 · 주소는 모두 가짜다. S3에서 DB(projects · likes)로 바뀐다.
 export type DemoProject = {
   id: number;
   name: string;
@@ -9,15 +9,6 @@ export type DemoProject = {
   likes: number;
   updatedAt: number;
 };
-
-export const DEMO_PIN = "0000";
-export const DEMO_ME = { name: "예시 사용자", team: "3팀" };
-
-export const DEMO_ROSTER = [
-  ["김가람", "1팀"], ["이나래", "1팀"], ["박다온", "1팀"], ["최라온", "2팀"], ["정마루", "2팀"],
-  ["강바다", "2팀"], ["조새봄", "3팀"], ["윤아라", "3팀"], ["예시 사용자", "3팀"], ["임하람", "4팀"],
-  ["한가온", "4팀"], ["오누리", "4팀"], ["서다솜", "5팀"], ["신로아", "5팀"], ["권미르", "5팀"],
-].map(([name, team]) => ({ name, team }));
 
 export const DEMO_PROJECTS: DemoProject[] = [
   { id: 1, name: "김가람", team: "1팀", app: "우산 챙겨?", tagline: "출근 시간대 강수확률만 크게 보여 줍니다", url: "https://umbrella-check.vercel.app", likes: 12, updatedAt: 9 },

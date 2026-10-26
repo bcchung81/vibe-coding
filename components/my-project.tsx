@@ -1,50 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { DEMO_ME } from "../lib/demo";
+import Link from "next/link";
+import { useState, useTransition } from "react";
+import { saveMyProject } from "../app/actions";
+import type { SavedProject } from "../lib/db";
 import { checkSiteUrl } from "../lib/site-url";
 import { Band } from "./band";
-import { FakeShot } from "./fake-shot";
 import { ProjectCard } from "./project-card";
 
-type Capture = "none" | "pending" | "done";
-
-// Demo: the real capture runs on the server in S2 (measured 11–20 s); here it is simulated
-const DEMO_CAPTURE_MS = 2600;
-
-export function MyProject() {
-  const [url, setUrl] = useState("");
+// Address, name and one line, saved for the logged-in trainee. The first-screen capture comes with the gallery (S3).
+export function MyProject({ me, saved: first }: { me: { name: string; team: string }; saved: SavedProject | null }) {
+  const [saved, setSaved] = useState(first);
+  const [url, setUrl] = useState(first?.url ?? "");
   const [touched, setTouched] = useState(false);
-  const [app, setApp] = useState("");
-  const [tagline, setTagline] = useState("");
-  const [capture, setCapture] = useState<Capture>("none");
+  const [app, setApp] = useState(first?.app ?? "");
+  const [tagline, setTagline] = useState(first?.tagline ?? "");
+  const [error, setError] = useState("");
+  const [pending, start] = useTransition();
   const check = checkSiteUrl(url);
   // judge once the address looks finished, not on every keystroke
   const judged = touched || url.includes(".vercel.app");
+  const changed = !saved || saved.url !== (check.ok ? check.url : url) || saved.app !== app.trim() || saved.tagline !== tagline.trim();
 
-  const shoot = () => {
-    setCapture("pending");
-    setTimeout(() => setCapture("done"), DEMO_CAPTURE_MS);
-  };
+  const save = () =>
+    start(async () => {
+      const result = await saveMyProject({ url, app, tagline });
+      if ("error" in result) return setError(result.error ?? "");
+      setError("");
+      setSaved(result.saved);
+      setUrl(result.saved.url);
+    });
 
   const band = !check.ok
     ? { title: "다음: 사이트 주소 넣기", lead: "Vercel 프로젝트의 기본 주소 https://<이름>.vercel.app 를 넣습니다." }
     : !app.trim()
       ? { title: "다음: 앱 이름과 한 줄 소개", lead: "갤러리 카드에 그대로 보입니다." }
-      : capture === "none"
-        ? { title: "다음: 저장하기", lead: "저장하면 서버가 내 사이트의 첫 화면을 찍습니다." }
-        : capture === "pending"
-          ? { title: "첫 화면을 찍는 중입니다", lead: "다 찍히면 갤러리에 바로 올라갑니다." }
-          : { title: "갤러리에 올라갔습니다", lead: "다음: 다른 사람 사이트에 좋아요 누르기", action: { href: "/", label: "갤러리 보기" } };
-
-  const shot =
-    capture === "done" ? (
-      <FakeShot seed={3} title={app || "내 앱"} />
-    ) : (
-      <div className="shot-empty" data-state={capture}>
-        {capture === "pending" ? "첫 화면을 찍는 중" : "저장하면 첫 화면을 찍습니다"}
-      </div>
-    );
+      : changed
+        ? { title: "다음: 저장하기", lead: "저장하면 갤러리 카드에 올라갑니다." }
+        : { title: "저장했습니다", lead: "다음: 다른 사람 사이트 둘러보기", action: { href: "/", label: "갤러리 보기" } };
 
   return (
     <>
@@ -55,10 +48,13 @@ export function MyProject() {
           onSubmit={(e) => {
             e.preventDefault();
             setTouched(true);
-            if (check.ok && app.trim()) shoot();
+            if (check.ok && app.trim()) save();
           }}
         >
           <h2>내 사이트</h2>
+          <p className="meta">
+            {me.name} · {me.team} · <Link href="/login">내가 아니면 다시 로그인</Link>
+          </p>
           <label>
             <span>사이트 주소</span>
             <input
@@ -87,18 +83,23 @@ export function MyProject() {
             <span className="hint">{tagline.length} / 40</span>
           </label>
           <div className="tools">
-            <button className="btn-primary" type="submit" disabled={capture === "pending"}>
-              {capture === "pending" ? "찍는 중…" : capture === "done" ? "다시 저장하고 찍기" : "저장"}
+            <button className="btn-primary" type="submit" disabled={pending || !changed}>
+              {pending ? "저장하는 중…" : changed ? "저장" : "저장됨"}
             </button>
+            {error && (
+              <span className="hint error" role="alert">
+                {error}
+              </span>
+            )}
           </div>
         </form>
         <section className="preview" aria-labelledby="preview-title">
           <h2 id="preview-title">갤러리에 이렇게 보입니다</h2>
           <ProjectCard
-            p={{ id: 0, app: app || "앱 이름", tagline: tagline || "한 줄 소개", url: check.ok ? check.url : "", name: DEMO_ME.name, team: DEMO_ME.team, likes: 0 }}
-            shot={shot}
+            p={{ id: 0, app: app || "앱 이름", tagline: tagline || "한 줄 소개", url: check.ok ? check.url : "", name: me.name, team: me.team, likes: 0 }}
+            shot={<div className="shot-empty">{saved ? "첫 화면 사진은 준비 중입니다" : "저장하면 첫 화면을 찍습니다"}</div>}
             mine
-            open={capture === "done"}
+            open={Boolean(saved)}
           />
         </section>
       </div>
