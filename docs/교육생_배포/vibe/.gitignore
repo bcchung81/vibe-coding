@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# 키는 .env.local 에만 둔다 — .env.example 만 커밋한다
+.env*
+!.env.example

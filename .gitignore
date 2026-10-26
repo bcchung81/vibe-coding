@@ -1,2 +1,22 @@
 .DS_Store
 .codex/
+
+# Next.js app
+node_modules/
+.next/
+.vercel/
+next-env.d.ts
+*.tsbuildinfo
+
+# impeccable working files (screenshots, sketches, scratch)
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/tmp/
+.impeccable/questions/
+.impeccable/decision-payload.json
+.impeccable/config.local.json
+
+# secrets and personal data: this repo is public
+.env*
+!.env.example
+*.csv

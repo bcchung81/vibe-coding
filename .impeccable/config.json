@@ -1,0 +1,53 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-21T12:41:54.077Z",
+        "reason": "agent decision: OMR 성명·팀 칸은 양식 칸처럼 테두리에 붙는 것이 의도이고 각 칸 글자에는 9~12px 안쪽 여백이 있음 (결정용 스케치)"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "gothic a1",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-21T13:09:15.503Z",
+        "reason": "agent decision: 선택되지 않은 결정 라운드 스케치(OMR안)라 출시 화면이 아님. gitignore 대상"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "docs/mockups/index.html"
+        ],
+        "createdAt": "2026-10-22T11:33:52.649Z",
+        "reason": "finish reviewer verdict: 노란 띠 좌우 여백 clamp(16px,4vw,48px)는 1440에서 48px, 390에서 16px로 계산됨 — 검사기가 clamp()를 못 풀어 생긴 오탐"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "gothic a1",
+        "files": [
+          "docs/mockups/index.html"
+        ],
+        "createdAt": "2026-10-22T11:33:52.665Z",
+        "reason": "DESIGN.md 기록: 발표자료 화면 안 예시 슬라이드는 강사 덱 내용물이고 덱 서체(Gothic A1)는 시스템에서 제외"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "malgun gothic",
+        "files": [
+          "docs/교육생_배포/vibe/app/globals.css"
+        ],
+        "createdAt": "2026-10-26T04:10:20.868Z",
+        "reason": "Claude: starter skeleton is a separate trainee project outside the hub DESIGN.md; Windows Korean system font fallback"
+      }
+    ]
+  }
+}

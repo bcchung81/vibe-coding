@@ -1,0 +1,6 @@
+# CLI 배포 때 올리지 않는다 — 비밀값, 앱 빌드에 필요 없는 시안 · 디자인 작업 파일
+.env*
+# 시작 폴더(vibe.zip)에 들어가는 빈 예시 파일은 올린다
+!docs/교육생_배포/vibe/.env.example
+.impeccable/
+docs/index.html

@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T00:00:00+09:00",
+  "title": "Design System: 바이브코딩 중급 운영 허브",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Plum Accent (자두 보라)",
+        "tonalRamp": [
+          "#271735",
+          "#412759",
+          "#5c377c",
+          "#76469f",
+          "#976abe",
+          "#b99cd3",
+          "#dacae8",
+          "#f3edf7"
+        ]
+      },
+      "nav": {
+        "role": "secondary",
+        "displayName": "Night Plum (밤 자두)",
+        "tonalRamp": [
+          "#271b32",
+          "#402d53",
+          "#5a3e74",
+          "#745095",
+          "#9574b4",
+          "#b8a2cd",
+          "#d9cde4",
+          "#f2eef6"
+        ]
+      },
+      "nav-mark": {
+        "role": "secondary",
+        "displayName": "Pale Mark (연보라 표시)",
+        "tonalRamp": [
+          "#29123a",
+          "#451e61",
+          "#602a88",
+          "#7c36af",
+          "#9c5ccc",
+          "#bd92dd",
+          "#dcc5ed",
+          "#f3ecf9"
+        ]
+      },
+      "red": {
+        "role": "tertiary",
+        "displayName": "Error Red (오류 빨강)",
+        "tonalRamp": [
+          "#420e0b",
+          "#6d1712",
+          "#99201a",
+          "#c52a21",
+          "#e05048",
+          "#eb8a85",
+          "#f4c0bd",
+          "#fbeae9"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Lavender Ground (연보라 바닥)",
+        "tonalRamp": [
+          "#231934",
+          "#3a2956",
+          "#513a79",
+          "#684a9b",
+          "#8a6eba",
+          "#b19ed1",
+          "#d5cbe6",
+          "#f1eef7"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper (종이)"
+      },
+      "soft": {
+        "role": "neutral",
+        "displayName": "Soft Lilac (연보라 면)",
+        "tonalRamp": [
+          "#261834",
+          "#3f2857",
+          "#58387a",
+          "#71489d",
+          "#926cbc",
+          "#b69dd2",
+          "#d8cae7",
+          "#f2eef7"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line (선)",
+        "tonalRamp": [
+          "#261d30",
+          "#3f304f",
+          "#58446f",
+          "#72578f",
+          "#937aae",
+          "#b7a6c9",
+          "#d8cfe2",
+          "#f2eff5"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink (잉크)",
+        "tonalRamp": [
+          "#261c31",
+          "#3f2e51",
+          "#584072",
+          "#725393",
+          "#9376b2",
+          "#b7a4cb",
+          "#d8cee3",
+          "#f2eff6"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink (흐린 잉크)",
+        "tonalRamp": [
+          "#27212b",
+          "#413848",
+          "#5c4e65",
+          "#766481",
+          "#9786a1",
+          "#b9afc1",
+          "#dad4de",
+          "#f3f1f4"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "화면 맨 위 제목 한 줄 하나."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "패널 · 단계 · 시작 폴더 구역 제목."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "갤러리 카드 앱 이름, 주제 카드 이름."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "본문 · 입력값 · 주 버튼(700) · 상단 막대 메뉴(700). 문서 본문 줄 간격 1.75."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "고스트 · 좋아요 · 고르기 버튼, 레이블, 표, 목차, 카드 아래 이름 · 팀."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "상태 칩, 힌트, 카드 주소, 예시 안내 줄. fake-shot 삽화 안 글자는 UI 단계가 아니다."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "모든 상태 전환과 움직임의 기본 곡선."
+      },
+      {
+        "name": "title-fade",
+        "value": "360ms ease-out; opacity 0 + translateY(-6px) → none",
+        "purpose": "첫 그리기 뒤 제목 · 보조 줄이 바뀔 때만."
+      },
+      {
+        "name": "rank-reorder",
+        "value": "View Transitions, 380ms ease-out; 카드마다 view-transition-name",
+        "purpose": "정렬 · 좋아요 뒤 카드 자리 이동."
+      },
+      {
+        "name": "count-roll",
+        "value": "280ms ease-out; translateY(100%) → 0",
+        "purpose": "좋아요 숫자 올림. 첫 그리기 제외."
+      },
+      {
+        "name": "heart-pop",
+        "value": "260ms ease-out; 40%에서 scale(1.25)",
+        "purpose": "좋아요 · 주제 고르기를 누를 때."
+      },
+      {
+        "name": "capture-scan",
+        "value": "1.3s cubic-bezier(0.45, 0, 0.55, 1) infinite; 3px nav-mark 선, nav 바탕",
+        "purpose": "캡처 중 칸."
+      },
+      {
+        "name": "capture-develop",
+        "value": "640ms ease-out; clip-path inset(0 0 100% 0) + brightness(1.6) → none",
+        "purpose": "캡처 미리보기가 위에서 아래로 드러남."
+      },
+      {
+        "name": "read-progress",
+        "value": "3px accent 막대, scaleX, 80ms linear",
+        "purpose": "문서 읽기 위치."
+      },
+      {
+        "name": "state-transition",
+        "value": "hover 150ms · 메뉴 밑줄 · 목차 점 200ms · 칩 · 주제 카드 · 단계 칸 220ms · 캡처 확대 300ms",
+        "purpose": "버튼 · 탭 · 칩 상태 변화."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "제목 160ms · 현상 200ms linear 페이드만; 순위 이동(JS에서 건너뜀) · 숫자 · 하트 · 훑는 선 · 캡처 확대 · 칩 전환 · 진행 막대 전환 없음",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "topics-3col",
+        "value": "1180px"
+      },
+      {
+        "name": "wall-2col",
+        "value": "1100px"
+      },
+      {
+        "name": "doc-single-column",
+        "value": "1000px"
+      },
+      {
+        "name": "tablet",
+        "value": "760px"
+      },
+      {
+        "name": "phone",
+        "value": "640px"
+      }
+    ],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 3px solid #633b86; outline-offset: 3px",
+        "purpose": "밝은 면 기본. 입력칸은 offset 0 + 보라 테두리."
+      },
+      {
+        "name": "focus-ring-on-plum",
+        "value": "outline: 3px solid #dcc5ed; outline-offset: 3px",
+        "purpose": "상단 막대 안."
+      }
+    ],
+    "pictogram": {
+      "grid": "24",
+      "strokeWidth": 2.6,
+      "strokeLinecap": "square",
+      "sizes": [
+        "16px",
+        "18px"
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Top Bar",
+      "kind": "nav",
+      "refersTo": "top-bar",
+      "description": "72px 자두색 상단 막대. 갤러리 · 자료 · 웹앱 주제 · 내 프로젝트, 현재 메뉴만 3px 연보라 밑줄.",
+      "html": "<header class=\"ds-topbar\"><a class=\"ds-brand\" href=\"#\">바이브코딩 중급</a><nav><a href=\"#\" aria-current=\"page\">갤러리</a><a href=\"#\">자료</a><a href=\"#\">웹앱 주제</a><a href=\"#\">내 프로젝트</a></nav><span class=\"ds-end\"><a href=\"#\">관리</a><a href=\"#\" class=\"ds-login\">로그인</a></span></header>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0 36px; min-height: 72px; padding: 0 24px; background: var(--nav); color: var(--paper); } .ds-brand { font-size: 20px; font-weight: 900; letter-spacing: -0.02em; color: var(--paper); text-decoration: none; } .ds-topbar nav, .ds-end { display: flex; align-self: stretch; gap: 4px; } .ds-end { margin-left: auto; align-items: center; gap: 12px; } .ds-topbar nav a, .ds-end a { display: inline-flex; align-items: center; min-height: 72px; padding: 0 12px; color: var(--paper); font-weight: 700; text-decoration: none; border-bottom: 3px solid transparent; transition: border-color 200ms var(--ease-out); } .ds-end a { min-height: 44px; } .ds-topbar a[aria-current=page] { border-color: var(--nav-mark); } .ds-login { border: 1px solid #ffffff59 !important; border-radius: var(--radius); padding: 0 14px; } .ds-login:hover { background: #ffffff1a; } .ds-topbar a:focus-visible { outline: 3px solid var(--nav-mark); outline-offset: 3px; }"
+    },
+    {
+      "name": "Page Title",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "화면 맨 위 큰 제목 한 줄과 보라 주 버튼 하나. 문구가 바뀌면 360ms 페이드.",
+      "html": "<section class=\"ds-band\"><div class=\"ds-band-text\"><h1><span class=\"ds-flip\">우리가 만든 작은 쓸모</span></h1><p>서로의 사이트를 열고, 마음에 드는 아이디어에 좋아요.</p></div><a class=\"ds-btn-primary\" href=\"#\">내 사이트 올리기 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"square\"><path d=\"M4 12h15M13 5l7 7-7 7\"/></svg></a></section>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-band { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; padding: 36px 24px 0; background: var(--bg); } .ds-band-text { flex: 1 1 480px; display: flex; flex-direction: column; gap: 10px; } .ds-band h1 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); font-weight: 900; line-height: 1.2; letter-spacing: -0.025em; } .ds-band h1 span { display: inline-block; } .ds-band p { margin: 0; color: var(--muted); } .ds-flip { animation: ds-fade 360ms var(--ease-out); } @keyframes ds-fade { from { opacity: 0; transform: translateY(-6px); } } .ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: var(--paper); font-weight: 700; text-decoration: none; transition: filter 150ms; } .ds-btn-primary:hover { filter: brightness(1.12); } .ds-btn-primary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-flip { animation: ds-fade 160ms linear; } }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "보라 채움 46px, 화면당 하나. 비활성은 점선.",
+      "html": "<button class=\"ds-btn-primary\">저장 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"square\"><path d=\"M4 12h15M13 5l7 7-7 7\"/></svg></button> <button class=\"ds-btn-primary\" disabled>주소를 먼저 넣으세요</button>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: var(--paper); font: inherit; font-weight: 700; cursor: pointer; transition: filter 150ms; } .ds-btn-primary:hover { filter: brightness(1.12); } .ds-btn-primary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-btn-primary:disabled { background: transparent; color: var(--muted); border: 1px dashed var(--muted); cursor: not-allowed; filter: none; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "종이 1px 선 42px. hover 연보라 면, 끝난 동작은 보라 반전.",
+      "html": "<button class=\"ds-ghost\">읽기</button> <button class=\"ds-ghost\" data-done=\"true\">복사함</button>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-ghost { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 150ms, border-color 150ms; } .ds-ghost:hover { background: var(--soft); border-color: var(--accent); } .ds-ghost:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-ghost[data-done=true] { background: var(--accent); border-color: var(--accent); color: var(--paper); }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "빨강 채움 44px. 되돌릴 수 없는 삭제만.",
+      "html": "<button class=\"ds-danger\">모두 삭제</button> <button class=\"ds-danger\" disabled>모두 삭제</button>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-danger { min-height: 44px; padding: 0 16px; border: 1px solid var(--red); border-radius: var(--radius); background: var(--red); color: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; } .ds-danger:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-danger:disabled { border-style: dashed; border-color: var(--muted); background: transparent; color: var(--muted); cursor: not-allowed; }"
+    },
+    {
+      "name": "Status Chips",
+      "kind": "chip",
+      "refersTo": "status-next",
+      "description": "자료 행 상태: 완료(연보라 실선) · 다음(보라 채움) · 아직(점선). 낱말로도 읽힌다.",
+      "html": "<span class=\"ds-status\" data-state=\"done\">완료</span> <span class=\"ds-status\" data-state=\"next\">다음</span> <span class=\"ds-status\" data-state=\"todo\">아직</span>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-status { display: inline-flex; align-items: center; justify-content: center; min-height: 29px; padding: 2px 9px; border: 1px dashed var(--muted); border-radius: var(--radius); font-size: 13px; transition: background 220ms var(--ease-out); } .ds-status[data-state=done] { border-style: solid; border-color: var(--line); background: var(--soft); } .ds-status[data-state=next] { border-style: solid; border-color: var(--accent); background: var(--accent); color: var(--paper); font-weight: 700; }"
+    },
+    {
+      "name": "Sort Tabs",
+      "kind": "nav",
+      "refersTo": "tab-selected",
+      "description": "4px 띄운 분리 버튼 44px, 선택은 보라 채움.",
+      "html": "<div class=\"ds-tabs\"><button aria-pressed=\"true\">좋아요순</button><button aria-pressed=\"false\">최신순</button></div>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-tabs { display: inline-flex; gap: 4px; } .ds-tabs button { min-height: 44px; padding: 0 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; transition: background 150ms, color 150ms; } .ds-tabs button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-tabs button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--paper); }"
+    },
+    {
+      "name": "Gallery Card",
+      "kind": "card",
+      "refersTo": "gallery-shot",
+      "description": "서명 컴포넌트. 16:10 큰 첫 화면 캡처, 바탕 · 테두리 없는 글 칸, 추천 칩, 좋아요(하트 튐 · 숫자 올림).",
+      "html": "<article class=\"ds-card\"><div class=\"ds-shot\"><div class=\"ds-shot-in\"><b>출근길 우산</b><span>예시 화면</span></div></div><div class=\"ds-card-body\"><div class=\"ds-card-title\"><span class=\"ds-rank\">추천 1</span><h3>출근길 우산</h3></div><p>출근 시간 강수확률을 한눈에.</p><span class=\"ds-url\">umbrella-demo.vercel.app</span><div class=\"ds-foot\"><span>김예시 · 1팀</span><button class=\"ds-like\" aria-pressed=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"square\"><path d=\"M12 20l-7.6-7.6a4.6 4.6 0 0 1 6.5-6.5L12 7l1.1-1.1a4.6 4.6 0 0 1 6.5 6.5z\"/></svg><span>12</span></button></div></div></article>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-card { display: flex; flex-direction: column; max-width: 420px; } .ds-shot { aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius); background: var(--soft); } .ds-shot-in { height: 100%; display: flex; justify-content: space-between; padding: 16px 20px; background: #e1edf8; color: #254e78; font-size: 12px; transition: transform 300ms var(--ease-out); } .ds-shot:hover .ds-shot-in { transform: scale(1.03); } .ds-card-body { display: flex; flex-direction: column; gap: 6px; padding-top: 16px; } .ds-card-title { display: flex; align-items: center; gap: 6px 10px; } .ds-card h3 { margin: 0; font-size: 21px; font-weight: 900; letter-spacing: -0.025em; } .ds-card p { margin: 0; color: var(--muted); } .ds-url { font-size: 13px; color: var(--muted); } .ds-rank { padding: 3px 8px; border-radius: 2px; background: var(--accent); color: var(--paper); font-size: 12px; font-weight: 700; } .ds-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 14px; } .ds-like { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 150ms, border-color 150ms; } .ds-like:hover { border-color: var(--accent); background: var(--soft); } .ds-like:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-like[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--paper); } .ds-like[aria-pressed=true] svg { fill: currentColor; animation: ds-pop 260ms var(--ease-out); } @keyframes ds-pop { 40% { transform: scale(1.25); } } @media (prefers-reduced-motion: reduce) { .ds-like[aria-pressed=true] svg { animation: none; } .ds-shot:hover .ds-shot-in { transform: none; } }"
+    },
+    {
+      "name": "Preparation Drawer",
+      "kind": "custom",
+      "refersTo": "drawer",
+      "description": "홈 갤러리 위 접히는 서랍. 접혀도 요약 줄이 다음 할 일 하나를 말한다.",
+      "html": "<details class=\"ds-drawer\"><summary>준비가 먼저라면 · 자료와 웹앱 주제 열기 <span class=\"ds-meta\">다음: 사전 안내 읽기</span></summary><div class=\"ds-drawer-body\"><section class=\"ds-now\"><div><h2>사전 안내 읽기</h2><p>자료 4개 중 0개 확인 · 로그인 없이 볼 수 있습니다.</p></div><a class=\"ds-ghost\" href=\"#\">읽기 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"square\"><path d=\"M4 12h15M13 5l7 7-7 7\"/></svg></a></section></div></details>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-drawer { overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); } .ds-drawer > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 18px 24px; cursor: pointer; font-weight: 700; } .ds-drawer > summary::marker { color: var(--accent); } .ds-drawer > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-drawer[open] > summary { border-bottom: 1px solid var(--line); } .ds-meta { font-size: 14px; font-weight: 400; color: var(--muted); } .ds-drawer-body { padding: 24px; background: var(--bg); } .ds-now { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 30px 32px; border-radius: var(--radius); background: var(--soft); } .ds-now h2 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.025em; } .ds-now p { margin: 8px 0 0; color: var(--muted); } .ds-ghost { display: inline-flex; align-items: center; gap: 6px; min-height: 46px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 700; text-decoration: none; transition: background 150ms, border-color 150ms; } .ds-ghost:hover { background: var(--soft); border-color: var(--accent); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "종이 1px 선 46px. focus는 보라 테두리, 오류는 빨강 테두리와 힌트.",
+      "html": "<label class=\"ds-field\"><span>사이트 주소</span><input placeholder=\"https://이름.vercel.app\"><span class=\"ds-hint\">vercel.app 주소를 넣으세요.</span></label> <label class=\"ds-field\"><span>앱 이름</span><input aria-invalid=\"true\" value=\"\"><span class=\"ds-hint ds-error\">앱 이름을 넣어 주세요.</span></label>",
+      "css": ":host { --bg: #eeeaf5; --paper: #ffffff; --ink: #30233e; --muted: #65566f; --accent: #633b86; --soft: #e5dcef; --line: #cbbfd8; --nav: #342443; --nav-mark: #dcc5ed; --red: #b3261e; --radius: 4px; --ease-out: cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Noto Sans KR', sans-serif; color: var(--ink); } .ds-field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; margin-bottom: 12px; } .ds-field > span:first-child { font-size: 14px; font-weight: 700; } .ds-field input { min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--ink); font: inherit; } .ds-field input::placeholder { color: var(--muted); } .ds-field input:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; border-color: var(--accent); } .ds-field input[aria-invalid=true] { border-color: var(--red); } .ds-hint { font-size: 13px; color: var(--muted); } .ds-error { color: var(--red); font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "갤러리 우선 (The Gallery Wall)",
+    "overview": "허브의 첫 화면은 전시 벽이다. 연보라 바닥 위에 수강생 사이트의 첫 화면 캡처가 세 줄로 크게 걸리고, 카드 자체는 테두리도 바탕도 없이 캡처 아래 글 몇 줄로 물러선다. 준비 자료와 웹앱 주제는 벽 위의 접힌 서랍 하나에 들어가고, 접힌 상태에서도 요약 줄이 \"다음: ○○\" 하나를 말한다. 화면마다 맨 위 큰 제목 한 줄이 이 화면이 무엇을 위한 곳인지 말하고, 오른쪽 보라 버튼 하나가 다음 행동을 맡는다.\n\n재료는 연보라 바닥, 흰 종이, 짙은 자두색 상단 막대, 그리고 보라 강조 하나다. 모서리는 4px로 살짝 무르고, 그림자는 없다. 위계는 한 서체(Noto Sans KR)의 크기와 400 / 700 / 900 굵기, 그리고 바닥 · 종이 · 연보라 면의 단계로 만든다. 상태는 색만이 아니라 글자(완료 · 다음 · 아직)와 선 모양(실선 · 점선 · 채움)으로 읽힌다. 기준 환경은 노트북, 휴대폰은 보조다.\n\n움직임은 PRODUCT.md의 \"누르면 바로 보인다\"를 맡는다. 제목이 바뀌면 살짝 내려앉고, 좋아요를 누르면 하트가 튀고 숫자가 올라가며 카드가 새 순위 자리로 미끄러진다. 동작 줄이기 설정에서는 이동이 빠지고 짧은 페이드만 남는다.",
+    "keyCharacteristics": [
+      "갤러리가 첫 화면: 3열 벽, 16:10 큰 첫 화면 캡처, 카드는 캡처 + 글뿐",
+      "준비는 벽 위 접히는 서랍 하나, 요약 줄에 다음 할 일 하나",
+      "화면마다 큰 제목 한 줄과 보라 주 버튼 하나",
+      "72px 자두색 상단 막대, 현재 위치는 연보라 3px 밑줄",
+      "보라 하나가 \"누름 · 선택 · 다음 · 지금\"을 맡는다",
+      "4px 모서리, 그림자 없음, 1px 선",
+      "상태는 완료 · 다음 · 아직 글자 칩과 실선 · 점선 · 채움으로"
+    ],
+    "rules": [
+      {
+        "name": "The One Plum Rule",
+        "body": "보라는 \"누른 것 · 고른 것 · 다음 것 · 지금 위치\"에만 쓴다. 보라 면은 주 버튼, 눌린 버튼 · 탭, \"다음\" 칩, 추천 칩뿐이고 구역 바탕이나 장식으로 깔지 않는다.",
+        "section": "colors"
+      },
+      {
+        "name": "The Plum Bar Rule",
+        "body": "연보라 표시(`nav-mark`)는 자두색 막대 · 캡처 중 칸 위에서만 쓴다. 밝은 면 위의 현재 표시는 보라(`accent`)다.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "허브 UI는 Noto Sans KR 하나, 400 / 700 / 900만 쓴다. 새 화면은 위 여섯 단계 안에서 크기를 고른다.",
+        "section": "typography"
+      },
+      {
+        "name": "The Wall First Rule",
+        "body": "홈에서 갤러리 벽 위에 놓이는 것은 제목 줄과 접힌 서랍 하나뿐이다. 준비 내용은 펼치기 전에는 한 줄이다.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Wall Rule",
+        "body": "허브 UI에 그림자를 넣지 않는다. 떠 보여야 할 것은 면 색 단계와 1px 선으로 구분한다.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Say-It Rule",
+        "body": "상태는 색을 빼도 읽혀야 한다. 칩에는 항상 낱말(완료 · 다음 · 아직 · 고름)을 쓰고, 채움 · 실선 · 점선으로 모양도 다르게 한다.",
+        "section": "components"
+      },
+      {
+        "name": "The Changed-Just-Now Rule",
+        "body": "움직임은 할 일 · 숫자 · 순서 · 진행이 바뀐 순간에만 돈다. 들어올 때 장식으로 움직이는 요소는 없다. `prefers-reduced-motion`에서는 제목 160ms · 현상 200ms linear 페이드만 남고, 순위 이동 · 숫자 · 하트 · 훑는 선 · 캡처 확대 · 칩 전환 · 진행 막대 전환은 돌지 않는다.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** 홈에서는 갤러리 벽을 첫 화면 주인공으로 두고, 준비는 접힌 서랍 한 줄로 둔다.",
+      "**Do** 화면마다 큰 제목 한 줄과 보라 주 버튼 하나를 둔다.",
+      "**Do** 보라는 누름 · 선택 · 다음 · 지금에만 쓴다.",
+      "**Do** 상태 칩에 낱말을 쓰고 실선 · 점선 · 채움으로도 구분한다.",
+      "**Do** 모서리는 4px, 원은 작은 상태 표시에만 쓴다.",
+      "**Do** 새 움직임은 상태 변화에만 붙이고 reduced-motion 대안을 함께 둔다.",
+      "**Do** 예시 데이터에는 \"예시\" · \"예시 화면\" 표시를 화면 안에 남긴다 (휴대폰 포함)."
+    ],
+    "donts": [
+      "**Don't** 갤러리 카드에 바탕 · 테두리 · 그림자를 둘러 캡처보다 카드가 보이게 하지 않는다.",
+      "**Don't** 보라를 구역 바탕이나 장식 강조로 깔지 않는다.",
+      "**Don't** 빨강을 오류 · 되돌릴 수 없는 삭제 밖에서 쓰지 않는다.",
+      "**Don't** 패널 · 카드에 그림자를 넣지 않는다.",
+      "**Don't** 제목 위에 작은 머리글(kicker · eyebrow)을 얹지 않는다.",
+      "**Don't** Noto Sans KR 밖의 서체나 500 · 600 굵기를 허브 UI에 쓰지 않는다."
+    ]
+  }
+}
