@@ -187,7 +187,7 @@ button { font: inherit; color: inherit; }
 .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; background: var(--accent); vertical-align: -1px; }
 .legend i[data-series="live"] { background: var(--live); }
 .answers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
-.answers li { padding: 10px 12px; border-left: 3px solid var(--line); background: var(--bg); font-size: var(--fs-label); }
+.answers li { padding: 10px 12px; border-radius: var(--radius); background: var(--bg); font-size: var(--fs-label); }
 @media (max-width: 640px) { .bar-row { grid-template-columns: minmax(0, 1fr) 6.5em; } .bar-track { grid-column: 1 / -1; grid-row: 2; } }
 .topic-foot .ghost, .topic-foot .pick { min-height: 40px; font-size: var(--fs-label); }
 .pick { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-size: var(--fs-label); font-weight: 700; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; }
