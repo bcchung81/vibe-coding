@@ -2,8 +2,11 @@
 
 import { refresh } from "next/cache";
 import { headers } from "next/headers";
+import { after } from "next/server";
+import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
-import { addStudents, findStudent, listStudents, PIN_FAILURE_LIMIT, recentPinFailures, recordPinFailure, saveProject, setTopic } from "../lib/db";
+import { captureProject } from "../lib/capture";
+import { addStudents, captureState, findStudent, listStudents, PIN_FAILURE_LIMIT, recentPinFailures, recordPinFailure, saveProject, setTopic, toggleLike, wipeAll } from "../lib/db";
 import { parseRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
@@ -46,8 +49,23 @@ export async function saveMyProject(input: { url: string; app: string; tagline: 
   if (!check.ok) return { error: check.reason };
   const app = input.app.trim().slice(0, 20);
   if (!app) return { error: "앱 이름을 넣어 주세요" };
-  await saveProject(me.id, { url: check.url, app, tagline: input.tagline.trim().slice(0, 40) });
-  return { saved: { url: check.url, app, tagline: input.tagline.trim().slice(0, 40) } };
+  const saved = { url: check.url, app, tagline: input.tagline.trim().slice(0, 40) };
+  await saveProject(me.id, saved);
+  // the first screen is captured after the response; the page asks myCapture() until it is done
+  after(() => captureProject(me.id, saved.url));
+  return { saved };
+}
+
+export async function myCapture() {
+  const me = await signedIn("student");
+  return me ? captureState(me.id) : null;
+}
+
+// null when not logged in (or your own project)
+export async function likeProject(projectId: number) {
+  const me = await signedIn("student");
+  if (!me || !Number.isInteger(projectId)) return null;
+  return toggleLike(me.id, projectId);
 }
 
 // Saved only for a logged-in trainee; the browser keeps its own copy either way. Returns whether it counted.
@@ -73,4 +91,18 @@ export async function saveRoster(text: string) {
   const added = await addStudents(rows);
   refresh();
   return { added, kept: rows.length - added };
+}
+
+// Removes every trainee, project, like and capture image. The admin types 삭제 to confirm.
+export async function wipeEverything(confirm: string) {
+  if (!(await signedIn("admin")) || confirm !== "삭제") return false;
+  await wipeAll();
+  let cursor: string | undefined;
+  do {
+    const page = await list({ prefix: "captures/", cursor });
+    if (page.blobs.length) await del(page.blobs.map((b) => b.url));
+    cursor = page.cursor;
+  } while (cursor);
+  refresh();
+  return true;
 }

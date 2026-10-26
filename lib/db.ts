@@ -33,10 +33,69 @@ export async function findProject(studentId: number) {
   return rows[0] ?? null;
 }
 
+// Saving always asks for a new first-screen capture
 export async function saveProject(studentId: number, p: SavedProject) {
   await sql()`
-    insert into projects (student_id, app_url, app_name, tagline) values (${studentId}, ${p.url}, ${p.app}, ${p.tagline})
-    on conflict (student_id) do update set app_url = excluded.app_url, app_name = excluded.app_name, tagline = excluded.tagline, updated_at = now()`;
+    insert into projects (student_id, app_url, app_name, tagline, capture_status) values (${studentId}, ${p.url}, ${p.app}, ${p.tagline}, 'pending')
+    on conflict (student_id) do update set app_url = excluded.app_url, app_name = excluded.app_name, tagline = excluded.tagline,
+      capture_status = 'pending', capture_error = null, updated_at = now()`;
+}
+
+// A capture still "pending" two minutes after saving was lost with its instance: show it as failed so it can be retried
+const STATUS = `case when capture_status = 'pending' and updated_at < now() - interval '2 minutes' then 'failed' else capture_status end`;
+export type Capture = { status: "none" | "pending" | "done" | "failed"; shot: string | null };
+
+export async function captureState(studentId: number) {
+  const rows = (await sql().query(`select ${STATUS} as status, capture_url as shot from projects where student_id = $1`, [studentId])) as Capture[];
+  return rows[0] ?? { status: "none", shot: null };
+}
+
+// Done: the new image replaces the old one, whose address comes back so the caller can delete it. Failed: the old image stays.
+export async function finishCapture(studentId: number, result: { url: string } | { error: string }) {
+  if ("error" in result) {
+    await sql()`update projects set capture_status = 'failed', capture_error = ${result.error} where student_id = ${studentId}`;
+    return null;
+  }
+  const rows = (await sql()`
+    update projects p set capture_status = 'done', capture_url = ${result.url}, capture_error = null, captured_at = now()
+    from (select capture_url from projects where student_id = ${studentId}) old
+    where p.student_id = ${studentId}
+    returning old.capture_url as old`) as { old: string | null }[];
+  return rows[0]?.old ?? null;
+}
+
+export type GalleryRow = { id: number; name: string; team: string; app: string; tagline: string; url: string; shot: string | null; status: Capture["status"]; likes: number; updatedAt: number };
+
+export async function galleryProjects() {
+  return (await sql().query(`
+    select p.student_id as id, s.name, s.team, p.app_name as app, p.tagline, p.app_url as url, p.capture_url as shot, ${STATUS} as status,
+      (select count(*) from likes l where l.project_id = p.student_id)::int as likes,
+      (extract(epoch from p.updated_at) * 1000)::float8 as "updatedAt"
+    from projects p join students s on s.id = p.student_id
+    where p.app_url is not null`)) as GalleryRow[];
+}
+
+export async function likedBy(studentId: number) {
+  const rows = (await sql()`select project_id from likes where student_id = ${studentId}`) as { project_id: number }[];
+  return rows.map((r) => r.project_id);
+}
+
+// Likes or unlikes someone else's project; returns the new state and count, or null for your own or a missing project
+export async function toggleLike(studentId: number, projectId: number) {
+  if (studentId === projectId) return null;
+  const removed = await sql()`delete from likes where student_id = ${studentId} and project_id = ${projectId} returning project_id`;
+  if (!removed.length) {
+    const added = await sql()`insert into likes (student_id, project_id) select ${studentId}, student_id from projects where student_id = ${projectId} returning project_id`;
+    if (!added.length) return null;
+  }
+  const rows = (await sql()`select count(*)::int as n from likes where project_id = ${projectId}`) as { n: number }[];
+  return { liked: !removed.length, likes: rows[0].n };
+}
+
+// End of the course: every trainee, project, like and PIN record (capture images are removed from Blob by the caller)
+export async function wipeAll() {
+  await sql()`delete from students`;
+  await sql()`delete from pin_failures`;
 }
 
 export async function setTopic(studentId: number, slug: string | null) {

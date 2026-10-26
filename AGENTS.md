@@ -14,7 +14,7 @@
 | `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (`00_사전안내.md` · `setup.ps1` · `00_환경설정.md` · `AGENTS.global.md` · `00_보고서도구.md`). 번호 없는 `웹앱_주제/` 는 주제 카드 10개로 `/topics` 가 읽고, `vibe/` 는 시작 폴더 원본으로 `/vibe.zip` 이 주제 카드와 함께 묶는다(명령은 `.agents/skills` 에만 쓰면 `.claude/skills` 복사본은 ZIP이 만든다) | **Windows 11 · PowerShell** |
 | `package.json` · `tsconfig.json` · `vercel.json` | 교육 운영 허브 웹앱 — Next.js 16.4.2 · React 19.3.1 · TypeScript · vitest 5.0.5 | macOS에서 개발, Vercel 배포 |
 
-- 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`), Vercel Blob은 S3에서 붙인다.
+- 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`), 첫 화면 캡처는 Vercel Blob(`lib/capture.ts`, 한글 폰트 `fonts/`).
 - 문서는 `docs/` 아래에 둔다. root에는 `README.md` · `AGENTS.md` · `CLAUDE.md` 와 웹앱 설정 파일만 둔다. 예외: impeccable 디자인 기록 `PRODUCT.md` · `DESIGN.md` 는 도구가 root에서 찾으므로 root에 둔다. 화면 디자인 방향은 `.impeccable/surfaces/` 에 있다.
 
 ## 2. 교육생 배포 파일 (`docs/교육생_배포/`)

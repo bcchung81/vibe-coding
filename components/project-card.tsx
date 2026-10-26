@@ -5,7 +5,7 @@ import { Icon } from "./icon";
 
 export type CardProject = { id: number; app: string; tagline: string; url: string; name: string; team: string; likes: number };
 
-// One card on the wall: the first screen leads, the words sit under it. `open` is false for demo addresses, which belong to nobody here.
+// One card on the wall: the first screen leads, the words sit under it. `open` is false until a site address is saved.
 export function ProjectCard({
   p,
   shot,

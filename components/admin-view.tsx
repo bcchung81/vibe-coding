@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { adminLogIn, saveRoster } from "../app/actions";
+import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
 import type { StatusRow } from "../lib/db";
 import { parseRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
@@ -58,6 +58,7 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
   const [onlyMissing, setOnlyMissing] = useState(false);
+  const [confirm, setConfirm] = useState("");
   const [pending, start] = useTransition();
   const { rows, duplicates } = parseRoster(text);
   const teams = new Set(rows.map((r) => r.team).filter(Boolean)).size;
@@ -182,7 +183,26 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
               결과물 CSV 내려받기
             </button>
           </div>
-          <p className="meta">명단 · 프로젝트 · 캡처를 모두 지우는 기능은 갤러리 · 캡처와 함께 다음 단계에서 붙입니다.</p>
+          <label className="form danger">
+            <span>명단 · 프로젝트 · 좋아요 · 캡처를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받고, 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
+            <span className="tools">
+              <input value={confirm} onChange={(e) => setConfirm(e.target.value)} aria-label="확인 문구" />
+              <button
+                className="danger-btn"
+                type="button"
+                disabled={confirm !== "삭제" || pending}
+                onClick={() =>
+                  start(async () => {
+                    const done = await wipeEverything(confirm);
+                    setConfirm("");
+                    setResult(done ? "모두 지웠습니다" : "지우지 못했습니다. 다시 로그인해 주세요");
+                  })
+                }
+              >
+                모두 지우기
+              </button>
+            </span>
+          </label>
         </section>
       </div>
     </>

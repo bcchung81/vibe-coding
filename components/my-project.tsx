@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { saveMyProject } from "../app/actions";
-import type { SavedProject } from "../lib/db";
+import { useEffect, useState, useTransition } from "react";
+import { myCapture, saveMyProject } from "../app/actions";
+import type { Capture, SavedProject } from "../lib/db";
 import { checkSiteUrl } from "../lib/site-url";
 import { Band } from "./band";
 import { ProjectCard } from "./project-card";
 
-// Address, name and one line, saved for the logged-in trainee. The first-screen capture comes with the gallery (S3).
-export function MyProject({ me, saved: first }: { me: { name: string; team: string }; saved: SavedProject | null }) {
+// Address, name and one line, saved for the logged-in trainee. Saving (or saving again) has the server capture the first screen.
+export function MyProject({ me, saved: first, capture: firstCapture }: { me: { name: string; team: string }; saved: SavedProject | null; capture: Capture }) {
   const [saved, setSaved] = useState(first);
+  const [capture, setCapture] = useState(firstCapture);
   const [url, setUrl] = useState(first?.url ?? "");
   const [touched, setTouched] = useState(false);
   const [app, setApp] = useState(first?.app ?? "");
@@ -21,6 +22,14 @@ export function MyProject({ me, saved: first }: { me: { name: string; team: stri
   // judge once the address looks finished, not on every keystroke
   const judged = touched || url.includes(".vercel.app");
   const changed = !saved || saved.url !== (check.ok ? check.url : url) || saved.app !== app.trim() || saved.tagline !== tagline.trim();
+  const shooting = capture.status === "pending";
+
+  // while the server is capturing, ask every 3 seconds (it takes about 15)
+  useEffect(() => {
+    if (!shooting) return;
+    const timer = setInterval(() => myCapture().then((c) => c && c.status !== "pending" && setCapture(c)), 3000);
+    return () => clearInterval(timer);
+  }, [shooting]);
 
   const save = () =>
     start(async () => {
@@ -29,6 +38,7 @@ export function MyProject({ me, saved: first }: { me: { name: string; team: stri
       setError("");
       setSaved(result.saved);
       setUrl(result.saved.url);
+      setCapture((c) => ({ ...c, status: "pending" }));
     });
 
   const band = !check.ok
@@ -36,8 +46,12 @@ export function MyProject({ me, saved: first }: { me: { name: string; team: stri
     : !app.trim()
       ? { title: "다음: 앱 이름과 한 줄 소개", lead: "갤러리 카드에 그대로 보입니다." }
       : changed
-        ? { title: "다음: 저장하기", lead: "저장하면 갤러리 카드에 올라갑니다." }
-        : { title: "저장했습니다", lead: "다음: 다른 사람 사이트 둘러보기", action: { href: "/", label: "갤러리 보기" } };
+        ? { title: "다음: 저장하기", lead: "저장하면 서버가 내 사이트의 첫 화면을 찍어 갤러리에 올립니다." }
+        : shooting
+          ? { title: "첫 화면을 찍는 중입니다", lead: "15초쯤 걸립니다. 다 찍히면 갤러리에 바로 올라갑니다." }
+          : capture.status === "failed"
+            ? { title: "첫 화면을 찍지 못했습니다", lead: "사이트가 열리는지 확인하고 '다시 찍기'를 누르세요." }
+            : { title: "갤러리에 올라갔습니다", lead: "다음: 다른 사람 사이트에 좋아요 누르기", action: { href: "/", label: "갤러리 보기" } };
 
   return (
     <>
@@ -83,8 +97,8 @@ export function MyProject({ me, saved: first }: { me: { name: string; team: stri
             <span className="hint">{tagline.length} / 40</span>
           </label>
           <div className="tools">
-            <button className="btn-primary" type="submit" disabled={pending || !changed}>
-              {pending ? "저장하는 중…" : changed ? "저장" : "저장됨"}
+            <button className="btn-primary" type="submit" disabled={pending || shooting}>
+              {pending ? "저장하는 중…" : shooting ? "찍는 중…" : changed ? "저장" : "다시 찍기"}
             </button>
             {error && (
               <span className="hint error" role="alert">
@@ -97,7 +111,15 @@ export function MyProject({ me, saved: first }: { me: { name: string; team: stri
           <h2 id="preview-title">갤러리에 이렇게 보입니다</h2>
           <ProjectCard
             p={{ id: 0, app: app || "앱 이름", tagline: tagline || "한 줄 소개", url: check.ok ? check.url : "", name: me.name, team: me.team, likes: 0 }}
-            shot={<div className="shot-empty">{saved ? "첫 화면 사진은 준비 중입니다" : "저장하면 첫 화면을 찍습니다"}</div>}
+            shot={
+              capture.shot && !shooting ? (
+                <img className="shot-img" src={capture.shot} alt={`${app} 첫 화면`} width={1280} height={800} />
+              ) : (
+                <div className="shot-empty" data-state={shooting ? "pending" : undefined}>
+                  {shooting ? "첫 화면을 찍는 중" : capture.status === "failed" ? "찍지 못했습니다 · 다시 찍기" : "저장하면 첫 화면을 찍습니다"}
+                </div>
+              )
+            }
             mine
             open={Boolean(saved)}
           />

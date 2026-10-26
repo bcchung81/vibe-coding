@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { MyProject } from "../../components/my-project";
 import { signedIn } from "../../lib/auth";
-import { findProject, findStudent } from "../../lib/db";
+import { captureState, findProject, findStudent } from "../../lib/db";
 
 export const metadata = { title: "내 프로젝트" };
 
@@ -10,5 +10,5 @@ export default async function MyProjectPage() {
   const session = await signedIn("student");
   const me = session && (await findStudent(session.id));
   if (!me) redirect("/login");
-  return <MyProject me={{ name: me.name, team: me.team }} saved={await findProject(me.id)} />;
+  return <MyProject me={{ name: me.name, team: me.team }} saved={await findProject(me.id)} capture={await captureState(me.id)} />;
 }
