@@ -1,50 +1,113 @@
 import { describe, expect, test } from "vitest";
-import { attends, QUESTIONS, readSurvey, tally } from "./survey";
+import { asked, attends, checkAnswers, QUESTIONS, tally, toDraft, type Draft, type Response } from "./survey";
 
 const q = (no: number) => QUESTIONS.find((x) => x.no === no)!;
-// Header as Google Forms writes it (question titles), with the name and timestamp columns that must not be kept
-const CSV = [
-  "타임스탬프,이름 · 소속,1. 어느 날 참여하나요?,2. 업무에서 AI를 주로 어디에 쓰나요? 모두 골라 주세요,7. (1일차 참여자) 웹앱 주제 중 만들어 보고 싶은 것을 2개까지 골라 주세요,10. 이 과정에서 꼭 듣고 싶은 교육 내용을 자유롭게 적어 주세요",
-  '2026/10/27,가나다 · 기획팀,이틀 모두,"문서 작성 · 요약, 자료 조사","버스 몇 분?(버스 도착), 우산 챙겨?(날씨 예보)",엑셀 자동화',
-  '2026/10/27,라마바 · 운영팀,1일차만,"자료 조사, 우리 부서 회계 정리",숨쉬기 괜찮아?(미세먼지),',
-  "2026/10/27,사아자 · 총무팀,2일차만,보고서 · 기안 초안,,보고서 양식 맞추기",
-].join("\n");
 
-describe("readSurvey", () => {
-  test("keeps answers by question number and drops name and time", () => {
-    const { responses, missing } = readSurvey(CSV);
-    expect(responses).toHaveLength(3);
-    expect(responses[0]).toEqual({ "1": "이틀 모두", "2": "문서 작성 · 요약, 자료 조사", "7": "버스 몇 분?(버스 도착), 우산 챙겨?(날씨 예보)", "10": "엑셀 자동화" });
-    expect(JSON.stringify(responses)).not.toMatch(/가나다|기획팀|2026\/10\/27/);
-    expect(missing).toEqual([3, 4, 5, 6, 8, 9]);
+// A full answer sheet for someone who comes both days; each test changes only what it checks
+const full = (): Draft => ({
+  "1": { picked: ["이틀 모두"], text: "" },
+  "2": { picked: ["자료 조사", "문서 작성 · 요약"], text: "회의록 정리" },
+  "3": { picked: ["Codex"], text: "" },
+  "4": { picked: ["이미 구독 중"], text: "" },
+  "5": { picked: ["검토 보고"], text: "" },
+  "6": { picked: ["해당 없음"], text: "" },
+  "7": { picked: ["우산 챙겨?", "버스 몇 분?"], text: "" },
+  "8": { picked: [], text: "" },
+  "9": { picked: ["특별히 없음"], text: "" },
+  "10": { picked: [], text: "  엑셀 자동화  " },
+});
+
+describe("checkAnswers", () => {
+  test("keeps options in form order, then the written-in 기타; trims written answers; skips an empty optional one", () => {
+    const r = checkAnswers(full());
+    expect("answers" in r && r.answers).toEqual({
+      "1": ["이틀 모두"],
+      "2": ["문서 작성 · 요약", "자료 조사", "회의록 정리"],
+      "3": ["Codex"],
+      "4": ["이미 구독 중"],
+      "5": ["검토 보고"],
+      "6": ["해당 없음"],
+      "7": ["버스 몇 분?", "우산 챙겨?"],
+      "9": ["특별히 없음"],
+      "10": ["엑셀 자동화"],
+    });
+  });
+
+  test("drops the other day's question, even if it was answered before question 1 changed", () => {
+    const d = full();
+    d["1"].picked = ["2일차만"];
+    const r = checkAnswers(d);
+    expect("answers" in r && Object.keys(r.answers)).not.toContain("7");
+    expect("answers" in r && r.answers["5"]).toEqual(["검토 보고"]);
+  });
+
+  test("names the first question that needs fixing", () => {
+    const cases: [(d: Draft) => void, number, RegExp][] = [
+      [(d) => (d["1"].picked = []), 1, /답해 주세요/],
+      [(d) => (d["5"].picked = []), 5, /답해 주세요/],
+      [(d) => (d["3"].picked = ["Codex", "Claude Code"]), 3, /하나만/],
+      [(d) => (d["7"].picked = ["버스 몇 분?", "우산 챙겨?", "새 가족 찾기"]), 7, /2개까지/],
+      [(d) => (d["6"].picked = ["해당 없음", "GitHub에 올리기"]), 6, /함께 고르지 않습니다/],
+      [(d) => (d["9"] = { picked: ["특별히 없음"], text: "노트북이 느림" }), 9, /함께 고르지 않습니다/],
+      [(d) => (d["4"].picked = ["<script>"]), 4, /없는 선택지/],
+      [(d) => (d["10"].text = "가".repeat(301)), 10, /300자/],
+    ];
+    for (const [change, no, message] of cases) {
+      const d = full();
+      change(d);
+      const r = checkAnswers(d);
+      expect(r).toMatchObject({ no });
+      expect("error" in r && r.error).toMatch(message);
+    }
+  });
+
+  test("turns anything that is not a draft into a missing answer", () => {
+    expect(checkAnswers(null)).toMatchObject({ no: 1 });
+    expect(checkAnswers({ "1": { picked: "이틀 모두" } })).toMatchObject({ no: 1 });
   });
 });
 
+describe("asked", () => {
+  test("shows a day question until question 1 says the person does not come that day", () => {
+    const d = full();
+    expect(asked(q(7), { ...d, "1": { picked: [], text: "" } })).toBe(true);
+    expect(asked(q(7), { ...d, "1": { picked: ["2일차만"], text: "" } })).toBe(false);
+    expect(asked(q(5), { ...d, "1": { picked: ["2일차만"], text: "" } })).toBe(true);
+    expect(asked(q(2), { ...d, "1": { picked: ["1일차만"], text: "" } })).toBe(true);
+  });
+});
+
+describe("toDraft", () => {
+  test("puts saved answers back into the form unchanged", () => {
+    const r = checkAnswers(full());
+    if (!("answers" in r)) throw new Error(r.error);
+    const again = checkAnswers(toDraft(r.answers));
+    expect(again).toEqual(r);
+    expect(toDraft(null)["2"]).toEqual({ picked: [], text: "" });
+  });
+});
+
+const responses: Response[] = [
+  { "1": ["이틀 모두"], "2": ["문서 작성 · 요약", "자료 조사"], "10": ["엑셀 자동화"] },
+  { "1": ["1일차만"], "2": ["자료 조사", "우리 부서 회계 정리"] },
+  { "1": ["2일차만"], "2": ["보고서 · 기안 초안"], "10": ["보고서 양식 맞추기"] },
+];
+
 describe("attends", () => {
   test("splits respondents by the day they come; both days count for each", () => {
-    const { responses } = readSurvey(CSV);
     expect(responses.filter((r) => attends(r, "all"))).toHaveLength(3);
-    expect(responses.filter((r) => attends(r, "day1")).map((r) => r["1"])).toEqual(["이틀 모두", "1일차만"]);
-    expect(responses.filter((r) => attends(r, "day2")).map((r) => r["1"])).toEqual(["이틀 모두", "2일차만"]);
+    expect(responses.filter((r) => attends(r, "day1")).map((r) => r["1"][0])).toEqual(["이틀 모두", "1일차만"]);
+    expect(responses.filter((r) => attends(r, "day2")).map((r) => r["1"][0])).toEqual(["이틀 모두", "2일차만"]);
   });
 });
 
 describe("tally", () => {
-  const { responses } = readSurvey(CSV);
-
-  test("counts checkbox options and keeps a written-in 기타", () => {
-    const t = tally(responses, q(2));
-    expect(t.answered).toBe(3);
+  test("counts options and keeps a written-in 기타, even one that contains an option's words", () => {
+    const t = tally([...responses, { "1": ["1일차만"], "2": ["자료 조사 결과 요약"] }], q(2));
+    expect(t.answered).toBe(4);
     expect(t.bars.find((b) => b.label === "자료 조사")?.n).toBe(2);
-    expect(t.bars.find((b) => b.label === "기타")).toEqual({ label: "기타", n: 1 });
-    expect(t.others).toEqual(["우리 부서 회계 정리"]);
-  });
-
-  test("matches an option even with the form's note in brackets", () => {
-    const t = tally(responses, q(7));
-    expect(t.answered).toBe(2);
-    expect(t.bars.filter((b) => b.n > 0).map((b) => b.label)).toEqual(["버스 몇 분?", "우산 챙겨?", "숨쉬기 괜찮아?"]);
-    expect(t.others).toEqual([]);
+    expect(t.bars.find((b) => b.label === "기타")).toEqual({ label: "기타", n: 2 });
+    expect(t.others).toEqual(["우리 부서 회계 정리", "자료 조사 결과 요약"]);
   });
 
   test("keeps written answers as they are", () => {

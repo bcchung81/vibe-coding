@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import { checkPin, logIn, logOut } from "../app/actions";
 import { Band } from "./band";
@@ -21,7 +22,8 @@ const BANDS: Record<Step, { title: string; lead: string }> = {
 };
 
 // Course-wide PIN first (the server hands out the roster only then), then pick your own name
-export function LoginFlow({ me }: { me?: Person }) {
+export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean }) {
+  const router = useRouter();
   const [step, setStep] = useState<Step>(me ? "done" : "pin");
   const [pin, setPin] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
@@ -31,6 +33,11 @@ export function LoginFlow({ me }: { me?: Person }) {
   const [pending, start] = useTransition();
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const order = STEPS.findIndex(([s]) => s === step);
+  const band = !toSurvey
+    ? BANDS[step]
+    : step === "done"
+      ? { title: BANDS.done.title, lead: "수요조사로 넘어갑니다." }
+      : { ...BANDS[step], lead: `${BANDS[step].lead} 로그인하면 수요조사로 돌아갑니다.` };
 
   const wrongPin = (message: string) => {
     setPin(["", "", "", ""]);
@@ -64,6 +71,7 @@ export function LoginFlow({ me }: { me?: Person }) {
       if (!person) return wrongPin("로그인하지 못했습니다. PIN을 다시 넣어 주세요.");
       setWho(person);
       setStep("done");
+      if (toSurvey) router.push("/survey/answer");
     });
 
   const leave = () =>
@@ -76,7 +84,7 @@ export function LoginFlow({ me }: { me?: Person }) {
 
   return (
     <>
-      <Band {...BANDS[step]} action={step === "done" ? { href: "/me", label: "내 프로젝트" } : undefined} />
+      <Band {...band} action={step === "done" ? (toSurvey ? { href: "/survey/answer", label: "수요조사 답하기" } : { href: "/me", label: "내 프로젝트" }) : undefined} />
       <div className="content">
         <section className="panel login-panel" aria-label="로그인" aria-busy={pending}>
           <ol className="stepper">

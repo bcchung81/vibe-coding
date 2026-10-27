@@ -8,7 +8,7 @@ const sql = () => (client ??= neon(process.env.DATABASE_URL!));
 
 export type Student = { id: number; name: string; team: string; topic: string | null };
 export type SavedProject = { url: string; app: string; tagline: string };
-export type StatusRow = { name: string; team: string; topic: string | null; app: string | null; url: string | null; likes: number };
+export type StatusRow = { name: string; team: string; topic: string | null; app: string | null; url: string | null; likes: number; surveyed: boolean };
 
 export async function listStudents() {
   return (await sql()`select id, name, team from students order by team, name`) as Omit<Student, "topic">[];
@@ -100,14 +100,21 @@ export async function wipeAll() {
   await sql()`delete from survey_responses`;
 }
 
-// A new CSV replaces the previous upload
-export async function replaceSurvey(responses: Response[]) {
-  await sql()`delete from survey_responses`;
-  await sql()`insert into survey_responses (answers) select * from jsonb_array_elements(${JSON.stringify(responses)}::jsonb)`;
+// One answer sheet per trainee; answering again replaces it
+export async function saveSurvey(studentId: number, answers: Response) {
+  await sql()`
+    insert into survey_responses (student_id, answers) values (${studentId}, ${JSON.stringify(answers)}::jsonb)
+    on conflict (student_id) do update set answers = excluded.answers`;
 }
 
+export async function mySurvey(studentId: number) {
+  const rows = (await sql()`select answers from survey_responses where student_id = ${studentId}`) as { answers: Response }[];
+  return rows[0]?.answers ?? null;
+}
+
+// Answers only, in an order that is not the roster's, so a written answer does not point to its writer
 export async function surveyResponses() {
-  const rows = (await sql()`select answers from survey_responses order by id`) as { answers: Response }[];
+  const rows = (await sql()`select answers from survey_responses order by md5(student_id::text)`) as { answers: Response }[];
   return rows.map((r) => r.answers);
 }
 
@@ -124,7 +131,8 @@ export async function topicCounts() {
 export async function rosterStatus() {
   return (await sql()`
     select s.name, s.team, s.topic, p.app_name as app, p.app_url as url,
-      (select count(*) from likes l where l.project_id = s.id)::int as likes
+      (select count(*) from likes l where l.project_id = s.id)::int as likes,
+      exists (select 1 from survey_responses r where r.student_id = s.id) as surveyed
     from students s left join projects p on p.student_id = s.id
     order by s.team, s.name`) as StatusRow[];
 }

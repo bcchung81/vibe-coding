@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { adminLogIn, saveRoster, saveSurvey, wipeEverything } from "../app/actions";
+import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
 import type { StatusRow } from "../lib/db";
 import { parseRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
@@ -55,17 +55,19 @@ export function AdminLogin() {
   );
 }
 
-export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]; titles: Record<string, string>; surveyCount: number }) {
+type Show = "all" | "site" | "survey";
+
+export function AdminView({ status, titles }: { status: StatusRow[]; titles: Record<string, string> }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
-  const [onlyMissing, setOnlyMissing] = useState(false);
+  const [show, setShow] = useState<Show>("all");
   const [confirm, setConfirm] = useState("");
-  const [survey, setSurvey] = useState({ ok: true, text: surveyCount ? `지금 ${surveyCount}명 응답이 올라가 있습니다` : "" });
   const [pending, start] = useTransition();
   const { rows, duplicates } = parseRoster(text);
   const teams = new Set(rows.map((r) => r.team).filter(Boolean)).size;
   const missing = status.filter((s) => !s.url);
-  const shown = onlyMissing ? missing : status;
+  const unsurveyed = status.filter((s) => !s.surveyed);
+  const shown = show === "site" ? missing : show === "survey" ? unsurveyed : status;
   const counts: Record<string, number> = {};
   for (const s of status) if (s.topic) counts[s.topic] = (counts[s.topic] ?? 0) + 1;
   const top = topTopics(counts);
@@ -138,11 +140,14 @@ export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]
           <div className="panel-head">
             <h2 id="status-title">현황</h2>
             <div className="tabs" role="group" aria-label="보기">
-              <button type="button" aria-pressed={!onlyMissing} onClick={() => setOnlyMissing(false)}>
+              <button type="button" aria-pressed={show === "all"} onClick={() => setShow("all")}>
                 전체 {status.length}
               </button>
-              <button type="button" aria-pressed={onlyMissing} onClick={() => setOnlyMissing(true)}>
-                아직 {missing.length}
+              <button type="button" aria-pressed={show === "survey"} onClick={() => setShow("survey")}>
+                수요조사 아직 {unsurveyed.length}
+              </button>
+              <button type="button" aria-pressed={show === "site"} onClick={() => setShow("site")}>
+                사이트 아직 {missing.length}
               </button>
             </div>
           </div>
@@ -157,6 +162,7 @@ export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]
                 <tr>
                   <th>이름</th>
                   <th>팀</th>
+                  <th>수요조사</th>
                   <th>주제</th>
                   <th>사이트</th>
                   <th>좋아요</th>
@@ -167,6 +173,7 @@ export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]
                   <tr key={`${s.name}-${s.team}`}>
                     <td>{s.name}</td>
                     <td>{s.team}</td>
+                    <td>{s.surveyed ? <span className="chip done">냈음</span> : <span className="chip todo">아직</span>}</td>
                     <td>{s.topic ? `${s.topic} ${titles[s.topic] ?? ""}` : <span className="meta">—</span>}</td>
                     <td>{s.url ? <span className="chip done">올림 · {s.app}</span> : <span className="chip todo">아직</span>}</td>
                     <td className="num">{s.likes}</td>
@@ -184,33 +191,9 @@ export function AdminView({ status, titles, surveyCount }: { status: StatusRow[]
               결과 보기
             </Link>
           </div>
-          <label className="form">
-            <span>구글폼 응답 CSV — 연결된 스프레드시트에서 파일 → 다운로드 → CSV. 이름 · 소속 · 제출 시각은 저장하지 않고, 다시 올리면 바뀝니다.</span>
-            <input
-              type="file"
-              accept=".csv,text/csv"
-              disabled={pending}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                e.target.value = "";
-                if (!file) return;
-                const text = await file.text();
-                start(async () => {
-                  const r = await saveSurvey(text);
-                  setSurvey(
-                    "error" in r
-                      ? { ok: false, text: r.error ?? "" }
-                      : { ok: true, text: `${r.count}명 응답을 올렸습니다${r.missing.length ? ` · 찾지 못한 문항: ${r.missing.join(", ")}번` : ""}` },
-                  );
-                });
-              }}
-            />
-          </label>
-          {survey.text && (
-            <p className={`hint ${survey.ok ? "ok" : "error"}`} role="status">
-              {survey.text}
-            </p>
-          )}
+          <p>
+            명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 답했습니다. 수강생은 로그인한 뒤 <Link href="/survey/answer">/survey/answer</Link> 에서 답하고, 다시 들어와 고칠 수 있습니다. 아직인 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
+          </p>
         </section>
 
         <section className="panel" aria-labelledby="close-title">

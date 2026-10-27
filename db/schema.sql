@@ -37,8 +37,8 @@ create table if not exists pin_failures (
 );
 create index if not exists pin_failures_ip_at on pin_failures (ip, at);
 
--- 사전 수요조사 응답: 관리 화면에서 구글폼 CSV를 올리면 통째로 바꾼다. 이름 · 소속 · 제출 시각은 저장하지 않는다 (lib/survey.ts)
+-- 사전 수요조사 응답: 수강생이 허브(/survey/answer)에서 낸다. 한 사람에 하나, 다시 내면 바뀐다. 결과 화면에는 집계만 나가고 이름은 나가지 않는다 (lib/survey.ts)
 create table if not exists survey_responses (
-  id serial primary key,
-  answers jsonb not null
+  student_id int primary key references students(id) on delete cascade,
+  answers jsonb not null                -- {"1": ["이틀 모두"], "2": ["자료 조사", "기타에 적은 글"], ...}
 );

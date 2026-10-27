@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Day, Question, Tally } from "../lib/survey";
-import { Band } from "./band";
+import { Band, type BandAction } from "./band";
 import { useTopicCounts } from "./topic-counts";
 
 export type SurveyResults = Record<Day, { count: number; tallies: (Tally & { hiddenOthers: number })[] }>;
@@ -18,7 +18,7 @@ const WHO = { day1: "1일차 참여자만 답함", day2: "2일차 참여자만 �
 const topicSlug = (i: number) => String(i + 1).padStart(2, "0");
 
 // Survey results to look at together in class: one panel per question, counts as bars, filtered by the day people attend
-export function SurveyView({ results, questions, admin }: { results: SurveyResults; questions: Question[]; admin: boolean }) {
+export function SurveyView({ results, questions, admin, action }: { results: SurveyResults; questions: Question[]; admin: boolean; action: BandAction }) {
   const [day, setDay] = useState<Day>("all");
   const [live] = useTopicCounts();
   const { count, tallies } = results[day];
@@ -26,14 +26,12 @@ export function SurveyView({ results, questions, admin }: { results: SurveyResul
 
   if (total === 0)
     return (
-      <>
-        <Band title="사전 수요조사 결과" lead="아직 결과가 없습니다. 관리 화면에서 구글폼 응답 CSV를 올리면 여기에 모입니다." />
-      </>
+      <Band title="사전 수요조사 결과" lead="아직 응답이 없습니다. 수강생이 로그인하고 답하면 여기에 모입니다." action={action} />
     );
 
   return (
     <>
-      <Band title="사전 수요조사 결과" lead={`${total}명 응답 · 1일차 참여 ${results.day1.count}명 · 2일차 참여 ${results.day2.count}명 · 이름은 저장하지 않았습니다`} />
+      <Band title="사전 수요조사 결과" lead={`${total}명 응답 · 1일차 참여 ${results.day1.count}명 · 2일차 참여 ${results.day2.count}명 · 이름은 보이지 않습니다`} action={action} />
       <div className="content">
         <div className="panel-head">
           <div className="tabs" role="group" aria-label="참여한 날">
