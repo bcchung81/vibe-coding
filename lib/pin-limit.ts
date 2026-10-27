@@ -12,3 +12,7 @@ export function pinLocked(kind: PinKind, failures: PinFailures) {
   const limit = PIN_LIMITS[kind];
   return failures.here >= limit.here || failures.everywhere >= limit.everywhere;
 }
+
+// The login screen takes the admin PIN too. Its wrong PINs are counted as course ones, so they are held to the admin limits as well:
+// past them, only /admin takes the admin PIN.
+export const adminAtLogin = (course: PinFailures, admin: PinFailures) => !pinLocked("admin", admin) && !pinLocked("admin", course);

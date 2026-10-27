@@ -7,8 +7,8 @@ import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
 import { captureProject } from "../lib/capture";
 import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
-import { pinLocked, type PinKind } from "../lib/pin-limit";
-import { checkAnswers } from "../lib/survey";
+import { adminAtLogin, pinLocked, type PinKind } from "../lib/pin-limit";
+import { checkAnswers, type Response as SurveyAnswers } from "../lib/survey";
 import { canApply, cleanCell, planRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
@@ -16,21 +16,34 @@ import { isTopicSlug } from "../lib/topic-counts";
 
 // Server Functions are public endpoints: each one checks the PIN, password or cookie itself.
 
-// "ok", "wrong", or "locked" after too many wrong PINs (lib/pin-limit.ts). Vercel sets x-forwarded-for.
+// Vercel sets x-forwarded-for
+const clientIp = async () => (await headers()).get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+const isPin = (pin: string, expected: string | undefined) => /^\d{4}$/.test(pin) && matchesSecret(pin, expected);
+
+// "ok", "wrong", or "locked" after too many wrong PINs (lib/pin-limit.ts)
 async function checkPin4(kind: PinKind, pin: string, expected: string | undefined) {
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+  const ip = await clientIp();
   if (pinLocked(kind, await pinFailures(kind, ip))) return "locked";
-  if (/^\d{4}$/.test(pin) && matchesSecret(pin, expected)) return "ok";
+  if (isPin(pin, expected)) return "ok";
   await recordPinFailure(kind, ip);
   return "wrong";
 }
 
 const checkCoursePin = (pin: string) => checkPin4("course", pin, process.env.COURSE_PIN);
 
-// The roster is only handed out to someone who knows the course PIN
+// The login screen's one PIN box: the course PIN hands out the roster (only then), the admin PIN goes straight to 관리
 export async function checkPin(pin: string) {
-  const result = await checkCoursePin(pin);
-  return result === "ok" ? { ok: true as const, roster: await listStudents() } : { ok: false as const, locked: result === "locked" };
+  const ip = await clientIp();
+  const [course, admin] = await Promise.all([pinFailures("course", ip), pinFailures("admin", ip)]);
+  if (pinLocked("course", course)) return { ok: false as const, locked: true };
+  if (isPin(pin, process.env.COURSE_PIN)) return { ok: true as const, roster: await listStudents() };
+  if (adminAtLogin(course, admin) && isPin(pin, process.env.ADMIN_PASSWORD)) {
+    await signIn({ kind: "admin", id: 0 });
+    refresh();
+    return { ok: true as const, admin: true as const };
+  }
+  await recordPinFailure("course", ip);
+  return { ok: false as const, locked: false };
 }
 
 // `topic` is what this browser picked before logging in; it counts unless the trainee already has one saved
@@ -123,7 +136,7 @@ export async function wipeEverything(confirm: string) {
 }
 
 // The trainee's own pre-course survey, checked the same way the form checks it; answering again replaces it
-export async function answerSurvey(draft: unknown) {
+export async function answerSurvey(draft: unknown): Promise<{ error: string; no: number } | { saved: SurveyAnswers }> {
   const me = await signedIn("student");
   if (!me) return { error: "로그인이 풀렸습니다. 다시 로그인해 주세요.", no: 0 };
   const result = checkAnswers(draft);

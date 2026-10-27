@@ -53,6 +53,10 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
       const result = await checkPin(value);
       if (!result.ok)
         return wrongPin(result.locked ? "여러 번 틀려 잠시 막았습니다. 10분 뒤에 다시 해 주세요." : "PIN이 맞지 않습니다. 공지 문자를 다시 확인해 주세요.");
+      if ("admin" in result) {
+        sessionChanged();
+        return router.push(toSurvey ? "/survey" : "/admin");
+      }
       setPin(value);
       setRoster(result.roster);
       setStep("name");
@@ -97,9 +101,7 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
               <span className={`hint ${error ? "error" : ""}`} aria-live="polite">
                 {pending ? "확인하는 중…" : error || "수강생 모두 같은 PIN을 씁니다. 자료 · 갤러리 보기는 로그인 없이 됩니다."}
               </span>
-              <Link className="hint staff-link" href="/admin">
-                강사 · 조교는 관리 PIN으로 들어갑니다
-              </Link>
+              <span className="hint">강사 · 조교는 여기에 관리 PIN을 넣으면 관리 화면으로 갑니다.</span>
             </div>
           )}
 
