@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { checkPin, logIn, logOut } from "../app/actions";
 import { Band } from "./band";
 import { Icon } from "./icon";
 import { myTopic } from "./my-topic";
+import { PinInput } from "./pin-input";
+import { sessionChanged } from "./session";
 
 type Step = "pin" | "name" | "done";
 type Person = { name: string; team: string };
@@ -25,13 +27,13 @@ const BANDS: Record<Step, { title: string; lead: string }> = {
 export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(me ? "done" : "pin");
-  const [pin, setPin] = useState(["", "", "", ""]);
+  const [pin, setPin] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const [roster, setRoster] = useState<(Person & { id: number })[]>([]);
   const [query, setQuery] = useState("");
   const [who, setWho] = useState(me);
   const [pending, start] = useTransition();
-  const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const order = STEPS.findIndex(([s]) => s === step);
   const band = !toSurvey
     ? BANDS[step]
@@ -40,45 +42,38 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
       : { ...BANDS[step], lead: `${BANDS[step].lead} 로그인하면 수요조사로 돌아갑니다.` };
 
   const wrongPin = (message: string) => {
-    setPin(["", "", "", ""]);
+    setPin("");
+    setAttempt((n) => n + 1);
     setError(message);
     setStep("pin");
-    boxes.current[0]?.focus();
   };
 
-  const typePin = (i: number, value: string) => {
-    const digits = value.replace(/\D/g, "");
-    if (!digits) return;
-    const next = [...pin];
-    // typing or pasting fills forward from this box
-    digits.split("").slice(0, 4 - i).forEach((d, k) => (next[i + k] = d));
-    setError("");
-    setPin(next);
-    const empty = next.findIndex((d) => !d);
-    if (empty !== -1) return boxes.current[empty]?.focus();
+  const sendPin = (value: string) =>
     start(async () => {
-      const result = await checkPin(next.join(""));
+      const result = await checkPin(value);
       if (!result.ok)
         return wrongPin(result.locked ? "여러 번 틀려 잠시 막았습니다. 10분 뒤에 다시 해 주세요." : "PIN이 맞지 않습니다. 공지 문자를 다시 확인해 주세요.");
+      setPin(value);
       setRoster(result.roster);
       setStep("name");
     });
-  };
 
   const choose = (id: number) =>
     start(async () => {
-      const person = await logIn(pin.join(""), id, myTopic());
+      const person = await logIn(pin, id, myTopic());
       if (!person) return wrongPin("로그인하지 못했습니다. PIN을 다시 넣어 주세요.");
       setWho(person);
       setStep("done");
+      sessionChanged();
       if (toSurvey) router.push("/survey/answer");
     });
 
   const leave = () =>
     start(async () => {
       await logOut();
+      sessionChanged();
       setWho(undefined);
-      setPin(["", "", "", ""]);
+      setPin("");
       setStep("pin");
     });
 
@@ -98,36 +93,13 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
 
           {step === "pin" && (
             <div className="form">
-              <div className="pin" role="group" aria-label="공통 PIN 4자리" data-error={Boolean(error)}>
-                {pin.map((d, i) => (
-                  <input
-                    key={i}
-                    ref={(el) => {
-                      boxes.current[i] = el;
-                    }}
-                    value={d}
-                    inputMode="numeric"
-                    autoComplete="off"
-                    placeholder="·"
-                    autoFocus={i === 0}
-                    disabled={pending}
-                    aria-label={`${i + 1}번째 숫자`}
-                    aria-invalid={Boolean(error)}
-                    onChange={(e) => typePin(i, e.target.value.slice(-4))}
-                    onKeyDown={(e) => {
-                      if (e.key === "Backspace" && !d && i > 0) {
-                        const next = [...pin];
-                        next[i - 1] = "";
-                        setPin(next);
-                        boxes.current[i - 1]?.focus();
-                      }
-                    }}
-                  />
-                ))}
-              </div>
+              <PinInput key={attempt} label="공통 PIN 4자리" error={Boolean(error)} disabled={pending} onEdit={() => setError("")} onDone={sendPin} />
               <span className={`hint ${error ? "error" : ""}`} aria-live="polite">
                 {pending ? "확인하는 중…" : error || "수강생 모두 같은 PIN을 씁니다. 자료 · 갤러리 보기는 로그인 없이 됩니다."}
               </span>
+              <Link className="hint staff-link" href="/admin">
+                강사 · 조교는 관리 PIN으로 들어갑니다
+              </Link>
             </div>
           )}
 

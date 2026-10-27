@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
 import type { StatusRow } from "../lib/db";
-import { parseRoster } from "../lib/roster";
+import { planRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
 import { Band } from "./band";
 import { Icon } from "./icon";
+import { PinInput } from "./pin-input";
+import { isTicked, padRows, RosterGrid, type GridRow } from "./roster-grid";
+import { sessionChanged } from "./session";
 
 function downloadCsv(status: StatusRow[]) {
   const lines = [["이름", "팀", "주제", "앱", "주소", "좋아요"], ...status.map((s) => [s.name, s.team, s.topic ?? "", s.app ?? "", s.url ?? "", String(s.likes)])];
@@ -19,37 +22,28 @@ function downloadCsv(status: StatusRow[]) {
   URL.revokeObjectURL(a.href);
 }
 
-// The admin password set in Vercel (ADMIN_PASSWORD); the page reloads with the real view once it matches
+// The admin PIN (4 digits, ADMIN_PASSWORD in Vercel); the page reloads with the real view once it matches
 export function AdminLogin() {
-  const [password, setPassword] = useState("");
-  const [wrong, setWrong] = useState(false);
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const [pending, start] = useTransition();
+  const send = (pin: string) =>
+    start(async () => {
+      const result = await adminLogIn(pin);
+      if (result === "ok") return sessionChanged();
+      setError(result === "locked" ? "여러 번 틀려 막았습니다. 10분(여러 곳에서 틀렸으면 1시간) 뒤에 다시 해 주세요." : "관리 PIN이 맞지 않습니다.");
+      setAttempt((n) => n + 1);
+    });
   return (
     <>
-      <Band title="다음: 관리 비밀번호" lead="강사 · 조교만 들어옵니다." />
+      <Band title="다음: 관리 PIN 4자리" lead="강사 · 조교만 들어옵니다." />
       <div className="content">
-        <form
-          className="panel form login-panel"
-          onSubmit={(e) => {
-            e.preventDefault();
-            start(async () => setWrong(!(await adminLogIn(password))));
-          }}
-        >
-          <label>
-            <span>비밀번호</span>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" autoFocus />
-          </label>
-          <div className="tools">
-            <button className="btn-primary" type="submit" disabled={pending || !password}>
-              {pending ? "확인하는 중…" : "들어가기"}
-            </button>
-            {wrong && (
-              <span className="hint error" role="alert">
-                비밀번호가 맞지 않습니다
-              </span>
-            )}
-          </div>
-        </form>
+        <section className="panel form login-panel" aria-label="관리 로그인" aria-busy={pending}>
+          <PinInput key={attempt} label="관리 PIN 4자리" error={Boolean(error)} disabled={pending} onEdit={() => setError("")} onDone={send} />
+          <span className={`hint ${error ? "error" : ""}`} aria-live="polite">
+            {pending ? "확인하는 중…" : error || "수강생 공통 PIN과 다른 번호입니다."}
+          </span>
+        </section>
       </div>
     </>
   );
@@ -58,13 +52,14 @@ export function AdminLogin() {
 type Show = "all" | "site" | "survey";
 
 export function AdminView({ status, titles }: { status: StatusRow[]; titles: Record<string, string> }) {
-  const [text, setText] = useState("");
-  const [result, setResult] = useState("");
+  const [rows, setRows] = useState<GridRow[]>(() => padRows([]));
+  const [notice, setNotice] = useState<{ title: string; lead: string } | null>(null);
   const [show, setShow] = useState<Show>("all");
   const [confirm, setConfirm] = useState("");
   const [pending, start] = useTransition();
-  const { rows, duplicates } = parseRoster(text);
-  const teams = new Set(rows.map((r) => r.team).filter(Boolean)).size;
+  const plans = planRoster(rows, status);
+  const sending = rows.filter((r, i) => isTicked(r, plans[i]));
+  const broken = plans.filter((p) => p?.state === "error" || p?.state === "duplicate").length;
   const missing = status.filter((s) => !s.url);
   const unsurveyed = status.filter((s) => !s.surveyed);
   const shown = show === "site" ? missing : show === "survey" ? unsurveyed : status;
@@ -72,21 +67,32 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
   for (const s of status) if (s.topic) counts[s.topic] = (counts[s.topic] ?? 0) + 1;
   const top = topTopics(counts);
 
-  const save = () =>
+  const changeRows = (next: GridRow[]) => {
+    setRows(next);
+    setNotice(null);
+  };
+
+  // Rows that went in leave the sheet (they show in 현황); the rest stay with the reason
+  const apply = () =>
     start(async () => {
-      const r = await saveRoster(text);
-      if ("error" in r) return setResult(r.error ?? "");
-      setResult(`${r.added}명 추가 · ${r.kept}명은 이미 있음`);
-      setText("");
+      const r = await saveRoster(sending.map(({ name, team }) => ({ name, team })));
+      if ("error" in r) return setNotice({ title: "다음: 다시 로그인", lead: r.error ?? "" });
+      const added = new Set(sending.filter((_, k) => r.results[k]?.ok));
+      const failed = r.results.filter((x) => !x.ok);
+      setRows(padRows(rows.filter((row) => !added.has(row))));
+      setNotice({
+        title: `명단에 ${added.size}명을 더했습니다`,
+        lead: failed.length ? `${failed.length}줄은 넣지 못해 표에 남겼습니다 — ${failed[0].note}` : "다음: 주소 · 공통 PIN · 수요조사 주소를 공지합니다.",
+      });
     });
 
-  const band = result
-    ? { title: `다음: 아직 안 올린 ${missing.length}명 확인`, lead: `${result} · 현황 표에서 '아직'인 사람을 찾아 돕습니다.` }
-    : duplicates.length
-      ? { title: "다음: 중복 고치기", lead: `같은 이름 · 팀이 있어 저장할 수 없습니다 · ${duplicates.join(", ")}` }
-      : rows.length
-        ? { title: `다음: 명단 ${rows.length}명 저장`, lead: `${teams}개 팀 · 중복 없음 · 이미 있는 이름은 그대로 둡니다` }
-        : { title: status.length ? `아직 안 올린 사람 ${missing.length}명` : "다음: 명단 붙여넣기", lead: "엑셀에서 이름 · 팀 두 칸을 복사해 붙여넣습니다." };
+  const band =
+    notice ??
+    (broken
+      ? { title: `다음: 빨간 줄 ${broken}개 고치기`, lead: "중복 · 오류 줄은 반영하지 않습니다. 고치거나 지우면 바로 다시 판정합니다." }
+      : sending.length
+        ? { title: `다음: 명단 ${sending.length}명 반영`, lead: "체크한 줄만 들어갑니다. 이미 있는 이름과 그 사람의 사이트는 그대로 둡니다." }
+        : { title: status.length ? `명단 ${status.length}명 · 사이트 아직 ${missing.length}명` : "다음: 명단 붙여넣기", lead: "엑셀에서 이름 · 팀 열을 복사해 아래 표의 이름 칸에 붙여넣습니다." });
 
   return (
     <>
@@ -95,45 +101,9 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
         <section className="panel" aria-labelledby="roster-title">
           <div className="panel-head">
             <h2 id="roster-title">명단</h2>
-            <span className="meta">
-              저장된 {status.length}명 · 붙여넣은 {rows.length}명
-            </span>
+            <span className="meta">저장된 {status.length}명 · 머리글 줄이 있어도 됩니다 · 칸을 고치면 바로 다시 판정합니다</span>
           </div>
-          <div className="split">
-            <label className="form">
-              <span>이름 · 팀 (한 줄에 한 사람)</span>
-              <textarea
-                rows={8}
-                value={text}
-                onChange={(e) => {
-                  setText(e.target.value);
-                  setResult("");
-                }}
-                placeholder={"이름\t팀\n가나다\t1팀\n라마바\t2팀"}
-                spellCheck={false}
-              />
-            </label>
-            <div className="roster-preview" aria-live="polite">
-              {duplicates.length > 0 && <p className="hint error">중복: {duplicates.join(", ")}</p>}
-              {rows.length === 0 ? (
-                <p className="meta">붙여넣으면 여기에서 바로 확인합니다.</p>
-              ) : (
-                <ol>
-                  {rows.map((r, i) => (
-                    <li key={i} data-dup={duplicates.includes(r.team ? `${r.name} · ${r.team}` : r.name)}>
-                      <b>{r.name}</b> <span className="meta">{r.team || "팀 없음"}</span>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </div>
-          </div>
-          <div className="tools">
-            <button className="btn-primary" type="button" disabled={!rows.length || duplicates.length > 0 || pending} onClick={save}>
-              {pending ? "저장하는 중…" : "명단 저장"}
-            </button>
-            {result && <span className="hint ok">{result}</span>}
-          </div>
+          <RosterGrid rows={rows} plans={plans} onRows={changeRows} onApply={apply} onClear={() => changeRows(padRows([]))} pending={pending} />
         </section>
 
         <section className="panel" id="status" aria-labelledby="status-title">
@@ -216,7 +186,7 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
                   start(async () => {
                     const done = await wipeEverything(confirm);
                     setConfirm("");
-                    setResult(done ? "모두 지웠습니다" : "지우지 못했습니다. 다시 로그인해 주세요");
+                    setNotice(done ? { title: "모두 지웠습니다", lead: "명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과가 없어졌습니다." } : { title: "지우지 못했습니다", lead: "관리 PIN으로 다시 들어와 주세요." });
                   })
                 }
               >

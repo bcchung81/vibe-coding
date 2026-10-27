@@ -1,4 +1,5 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import type { PinFailures, PinKind } from "./pin-limit";
 import type { RosterRow } from "./roster";
 import type { Response } from "./survey";
 
@@ -19,14 +20,13 @@ export async function findStudent(id: number) {
   return rows[0] ?? null;
 }
 
-// Adds new names and keeps the ones already there (their projects stay). Returns how many were new.
+// Adds new names and keeps the ones already there (their projects stay). Returns the rows that went in.
 export async function addStudents(rows: RosterRow[]) {
-  const added = await sql()`
+  return (await sql()`
     insert into students (name, team)
     select * from unnest(${rows.map((r) => r.name)}::text[], ${rows.map((r) => r.team)}::text[])
     on conflict (name, team) do nothing
-    returning id`;
-  return added.length;
+    returning name, team`) as RosterRow[];
 }
 
 export async function findProject(studentId: number) {
@@ -137,15 +137,16 @@ export async function rosterStatus() {
     order by s.team, s.name`) as StatusRow[];
 }
 
-// Wrong course PINs from one address in the last 10 minutes (the classroom shares one, so the limit is generous)
-export const PIN_FAILURE_LIMIT = 30;
-
-export async function recentPinFailures(ip: string) {
-  const rows = (await sql()`select count(*)::int as n from pin_failures where ip = ${ip} and at > now() - interval '10 minutes'`) as { n: number }[];
-  return rows[0].n;
+// Wrong PINs of one kind: from this address in the last 10 minutes, and from everywhere in the last hour (limits: lib/pin-limit.ts)
+export async function pinFailures(kind: PinKind, ip: string) {
+  const rows = (await sql()`
+    select count(*) filter (where ip = ${ip} and at > now() - interval '10 minutes')::int as here,
+      count(*) filter (where at > now() - interval '1 hour')::int as everywhere
+    from pin_failures where kind = ${kind}`) as PinFailures[];
+  return rows[0];
 }
 
-export async function recordPinFailure(ip: string) {
+export async function recordPinFailure(kind: PinKind, ip: string) {
   await sql()`delete from pin_failures where at < now() - interval '1 day'`;
-  await sql()`insert into pin_failures (ip) values (${ip})`;
+  await sql()`insert into pin_failures (kind, ip) values (${kind}, ${ip})`;
 }

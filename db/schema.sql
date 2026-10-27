@@ -30,11 +30,13 @@ create table if not exists likes (
   primary key (student_id, project_id)
 );
 
--- 틀린 공통 PIN 기록: 같은 곳(IP)에서 10분에 30번 틀리면 10분 막는다 (강의실은 IP 하나를 같이 쓰므로 넉넉하게). 하루 지난 기록은 지운다
+-- 틀린 PIN 기록 (lib/pin-limit.ts). 공통 PIN(course): 같은 곳(IP)에서 10분에 30번 틀리면 막는다 — 강의실은 IP 하나를 같이 쓰므로 넉넉하게.
+-- 관리자 PIN(admin): 같은 곳에서 10분에 10번, 모든 곳 합쳐 1시간에 50번 틀리면 막는다. 하루 지난 기록은 지운다
 create table if not exists pin_failures (
   ip text not null,
   at timestamptz not null default now()
 );
+alter table pin_failures add column if not exists kind text not null default 'course';
 create index if not exists pin_failures_ip_at on pin_failures (ip, at);
 
 -- 사전 수요조사 응답: 수강생이 허브(/survey/answer)에서 낸다. 한 사람에 하나, 다시 내면 바뀐다. 결과 화면에는 집계만 나가고 이름은 나가지 않는다 (lib/survey.ts)

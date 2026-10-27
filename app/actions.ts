@@ -6,23 +6,26 @@ import { after } from "next/server";
 import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
 import { captureProject } from "../lib/capture";
-import { addStudents, captureState, findStudent, listStudents, PIN_FAILURE_LIMIT, recentPinFailures, recordPinFailure, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { pinLocked, type PinKind } from "../lib/pin-limit";
 import { checkAnswers } from "../lib/survey";
-import { parseRoster } from "../lib/roster";
+import { canApply, cleanCell, planRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
 import { isTopicSlug } from "../lib/topic-counts";
 
 // Server Functions are public endpoints: each one checks the PIN, password or cookie itself.
 
-// "ok", "wrong", or "locked" after too many wrong PINs from this address. Vercel sets x-forwarded-for.
-async function checkCoursePin(pin: string) {
+// "ok", "wrong", or "locked" after too many wrong PINs (lib/pin-limit.ts). Vercel sets x-forwarded-for.
+async function checkPin4(kind: PinKind, pin: string, expected: string | undefined) {
   const ip = (await headers()).get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  if ((await recentPinFailures(ip)) >= PIN_FAILURE_LIMIT) return "locked";
-  if (/^\d{4}$/.test(pin) && matchesSecret(pin, process.env.COURSE_PIN)) return "ok";
-  await recordPinFailure(ip);
+  if (pinLocked(kind, await pinFailures(kind, ip))) return "locked";
+  if (/^\d{4}$/.test(pin) && matchesSecret(pin, expected)) return "ok";
+  await recordPinFailure(kind, ip);
   return "wrong";
 }
+
+const checkCoursePin = (pin: string) => checkPin4("course", pin, process.env.COURSE_PIN);
 
 // The roster is only handed out to someone who knows the course PIN
 export async function checkPin(pin: string) {
@@ -77,21 +80,32 @@ export async function pickTopic(slug: string | null) {
   return true;
 }
 
-export async function adminLogIn(password: string) {
-  if (!matchesSecret(password, process.env.ADMIN_PASSWORD)) return false;
-  await signIn({ kind: "admin", id: 0 });
-  refresh();
-  return true;
+// The admin PIN (4 digits, ADMIN_PASSWORD in Vercel): "ok", "wrong" or "locked"
+export async function adminLogIn(pin: string) {
+  const result = await checkPin4("admin", pin, process.env.ADMIN_PASSWORD);
+  if (result === "ok") {
+    await signIn({ kind: "admin", id: 0 });
+    refresh();
+  }
+  return result;
 }
 
-// Adds new names only; existing ones and their projects stay
-export async function saveRoster(text: string) {
-  if (!(await signedIn("admin"))) return { error: "관리자 로그인이 풀렸습니다. 새로 고침 후 다시 들어오세요." };
-  const { rows, duplicates } = parseRoster(text);
-  if (!rows.length || duplicates.length) return { error: "명단을 확인해 주세요 (비어 있거나 중복이 있습니다)" };
-  const added = await addStudents(rows);
+export async function adminLogOut() {
+  await signOut("admin");
   refresh();
-  return { added, kept: rows.length - added };
+}
+
+// The ticked rows of the roster grid. The server judges them again against the saved roster (lib/roster.ts) and adds new names only;
+// names already there and their projects stay. Each row comes back with whether it went in and, if not, why.
+export async function saveRoster(input: unknown) {
+  if (!(await signedIn("admin"))) return { error: "관리자 로그인이 풀렸습니다. 새로 고침 후 다시 들어오세요." };
+  const rows = (Array.isArray(input) ? input : []).slice(0, 300).map((r) => ({ name: cleanCell(String(r?.name ?? "")), team: cleanCell(String(r?.team ?? "")) }));
+  const plan = planRoster(rows, await listStudents());
+  const fit = rows.filter((_, i) => canApply(plan[i]));
+  const added = fit.length ? await addStudents(fit) : [];
+  const went = new Set(added.map((r) => `${r.name}\u0000${r.team}`));
+  refresh();
+  return { results: rows.map((r, i) => (canApply(plan[i]) && went.has(`${r.name}\u0000${r.team}`) ? { ok: true as const } : { ok: false as const, note: plan[i]?.note || "이미 명단에 있습니다" })) };
 }
 
 // Removes every trainee, project, like, survey answer and capture image. The admin types 삭제 to confirm.
