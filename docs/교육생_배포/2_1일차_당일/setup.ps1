@@ -47,13 +47,11 @@ $PythonVersion = '3.14.8'
 # kordoc version tested by report-harness (its .mcp.json). Every agent gets the same one.
 $KordocPackage = 'kordoc@4.15.3'
 
-# Course repositories, each cloned to C:\workspace\<Name>
+# Course repositories, each cloned to C:\workspace\<Name>.
+# The report tools (report-harness) are installed on day 2 by 00_*.md, not here.
 $CourseRepos = @(
-    @{ Name = 'report-harness'; Url = 'https://github.com/bcchung81/report-harness.git' }
+    @{ Name = 'im-not-ai'; Url = 'https://github.com/epoko77-ai/im-not-ai.git' }   # humanize-korean skill (MIT)
 )
-
-# HyperFrames video skills: only the skills folder of the repository (the whole repository is about 500 MB)
-$HyperframesRepo = @{ Name = 'hyperframes-skills'; Url = 'https://github.com/heygen-com/hyperframes.git'; Sparse = 'skills' }
 
 # MCP servers for every selected agent (wrapped in "cmd /c" on Windows)
 $McpServers = @(
@@ -407,8 +405,7 @@ function Register-AntigravityMcp([string]$LawOc) {
 }
 
 # Clone C:\workspace\<Name>, or update it with a fast-forward pull.
-# $Sparse: check out only that folder (a partial clone downloads just its files).
-function Sync-Repo([string]$Name, [string]$Url, [string]$Sparse = '') {
+function Sync-Repo([string]$Name, [string]$Url) {
     $dir = Join-Path $Workspace $Name
     $item = "Repo $Name"
     if (Test-Path (Join-Path $dir '.git')) {
@@ -434,34 +431,8 @@ function Sync-Repo([string]$Name, [string]$Url, [string]$Sparse = '') {
         Add-Result $item 'WARN' "$dir exists but is not a git folder - skipped"
         return
     }
-    if ($Sparse) {
-        git clone --depth 1 --filter=blob:none --sparse $Url $dir
-        if ($LASTEXITCODE -eq 0) { git -C $dir sparse-checkout set $Sparse }
-    } else {
-        git clone --depth 1 $Url $dir
-    }
+    git clone --depth 1 $Url $dir
     if ($LASTEXITCODE -eq 0) { Add-Result $item 'OK' $dir } else { Add-Result $item 'FAIL' "git clone failed: $Url" }
-}
-
-# Unzip a skill package into each skill root. A hash marker skips it when nothing changed.
-function Install-ZipSkill([string]$Item, [string]$Zip, [string]$SkillName, [string[]]$Roots) {
-    if (-not (Test-Path $Zip)) {
-        Add-Result $Item 'FAIL' "$(Split-Path $Zip -Leaf) not found - report-harness not cloned?"
-        return
-    }
-    $hash = (Get-FileHash $Zip).Hash
-    $done = 0
-    foreach ($root in $Roots) {
-        $dest = Join-Path $root $SkillName
-        $marker = Join-Path $dest '.source-sha256'
-        if ((Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $hash)) { continue }
-        if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-        if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
-        Expand-Archive -Path $Zip -DestinationPath $root -Force
-        Set-Content -Path $marker -Value $hash -Encoding ASCII
-        $done++
-    }
-    if ($done -eq 0) { Add-Result $Item 'SKIP' 'already up to date' } else { Add-Result $Item 'OK' "installed in $done folder(s)" }
 }
 
 function Copy-SkillFolder([string]$Item, [string]$From, [string]$SkillName, [string[]]$Roots) {
@@ -483,44 +454,22 @@ function Copy-SkillFolder([string]$Item, [string]$From, [string]$SkillName, [str
     Add-Result $Item 'OK' "copied to $($todo.Count) folder(s)"
 }
 
-# Every skill folder under $From into each root, one result line for the whole set
-function Copy-SkillSet([string]$Item, [string]$From, [string[]]$Roots) {
-    $skills = @(Get-ChildItem $From -Directory -ErrorAction SilentlyContinue | Where-Object { Test-Path (Join-Path $_.FullName 'SKILL.md') })
-    if ($skills.Count -eq 0) {
-        Add-Result $Item 'FAIL' "no skills in $From"
-        return
-    }
-    $copied = 0
-    foreach ($root in $Roots) {
-        foreach ($s in $skills) {
-            $dest = Join-Path $root $s.Name
-            $f = Join-Path $dest 'SKILL.md'
-            if ((Test-Path $f) -and (Get-FileHash $f).Hash -eq (Get-FileHash (Join-Path $s.FullName 'SKILL.md')).Hash) { continue }
-            if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-            if (-not (Test-Path $root)) { New-Item -ItemType Directory -Path $root -Force | Out-Null }
-            Copy-Item $s.FullName $dest -Recurse -Force
-            $copied++
-        }
-    }
-    if ($copied -eq 0) { Add-Result $Item 'SKIP' "already up to date ($($skills.Count) skills)" } else { Add-Result $Item 'OK' "$($skills.Count) skills, $copied copied" }
-}
-
-# Claude Code gets the full report-harness plugin from the local clone
-function Install-ClaudePlugin([string]$Dir) {
-    $item = 'Claude plugin report-harness'
+# Claude Code gets a plugin from a local clone (marketplace $Market, plugin $Plugin)
+function Install-ClaudePlugin([string]$Dir, [string]$Market, [string]$Plugin) {
+    $item = "Claude plugin $Plugin"
     if (-not (Test-Path (Join-Path $Dir '.claude-plugin\marketplace.json'))) {
-        Add-Result $item 'FAIL' 'report-harness not cloned'
+        Add-Result $item 'FAIL' "$Market not cloned"
         return
     }
-    if (((Get-Lines { & $Claude plugin list }) -join ' ') -match 'report-harness') {
-        & $Claude plugin marketplace update report-harness *> $null
-        & $Claude plugin update report-harness@report-harness *> $null
+    if (((Get-Lines { & $Claude plugin list }) -join ' ') -match $Plugin) {
+        & $Claude plugin marketplace update $Market *> $null
+        & $Claude plugin update "$Plugin@$Market" *> $null
         Add-Result $item 'SKIP' 'already installed (update checked)'
         return
     }
     & $Claude plugin marketplace add $Dir *> $null
-    & $Claude plugin install report-harness@report-harness
-    if (((Get-Lines { & $Claude plugin list }) -join ' ') -match 'report-harness') {
+    & $Claude plugin install "$Plugin@$Market"
+    if (((Get-Lines { & $Claude plugin list }) -join ' ') -match $Plugin) {
         Add-Result $item 'OK' 'installed'
     } else {
         Add-Result $item 'FAIL' 'claude plugin install failed'
@@ -676,7 +625,7 @@ if (@('RemoteSigned', 'Unrestricted', 'Bypass') -contains $ep.Policy) {
 
 $blocked = $false
 
-# winget installs Node.js, Git, GitHub CLI and FFmpeg. A new Windows account gets it only
+# winget installs Node.js, Git and GitHub CLI. A new Windows account gets it only
 # after App Installer registers itself, so register it now (no admin needed).
 if (-not (Test-Command 'winget')) {
     try { Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe -ErrorAction Stop } catch { }
@@ -778,16 +727,14 @@ if ($blocked) {
 }
 
 # ---------------------------------------------------------------- 2
-Write-Step '2. Base tools - Git, GitHub CLI, FFmpeg, Python'
+Write-Step '2. Base tools - Git, GitHub CLI, Python'
 
 # Scopes: per-user install first (no admin rights needed), then the package default
 $packages = @(
     @{ Name = 'Git';        Id = 'Git.Git';     Scopes = @('user', ''); Test = { Test-Command 'git' };
        Dirs = { @((Join-Path $env:ProgramFiles 'Git\cmd'), (Join-Path $env:LOCALAPPDATA 'Programs\Git\cmd')) } },
     @{ Name = 'GitHub CLI'; Id = 'GitHub.cli';  Scopes = @('user', ''); Test = { Test-Command 'gh' };
-       Dirs = { @((Join-Path $env:ProgramFiles 'GitHub CLI'), (Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links')) } },
-    @{ Name = 'FFmpeg';     Id = 'Gyan.FFmpeg'; Scopes = @('');         Test = { Test-Command 'ffmpeg' };
-       Dirs = { @(Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links') } }
+       Dirs = { @((Join-Path $env:ProgramFiles 'GitHub CLI'), (Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links')) } }
 )
 
 foreach ($p in $packages) {
@@ -845,7 +792,7 @@ if (Test-PythonOk) {
     }
 }
 
-# report-harness scripts and hooks call "python3"; on Windows that name is only the Store shortcut
+# humanize-korean and the day-2 report-harness scripts call "python3"; on Windows that name is only the Store shortcut
 if ((Test-PythonOk) -and ((Get-FirstLine { python3 --version }) -notmatch '^Python 3')) {
     $pyDir = Split-Path (Get-Command python).Source
     Copy-Item (Join-Path $pyDir 'python.exe') (Join-Path $pyDir 'python3.exe') -Force
@@ -879,39 +826,16 @@ if (Test-Command 'git') {
 }
 
 # ---------------------------------------------------------------- 4
-Write-Step '4. Vercel CLI, Supabase CLI, HyperFrames CLI'
+Write-Step '4. Vercel CLI'
 
 Install-NpmGlobal 'Vercel CLI' 'vercel' 'vercel'
 
-# Supabase CLI runs through npx (no install). Download it once now so login is faster later.
-Write-Host '   Downloading Supabase CLI...'
-$sbVersion = Get-Lines { npx.cmd -y supabase@latest --version } | Where-Object { $_ -match '^\d+\.\d+' } | Select-Object -Last 1
-if ($sbVersion) {
-    Add-Result 'Supabase CLI' 'OK' $sbVersion
-} else {
-    Add-Result 'Supabase CLI' 'WARN' 'first run failed - check again at login'
-}
-
-# HyperFrames renders videos (day 2) with its own pinned Chrome build. Download it now, not 30 PCs at once in class.
-Install-NpmGlobal 'HyperFrames CLI' 'hyperframes' 'hyperframes'
-if (Test-Command 'hyperframes') {
-    Write-Host '   Downloading Chrome for HyperFrames rendering...'
-    $null = Get-Lines { hyperframes.cmd browser ensure }
-    if ($LASTEXITCODE -eq 0) {
-        Add-Result 'HyperFrames Chrome' 'OK' 'ready'
-    } else {
-        Add-Result 'HyperFrames Chrome' 'WARN' 'download failed - the first render downloads it'
-    }
-}
-
 # ---------------------------------------------------------------- 5
-Write-Step '5. Course repositories - report-harness, HyperFrames skills'
+Write-Step '5. Course repository - im-not-ai (humanize-korean)'
 
 if (Test-Command 'git') {
     $env:GIT_TERMINAL_PROMPT = '0'   # public repositories: never wait for a password prompt
     foreach ($r in $CourseRepos) { Sync-Repo $r.Name $r.Url }
-    $env:GIT_LFS_SKIP_SMUDGE = '1'   # the hyperframes repository keeps large test media in Git LFS; skills need none of it
-    Sync-Repo $HyperframesRepo.Name $HyperframesRepo.Url $HyperframesRepo.Sparse
 } else {
     Add-Result 'Course repositories' 'FAIL' 'Git not found'
 }
@@ -941,7 +865,7 @@ if ($Selected -contains 'codex') {
 if ($Selected -contains 'claude') {
     foreach ($s in $McpServers) { Register-ClaudeMcp $s $oc }
     if ($oc) {
-        # the report-harness plugin reads ${LAW_OC} from the environment
+        # the report-harness plugin (installed on day 2) reads ${LAW_OC} from the environment
         [Environment]::SetEnvironmentVariable('LAW_OC', $oc, 'User')
         Add-Result 'LAW_OC for Claude plugin' 'OK' 'saved as a user environment variable'
     }
@@ -952,7 +876,7 @@ if ($Selected -contains 'antigravity') {
 $oc = $null
 
 # ---------------------------------------------------------------- 7
-Write-Step '7. Skills - impeccable, report tools, humanizer, think, HyperFrames'
+Write-Step '7. Skills - impeccable, humanize-korean, think'
 
 # impeccable: the installer knows Codex and Claude Code; Antigravity gets a copy of the skill folder
 $impPaths = @{ codex = (Join-Path $HOME '.agents\skills\impeccable'); claude = (Join-Path $HOME '.claude\skills\impeccable') }
@@ -981,25 +905,18 @@ if ($Selected -contains 'antigravity') {
     }
 }
 
-# Report tools: Codex and Antigravity get the kca-report-hwpx skill, Claude Code the full harness plugin
-$Harness = Join-Path $Workspace 'report-harness'
-if ($Selected -contains 'codex') {
-    Install-ZipSkill 'kca-report-hwpx (codex)' (Join-Path $Harness 'dist\kca-report-hwpx-codex.zip') 'kca-report-hwpx' @(Join-Path $HOME '.agents\skills')
-}
-if ($Selected -contains 'antigravity') {
-    Install-ZipSkill 'kca-report-hwpx (antigravity)' (Join-Path $Harness 'dist\kca-report-hwpx-antigravity.zip') 'kca-report-hwpx' $AntigravitySkillRoots
-}
+# humanize-korean (natural Korean wording): Claude Code gets the plugin with its sub-agents,
+# Codex and Antigravity a copy of the Codex edition. Its scripts need python3 (step 2).
+$Humanize = Join-Path $Workspace 'im-not-ai'
 if ($Selected -contains 'claude') {
-    Install-ClaudePlugin $Harness
+    Install-ClaudePlugin $Humanize 'im-not-ai' 'humanize-korean'
 }
-
-# humanizer (natural Korean wording) comes with the report-harness plugin for Claude Code; Codex and Antigravity get a copy
-$Humanizer = Join-Path $Harness 'skills\humanizer'
+$HumanizeSkill = Join-Path $Humanize 'codex\skills\humanize-korean'
 foreach ($a in @($Selected | Where-Object { $_ -ne 'claude' })) {
-    if (Test-Path (Join-Path $Humanizer 'SKILL.md')) {
-        Copy-SkillFolder "humanizer ($a)" $Humanizer 'humanizer' $SkillRoots[$a]
+    if (Test-Path (Join-Path $HumanizeSkill 'SKILL.md')) {
+        Copy-SkillFolder "humanize-korean ($a)" $HumanizeSkill 'humanize-korean' $SkillRoots[$a]
     } else {
-        Add-Result "humanizer ($a)" 'FAIL' 'report-harness not cloned'
+        Add-Result "humanize-korean ($a)" 'FAIL' 'im-not-ai not cloned'
     }
 }
 
@@ -1012,21 +929,6 @@ foreach ($a in $Selected) {
         $written++
     }
     if ($written -eq 0) { Add-Result "think ($a)" 'SKIP' 'already up to date' } else { Add-Result "think ($a)" 'OK' "written to $written folder(s)" }
-}
-
-# HyperFrames: the same skill set for every selected agent
-$HfSkills = Join-Path (Join-Path $Workspace $HyperframesRepo.Name) 'skills'
-if (Test-Path $HfSkills) {
-    foreach ($a in $Selected) { Copy-SkillSet "HyperFrames skills ($a)" $HfSkills $SkillRoots[$a] }
-    # Keep these skills as installed: "hyperframes init" would otherwise update them from GitHub (a ~500 MB clone)
-    if ([Environment]::GetEnvironmentVariable('HYPERFRAMES_SKIP_SKILLS', 'User') -eq '1') {
-        Add-Result 'HyperFrames skill updates' 'SKIP' 'already off'
-    } else {
-        [Environment]::SetEnvironmentVariable('HYPERFRAMES_SKIP_SKILLS', '1', 'User')
-        Add-Result 'HyperFrames skill updates' 'OK' 'off (HYPERFRAMES_SKIP_SKILLS=1) - run setup.ps1 again to update'
-    }
-} else {
-    Add-Result 'HyperFrames skills' 'FAIL' 'hyperframes-skills not cloned'
 }
 
 # ---------------------------------------------------------------- 8
@@ -1090,5 +992,5 @@ Write-Host '   Open a new PowerShell window and start your agent:'
 Write-Host '      cd C:\workspace'
 if ($Selected -contains 'codex') { Write-Host '      codex           (Codex)' }
 if ($Selected -contains 'claude') { Write-Host '      claude          (Claude Code)' }
-if ($Selected -contains 'antigravity') { Write-Host '   Antigravity: open the app and open the folder C:\workspace' }
+if ($Selected -contains 'antigravity') { Write-Host '   Antigravity: open the app, then New Project > Add Folder > C:\workspace > Create' }
 Write-Host '   Then type the one-line request from Part A, step 5 of the setup guide.'
