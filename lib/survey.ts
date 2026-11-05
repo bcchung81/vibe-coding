@@ -38,6 +38,11 @@ export type Draft = Record<string, { picked: string[]; text: string }>;
 
 export type Day = "all" | "day1" | "day2";
 
+// Someone not logged in answers without a name; their browser keeps a random key in this cookie so they can change the sheet later
+export const SURVEY_COOKIE = "vibe-survey";
+
+export const isSurveyToken = (v: unknown): v is string => typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(v);
+
 // Question 1 decides the day: 이틀 모두 counts for both days; no answer counts only under 전체
 export function attends(r: Response, day: Day) {
   if (day === "all") return true;

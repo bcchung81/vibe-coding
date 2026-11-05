@@ -1,7 +1,8 @@
+import { cookies } from "next/headers";
 import { SurveyView, type SurveyResults } from "../../components/survey-view";
 import { signedIn } from "../../lib/auth";
-import { mySurvey, surveyResponses } from "../../lib/db";
-import { attends, QUESTIONS, tally, type Day } from "../../lib/survey";
+import { anonSurvey, mySurvey, surveyResponses } from "../../lib/db";
+import { attends, isSurveyToken, QUESTIONS, SURVEY_COOKIE, tally, type Day } from "../../lib/survey";
 
 export const metadata = { title: "사전 수요조사 결과" };
 
@@ -11,7 +12,8 @@ const DAYS: Day[] = ["all", "day1", "day2"];
 export default async function SurveyPage() {
   const admin = Boolean(await signedIn("admin"));
   const student = await signedIn("student");
-  const answered = Boolean(student && (await mySurvey(student.id)));
+  const token = (await cookies()).get(SURVEY_COOKIE)?.value;
+  const answered = Boolean(student ? await mySurvey(student.id) : isSurveyToken(token) && (await anonSurvey(token)));
   const responses = await surveyResponses();
   const results = Object.fromEntries(
     DAYS.map((day) => {

@@ -14,7 +14,8 @@ const answered = (q: Question, d: Draft[string]) => (q.kind === "text" ? Boolean
 
 // The pre-course survey on one page. Question 1 decides whether 5 and 7 are asked; the band counts what is left
 // and turns into "냈습니다" once the answers on screen are the saved ones.
-export function SurveyForm({ name, saved: first }: { name: string; saved: Response | null }) {
+// `name` is null for someone not logged in: their sheet is saved without a name and this browser can change it later.
+export function SurveyForm({ name, saved: first }: { name: string | null; saved: Response | null }) {
   const [saved, setSaved] = useState(first);
   const [draft, setDraft] = useState(() => toDraft(first));
   const [problem, setProblem] = useState<Problem | null>(null);
@@ -25,7 +26,9 @@ export function SurveyForm({ name, saved: first }: { name: string; saved: Respon
   const check = checkAnswers(draft);
   const done = Boolean(saved) && "answers" in check && JSON.stringify(check.answers) === JSON.stringify(saved);
 
-  const lead = `${name} 님 · 약 3분 · 답은 교육 준비에만 씁니다. 결과 화면에는 이름이 보이지 않습니다.`;
+  const lead = name
+    ? `${name} 님 · 약 3분 · 답은 교육 준비에만 씁니다. 결과 화면에는 이름이 보이지 않습니다.`
+    : "무기명 · 약 3분 · 답은 교육 준비에만 씁니다. 이 브라우저에서 다시 열면 고칠 수 있습니다.";
   const band = done
     ? { title: "수요조사를 냈습니다", lead: "고칠 것이 있으면 바꾸고 다시 내면 됩니다. 결과는 수업 때 함께 봅니다.", action: { href: "/survey", label: "결과 보기" } }
     : left
@@ -55,7 +58,7 @@ export function SurveyForm({ name, saved: first }: { name: string; saved: Respon
   const submit = () => {
     if ("error" in check) return show(check);
     start(async () => {
-      const r = await answerSurvey(draft);
+      const r = await answerSurvey(draft, name !== null);
       if ("error" in r) return show(r);
       setSaved(r.saved);
       setProblem(null);

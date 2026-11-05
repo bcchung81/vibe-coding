@@ -51,7 +51,7 @@ export function AdminLogin() {
 
 type Show = "all" | "site" | "survey";
 
-export function AdminView({ status, titles }: { status: StatusRow[]; titles: Record<string, string> }) {
+export function AdminView({ status, titles, anonymous }: { status: StatusRow[]; titles: Record<string, string>; anonymous: number }) {
   const [rows, setRows] = useState<GridRow[]>(() => padRows([]));
   const [notice, setNotice] = useState<{ title: string; lead: string } | null>(null);
   const [show, setShow] = useState<Show>("all");
@@ -162,7 +162,7 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
             </Link>
           </div>
           <p>
-            명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 답했습니다. 수강생은 로그인한 뒤 <Link href="/survey/answer">/survey/answer</Link> 에서 답하고, 다시 들어와 고칠 수 있습니다. 아직인 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
+            명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 이름으로, <b>{anonymous}건</b>이 무기명으로 답했습니다. <Link href="/survey/answer">/survey/answer</Link> 에서 로그인하면 이름으로, 로그인하지 않으면 무기명으로 내고 같은 브라우저에서 고칠 수 있습니다. 이름으로 아직 안 낸 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
           </p>
         </section>
 
@@ -175,7 +175,7 @@ export function AdminView({ status, titles }: { status: StatusRow[]; titles: Rec
             </button>
           </div>
           <label className="form danger">
-            <span>명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받고, 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
+            <span>명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받으세요. 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
             <span className="tools">
               <input value={confirm} onChange={(e) => setConfirm(e.target.value)} aria-label="확인 문구" />
               <button

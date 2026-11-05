@@ -98,6 +98,7 @@ export async function wipeAll() {
   await sql()`delete from students`;
   await sql()`delete from pin_failures`;
   await sql()`delete from survey_responses`;
+  await sql()`delete from survey_anon`;
 }
 
 // One answer sheet per trainee; answering again replaces it
@@ -107,14 +108,36 @@ export async function saveSurvey(studentId: number, answers: Response) {
     on conflict (student_id) do update set answers = excluded.answers`;
 }
 
+// An unnamed sheet, keyed by the random key in the answering browser's cookie; answering again from that browser replaces it
+export async function saveAnonSurvey(token: string, answers: Response) {
+  await sql()`
+    insert into survey_anon (token, answers) values (${token}, ${JSON.stringify(answers)}::jsonb)
+    on conflict (token) do update set answers = excluded.answers, at = now()`;
+}
+
+export async function anonSurvey(token: string) {
+  const rows = (await sql()`select answers from survey_anon where token = ${token}`) as { answers: Response }[];
+  return rows[0]?.answers ?? null;
+}
+
+export async function anonSurveyCount() {
+  const rows = (await sql()`select count(*)::int as n from survey_anon`) as { n: number }[];
+  return rows[0]?.n ?? 0;
+}
+
 export async function mySurvey(studentId: number) {
   const rows = (await sql()`select answers from survey_responses where student_id = ${studentId}`) as { answers: Response }[];
   return rows[0]?.answers ?? null;
 }
 
-// Answers only, in an order that is not the roster's, so a written answer does not point to its writer
+// Answers only — named and unnamed sheets together, in an order that is not the roster's, so a written answer does not point to its writer
 export async function surveyResponses() {
-  const rows = (await sql()`select answers from survey_responses order by md5(student_id::text)`) as { answers: Response }[];
+  const rows = (await sql()`
+    select answers from (
+      select answers, md5(student_id::text) as k from survey_responses
+      union all
+      select answers, md5(token) as k from survey_anon
+    ) t order by k`) as { answers: Response }[];
   return rows.map((r) => r.answers);
 }
 

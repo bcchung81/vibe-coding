@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { asked, attends, checkAnswers, QUESTIONS, tally, toDraft, type Draft, type Response } from "./survey";
+import { asked, attends, checkAnswers, isSurveyToken, QUESTIONS, tally, toDraft, type Draft, type Response } from "./survey";
 
 const q = (no: number) => QUESTIONS.find((x) => x.no === no)!;
 
@@ -112,5 +112,14 @@ describe("tally", () => {
 
   test("keeps written answers as they are", () => {
     expect(tally(responses, q(10))).toEqual({ no: 10, answered: 2, bars: [], others: ["엑셀 자동화", "보고서 양식 맞추기"] });
+  });
+});
+
+describe("isSurveyToken", () => {
+  test("takes the random key the server hands out", () => {
+    expect(isSurveyToken(crypto.randomUUID())).toBe(true);
+  });
+  test("refuses anything else, so a made-up cookie never reads or writes a sheet", () => {
+    for (const v of [undefined, "", "abc", "00000000-0000-0000-0000-00000000000G", "' or 1=1 --", 42]) expect(isSurveyToken(v)).toBe(false);
   });
 });
