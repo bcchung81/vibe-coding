@@ -1,5 +1,7 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { shipped, starterFiles } from "./starter";
+import { GITIGNORE, shipped, starterFiles } from "./starter";
 
 describe("shipped", () => {
   test.each([
@@ -29,7 +31,7 @@ describe("starterFiles", () => {
 
   test("gives Claude Code the same commands as Codex and Antigravity", () => {
     const skills = paths.filter((p) => p.startsWith(".agents/skills/"));
-    expect(skills).toHaveLength(5);
+    expect(skills).toHaveLength(3);
     for (const p of skills) {
       expect(byPath.get(p.replace(/^\.agents\//, ".claude/"))).toBe(byPath.get(p));
     }
@@ -50,5 +52,14 @@ describe("starterFiles", () => {
   test("keeps the region on Seoul and key files out of git", () => {
     expect(JSON.parse(byPath.get("vercel.json")!).regions).toEqual(["icn1"]);
     expect(byPath.get(".gitignore")).toMatch(/^\.env\*$/m);
+  });
+
+  test("ships one .gitignore from code, equal to the folder's copy, keeping installs and builds out too", () => {
+    expect(paths.filter((p) => p === ".gitignore")).toHaveLength(1);
+    expect(GITIGNORE).toBe(readFileSync(join(process.cwd(), "docs", "교육생_배포", "vibe", ".gitignore"), "utf8"));
+    expect(byPath.get(".gitignore")).toBe(GITIGNORE);
+    expect(GITIGNORE).toMatch(/^node_modules$/m);
+    expect(GITIGNORE).toMatch(/^\.next$/m);
+    expect(GITIGNORE).toMatch(/^!\.env\.example$/m);
   });
 });

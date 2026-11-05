@@ -26,11 +26,12 @@
 1. `git init` — 이미 저장소면 건너뛴다
 2. `npm.cmd install`
 3. `npm.cmd run build` 로 뼈대가 빌드되는지 확인한다
-4. 3줄로 보고하고 사용자의 주제 번호를 묻는다. 다음은 `/vibe-prd 번호`
+4. 3줄로 보고하고 사용자의 주제 번호를 묻는다. 다음은 `/vibe-plan 번호`
 
 ## 5. 명령 (스킬)
 
-- `vibe-prd` · `vibe-plan` · `vibe-step` · `vibe-fix` · `vibe-check` 가 `.agents/skills/` (Codex · Antigravity) 와 `.claude/skills/` (Claude Code) 에 같은 내용으로 있다. 하나를 고치면 다른 쪽도 똑같이 고친다.
+- `vibe-plan`(인터뷰 → PRD → PLAN) · `vibe-develop`(한 단계 만들기 · 고치기 · 배포 전 점검) · `vibe-design`(화면 다듬기) 3개가 `.agents/skills/` (Codex · Antigravity) 와 `.claude/skills/` (Claude Code) 에 같은 내용으로 있다. 하나를 고치면 다른 쪽도 똑같이 고친다.
+- 이 명령들은 `setup.ps1` 이 전역에 설치한 스킬을 불러 쓴다: `think`(sequential-thinking MCP — 범위 · 원인을 단계별로 따질 때), `impeccable`(화면 디자인).
 - **전역 설치** — 사용자가 "vibe 명령을 전역에도 설치해줘" 하면 `.agents/skills/vibe-*` 폴더를 아래 전역 스킬 폴더에 복사한다. `setup.ps1` 이 `think` 를 둔 곳과 같다.
   - 이 PC에 있는 폴더에만 복사한다 (없는 에이전트 폴더는 만들지 않는다).
   - 같은 이름 폴더가 이미 있으면 덮어쓰기 전에 묻는다.

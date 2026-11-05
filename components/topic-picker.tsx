@@ -113,8 +113,8 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
             </li>
             <li>
               <p>고른 주제 번호로 시작합니다.</p>
-              <code>/vibe-prd {no}</code>
-              <p className="meta">Codex · Antigravity: vibe-prd 스킬로 주제 {no} 시작해줘</p>
+              <code>/vibe-plan {no}</code>
+              <p className="meta">Codex · Antigravity: vibe-plan 스킬로 주제 {no} 시작해줘</p>
             </li>
           </ol>
         </section>
