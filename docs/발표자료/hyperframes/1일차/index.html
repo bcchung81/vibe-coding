@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>1일차 · 내 웹앱을 인터넷에 — 바이브코딩 중급</title>
+<link rel="stylesheet" href="deck.css">
+<script src="vendor/gsap.min.js"></script>
+<script src="reveal.js"></script>
+</head>
+<body>
+<script type="application/hyperframes-slideshow+json">
+{
+  "slides": [
+    {
+      "sceneId": "s01-cover",
+      "notes": "표지 · 13:30–13:35 오리엔테이션. 오늘 손에 쥘 것 2가지 — 내 웹앱 · 인터넷 주소.\n사전 수요조사 결과를 허브 /survey 에서 함께 본다(1일차 참여 · 7번 웹앱 주제).\n도움 신호: 초록 컵 = 진행 중 · 빨강 컵 = 도움 필요. 조교가 돌며 본다.",
+      "fragments": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "sceneId": "s02-install",
+      "notes": "설치 실행 · setup.ps1 은 약 25분(리허설로 확인). 일반 PowerShell — 관리자 창이 아니다.\n막히면: '디지털 서명되지 않았습니다' → Unblock-File .\\setup.ps1 · 'Continue anyway? (y/N)' → 관리자 창에서 실행한 것, Enter로 멈추고 일반 창에서 다시.\n1일차만 오는 사람은 LAW_OC 를 Enter로 넘긴다.",
+      "fragments": [
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "sceneId": "s03-check",
+      "notes": "새 창에서 점검 · 창을 모두 닫고 새 창에서. 에이전트가 파일 하나의 지시문으로 PC를 점검한다 — 에이전트가 할 일과 사람이 할 일(로그인 · 관리자 확인 · 인증값 입력)의 경계를 짚는다.\n오늘 꼭 필요한 로그인: GitHub · Vercel(4교시 배포). Supabase는 건너뛴다.\n14:15까지 못 끝내면 빨강 컵 → 2교시 중 조교가 이어서 처리.",
+      "fragments": [
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "sceneId": "s04-map",
+      "notes": "만드는 순서와 구성요소 · 14:25–14:35 강의 10분. 작업 순서: 요구사항 → PRD → 구현 계획 → 확인 기준 먼저 → 단계별 구현.\n확인 기준을 먼저 쓰는 이유 — 에이전트는 '됐다'고 말하는 데 능하다. 무엇을 보면 됐다고 할지를 사람이 먼저 정한다.\n구성요소 지도는 2분 — 오늘 쓰는 것만.",
+      "fragments": [
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "sceneId": "s05-folder",
+      "notes": "시작 폴더 받기 · 14:35–14:40. 허브 '웹앱 주제'에서 시작 폴더 준비의 한 줄을 붙여 넣으면 C:\\workspace\\vibe 에 풀린다.\n'시작하기.md 대로 준비해줘' → git init · npm.cmd install · 빌드 확인.\n확인 필요(리허설): Windows Expand-Archive, 세 에이전트가 프로젝트 명령을 읽는지.",
+      "fragments": [
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "sceneId": "s06-commands",
+      "notes": "오늘 쓰는 명령 · 참고용 표. Claude Code 는 /이름, Codex · Antigravity 는 '이름 스킬로 ~'.\n명령은 파일 하나다(.agents\\skills\\vibe-prd\\SKILL.md) — 열어 보게 한다. '커스텀 명령은 파일'의 실례.",
+      "fragments": [
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "sceneId": "s07-prd",
+      "notes": "무엇을 만들까 · 14:40–15:05 중 PRD. 02 = 내 주제 번호. 에이전트가 질문을 5개 이하로 하나씩 묻고 PRD.md 를 쓴다. 데이터는 snapshot.json.\n주제 고르기가 막히면 think 로 따져 본다. 코드는 아직 고치지 않는다.",
+      "fragments": [
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "sceneId": "s08-plan",
+      "notes": "어떻게 확인할까 · 화면 단계 4개 이하 + 실제 API 단계 1개. 단계마다 눈으로 확인할 완료 기준.\n나쁜 예 '화면 완성' / 좋은 예 '첫 화면에 데이터 5건이 카드로 보이고, 검색어를 넣으면 2건으로 줄어든다'.\n코드는 아직 고치지 않는다. 15:05 까지 PRD.md · PLAN.md.",
+      "fragments": [
+        37,
+        38,
+        39
+      ]
+    },
+    {
+      "sceneId": "s09-screen",
+      "notes": "예시 데이터로 먼저 화면을 만든다 · 15:15–15:45 (30분). /vibe-step 을 단계마다 부른다 — 그 단계만 구현하고 완료 기준대로 확인.\n30분이 되면 화면 단계가 덜 끝났어도 API 단계로. 남은 화면 단계는 16:10 이후 디자인 시간에.\ndata/snapshot.json 이 비어 있으면 에이전트가 주제 카드 항목으로 예시 5건을 만든다.",
+      "fragments": [
+        41,
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "sceneId": "s10-key",
+      "notes": "키는 내 PC의 .env.local 에만 · 15:45–15:50 강의 5분. 키는 서버에만 — .env.local, 서버 라우트에서만 읽는다. 이름에 NEXT_PUBLIC_ 을 붙이면 브라우저로 샌다.\n에이전트에게 키 값을 말하지 않는다 — 사람이 직접 붙여 넣는다(대화 기록에 안 남게).\nDecoding 키를 쓴다. Encoding 키는 SERVICE_KEY_IS_NOT_REGISTERED_ERROR.",
+      "fragments": [
+        46,
+        47,
+        48,
+        49
+      ]
+    },
+    {
+      "sceneId": "s11-api",
+      "notes": "화면은 그대로, 데이터만 실제 API로 · 15:50–16:10 실습 20분. PLAN.md 의 마지막 단계 — 같은 서버 라우트가 실제 API 를 부른다. 화면 코드는 안 바뀐다.\n키를 지우면 '예시 데이터'로 도는지 확인 → 키를 되돌리고 커밋.\n키 미승인자는 스냅샷 그대로 진행 — 화면과 배포는 같다.",
+      "fragments": [
+        51,
+        52,
+        53,
+        54
+      ]
+    },
+    {
+      "sceneId": "s12-stuck",
+      "notes": "막혔을 때 · 실습 중 3분 안내. 오류 원문을 그대로 붙여 넣는다 — 요약하지 않는다. '원인 가설 3개와 확인 방법부터' — 고치기 전에 진단부터.\n한 번에 하나만 고친다. 두 번 실패하면 접근을 바꾸라고 지시한다.\n대화가 길면 새 세션에서 PLAN.md 부터 — 맥락은 대화가 아니라 파일에 둔다.",
+      "fragments": [
+        56,
+        57,
+        58,
+        59
+      ]
+    },
+    {
+      "sceneId": "s13-polish",
+      "notes": "필수 기능 확인 후 화면 다듬기 · 16:10–16:25. 남은 단계 → PLAN.md 확인 기준을 하나씩 브라우저로 → 커밋. 시간이 남으면 impeccable 로 디자인(15분), 다듬은 뒤 확인 기준을 다시.\n키 승인 전 · 한도 초과는 예시 데이터로 배포해도 된다.",
+      "fragments": [
+        61,
+        62,
+        63,
+        64
+      ]
+    },
+    {
+      "sceneId": "s14-predeploy",
+      "notes": "배포 전 3가지 · 16:30–16:35. /vibe-check 로 3가지: ① 키가 git에 안 올라간다 ② 키 없이도 빌드된다 ③ 오류 원문이 화면에 없다.\n리전 확인: vercel.json 에 icn1(서울).",
+      "fragments": [
+        66,
+        67,
+        68,
+        69,
+        70
+      ]
+    },
+    {
+      "sceneId": "s15-deploy",
+      "notes": "Vercel에 올리고 주소 확인 · 16:35–16:50 실습 15분. 환경변수는 수강생이 별도 PowerShell 창에서 직접 넣는다 — 키는 에이전트에게 붙이지 않는다. 키가 없는 사람은 건너뛴다(예시 데이터로 뜬다).\n공유는 기본 주소(프로젝트이름.vercel.app). 배포마다 생기는 긴 주소는 로그인 보호로 남에게 안 열릴 수 있다.\nx-vercel-id 에 icn1 이 보이면 서울에서 실행된 것.",
+      "fragments": [
+        72,
+        73,
+        74,
+        75
+      ]
+    },
+    {
+      "sceneId": "s16-finish",
+      "notes": "갤러리 등록 · 오늘 마무리 · 16:50–17:00. 갤러리 7분: 내 프로젝트에 기본 주소 · 앱 이름 · 한 줄 소개 → 옆 사람 카드를 휴대폰으로 열어 본다(열리나 · 키가 소스에 보이나 · 오류 원문이 나오나) → 좋아요.\n마무리 3분: Vercel 주소는 공개 상태 — 내리려면 대시보드에서 삭제.\n1일차만: 수료 · 설문 · 공용 PC 로그아웃. 2일차 오는 사람: 향후 고도화 1개 + 공개자료 2~3건.",
+      "fragments": [
+        77,
+        78,
+        79,
+        80,
+        81
+      ]
+    }
+  ],
+  "slideSequences": []
+}
+</script>
+<div id="root" data-composition-id="deck" data-start="0" data-duration="82" data-width="1920" data-height="1080">
+  <div id="slot-s01-cover" data-composition-id="s01-cover" data-composition-src="compositions/s01-cover.html" data-start="0" data-duration="6" data-track-index="1" data-width="1920" data-height="1080" data-label="표지"></div>
+  <div id="slot-s02-install" data-composition-id="s02-install" data-composition-src="compositions/s02-install.html" data-start="6" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="설치 실행"></div>
+  <div id="slot-s03-check" data-composition-id="s03-check" data-composition-src="compositions/s03-check.html" data-start="11" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="새 창에서 점검"></div>
+  <div id="slot-s04-map" data-composition-id="s04-map" data-composition-src="compositions/s04-map.html" data-start="16" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="만드는 순서와 구성요소"></div>
+  <div id="slot-s05-folder" data-composition-id="s05-folder" data-composition-src="compositions/s05-folder.html" data-start="21" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="시작 폴더 받기"></div>
+  <div id="slot-s06-commands" data-composition-id="s06-commands" data-composition-src="compositions/s06-commands.html" data-start="26" data-duration="6" data-track-index="1" data-width="1920" data-height="1080" data-label="오늘 쓰는 명령"></div>
+  <div id="slot-s07-prd" data-composition-id="s07-prd" data-composition-src="compositions/s07-prd.html" data-start="32" data-duration="4" data-track-index="1" data-width="1920" data-height="1080" data-label="무엇을 만들까"></div>
+  <div id="slot-s08-plan" data-composition-id="s08-plan" data-composition-src="compositions/s08-plan.html" data-start="36" data-duration="4" data-track-index="1" data-width="1920" data-height="1080" data-label="어떻게 확인할까"></div>
+  <div id="slot-s09-screen" data-composition-id="s09-screen" data-composition-src="compositions/s09-screen.html" data-start="40" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="예시 데이터로 먼저 화면을 만든다"></div>
+  <div id="slot-s10-key" data-composition-id="s10-key" data-composition-src="compositions/s10-key.html" data-start="45" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="키는 내 PC의 .env.local 에만"></div>
+  <div id="slot-s11-api" data-composition-id="s11-api" data-composition-src="compositions/s11-api.html" data-start="50" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="화면은 그대로, 데이터만 실제 API로"></div>
+  <div id="slot-s12-stuck" data-composition-id="s12-stuck" data-composition-src="compositions/s12-stuck.html" data-start="55" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="막혔을 때"></div>
+  <div id="slot-s13-polish" data-composition-id="s13-polish" data-composition-src="compositions/s13-polish.html" data-start="60" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="필수 기능 확인 후 화면 다듬기"></div>
+  <div id="slot-s14-predeploy" data-composition-id="s14-predeploy" data-composition-src="compositions/s14-predeploy.html" data-start="65" data-duration="6" data-track-index="1" data-width="1920" data-height="1080" data-label="배포 전 3가지"></div>
+  <div id="slot-s15-deploy" data-composition-id="s15-deploy" data-composition-src="compositions/s15-deploy.html" data-start="71" data-duration="5" data-track-index="1" data-width="1920" data-height="1080" data-label="Vercel에 올리고 주소 확인"></div>
+  <div id="slot-s16-finish" data-composition-id="s16-finish" data-composition-src="compositions/s16-finish.html" data-start="76" data-duration="6" data-track-index="1" data-width="1920" data-height="1080" data-label="갤러리 등록 · 오늘 마무리"></div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  window.__timelines["deck"] = gsap.timeline({ paused: true });
+</script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 {
   "detector": {
     "ignoreRules": [],
-    "ignoreFiles": [],
+    "ignoreFiles": [
+      ".impeccable/mocks/**"
+    ],
     "ignoreValues": [
       {
         "rule": "cramped-padding",
@@ -47,6 +49,36 @@
         ],
         "createdAt": "2026-10-26T04:10:20.868Z",
         "reason": "Claude: starter skeleton is a separate trainee project outside the hub DESIGN.md; Windows Korean system font fallback"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "nanum gothic coding",
+        "createdAt": "2026-10-27T08:37:24.585Z"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "deck sans",
+        "createdAt": "2026-10-27T11:13:36.290Z"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "deck mono",
+        "createdAt": "2026-10-27T11:13:36.307Z"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "slides sans",
+        "createdAt": "2026-11-04T04:31:07.291Z",
+        "reason": "deck surface: .impeccable/surfaces/docs-1-html.md says hub DESIGN.md does not apply to the projection deck; Slides Sans is a Noto Sans KR subset"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "docs/발표자료/slides.css"
+        ],
+        "createdAt": "2026-11-04T05:47:26.806Z",
+        "reason": "matches the reference deck the user asked to follow (~/Downloads/블랙인증과정/최종_슬라이드덱): ochre bar beside the lead line and a full-width navy rule on the cover top, not card side tabs"
       }
     ]
   }

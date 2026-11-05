@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"></head>
+<body>
+<template>
+  <div class="slide cover" id="s01-cover" data-composition-id="s01-cover" data-width="1920" data-height="1080">
+  <h1>내 웹앱을 만들어<br>인터넷에 올린다</h1>
+  <p class="meta">바이브코딩 중급 1일차 · 13:30–17:00</p>
+  <table>
+    <tbody>
+      <tr><td>오늘 결과물</td><td colspan="2"><b>내 웹앱 · 배포 주소 · 갤러리 등록</b></td></tr>
+      <tr><td>1교시</td><td>13:30–14:15</td><td>환경설정</td></tr>
+      <tr><td>2교시</td><td>14:25–15:05</td><td>기획 — PRD · PLAN</td></tr>
+      <tr><td>3교시</td><td>15:15–16:25</td><td>만들기 — 예시 데이터 → 실제 API → 디자인</td></tr>
+      <tr><td>4교시</td><td>16:30–17:00</td><td>배포 · 공유</td></tr>
+    </tbody>
+  </table>
+  <p class="note">초록 컵 = 진행 중 · 빨강 컵 = 도움 필요 &nbsp;|&nbsp; 수요조사 결과 <a href="https://kca-vibe.vercel.app/survey">kca-vibe.vercel.app/survey</a></p>
+  </div>
+  <script>
+    // 공개 순서: 누를 때마다 한 묶음씩 (reveal.js)
+    window.__timelines = window.__timelines || {};
+    window.__timelines["s01-cover"] = hfReveal("s01-cover", [["table tr:nth-child(1)"], ["table tr:nth-child(2)"], ["table tr:nth-child(3)"], ["table tr:nth-child(4)"], ["table tr:nth-child(5)", ".note"]]);
+  </script>
+</template>
+</body>
+</html>

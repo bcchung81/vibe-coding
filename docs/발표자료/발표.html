@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>바이브코딩 중급 — 1·2일차 발표</title>
+<link rel="stylesheet" href="slides.css">
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3.4 3.2 14.6 0 18M12 3c-3.2 3.4-3.2 14.6 0 18"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+  <symbol id="i-screen" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 21h6M12 17v4"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"/></symbol>
+</svg>
+<main class="deck">
+<nav class="rail" aria-label="진행 위치"></nav>
+
+<section class="slide cover" data-day="0" aria-label="이틀 지도">
+  <p class="eyebrow">바이브코딩 중급 · 1·2일차 · 교육 허브 kca-vibe.vercel.app</p>
+  <h1>첫날은 내 웹앱을 올리고,<br>둘째 날은 업무를 맡깁니다</h1>
+  <p class="rule"><span class="kicker">수업 약속</span><i class="cup go"></i>초록 컵 = 진행 중<i class="cup help"></i>빨강 컵 = 도움 필요</p>
+  <div class="tl">
+    <article class="ph" data-step="1" data-enter>
+      <p class="ph-h"><b>Ⅰ</b>1일차<span>13:30–17:00</span></p>
+      <p class="ph-t">내 웹앱을 만들어 인터넷에 올린다</p>
+      <ol class="dots">
+        <li><small>13:30</small><i></i><b>1교시</b>환경설정</li>
+        <li><small>14:25</small><i></i><b>2교시</b>기획</li>
+        <li><small>15:15</small><i></i><b>3교시</b>만들기</li>
+        <li><small>16:30</small><i></i><b>4교시</b>배포 · 공유</li>
+      </ol>
+      <p class="bracket"><span>남는 것</span>배포 주소 · 교육 허브 갤러리 등록</p>
+    </article>
+    <article class="ph" data-step="2" data-enter>
+      <p class="ph-h"><b>Ⅱ</b>2일차<span>09:30–17:00</span></p>
+      <p class="ph-t">업무를 자동화한다 — 보고서와 나만의 명령</p>
+      <ol class="dots">
+        <li><small>09:30</small><i></i><b>1교시</b>환경설정</li>
+        <li><small>10:25</small><i></i><b>2교시</b>작은 업무</li>
+        <li class="gap"><small>11:00</small><i></i><b>점심</b></li>
+        <li><small>13:30</small><i></i><b>3교시</b>보고서</li>
+        <li><small>15:10</small><i></i><b>4교시</b>내 명령</li>
+        <li><small>16:30</small><i></i><b>5교시</b>수료</li>
+      </ol>
+      <p class="bracket"><span>남는 것</span>결과 파일 · 보고서 .hwpx · 내 명령 SKILL.md</p>
+    </article>
+  </div>
+  <p class="foot">수요조사 결과 <a href="https://kca-vibe.vercel.app/survey">kca-vibe.vercel.app/survey</a></p>
+</section>
+
+<section class="slide" data-day="1" data-period="1" data-time="13:35–14:15" aria-label="환경설정">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">1교시 · 13:35–14:15 · 실습</p>
+    <h2 class="title">설치는 한 번 실행하고, 점검은 에이전트에게 맡깁니다</h2>
+  </header>
+  <div class="cols2 lean">
+    <div class="stack">
+      <ol class="steps">
+        <li data-step="1" data-enter>
+          <p class="st">파일 받기<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+          <p class="sub">교육 허브 <b>자료</b> → 1일차 당일 → 3개를 <code>C:\workspace</code> 로</p>
+          <p class="sub">setup.ps1 · 00_환경설정.md · AGENTS.global.md</p>
+        </li>
+        <li data-step="2" data-enter>
+          <p class="st">setup.ps1 실행<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+          <div class="term"><span class="term-label">PowerShell · 관리자 아님</span>
+<pre><span class="ps">PS&gt;</span> <span class="type">cd C:\workspace</span>
+<span class="ps">PS&gt;</span> <span class="type">powershell -ExecutionPolicy Bypass -File .\setup.ps1</span></pre></div>
+          <p class="sub">물으면 — 에이전트 Enter · 관리자 확인 창 예 · Git 이름 · GitHub 이메일 · LAW_OC 있으면 입력, 없으면 Enter</p>
+        </li>
+      </ol>
+      <p class="panel" data-enter><b>2일차에 처음 왔다면</b> 09:35–10:15 — 1에서 2일차 당일의 <code>00_보고서도구.md</code> 도 받고, 4에 덧붙인다: Vercel 로그인은 건너뛰고, 끝나면 <code>00_보고서도구.md</code> 의 Part B도 이어서 진행해줘</p>
+    </div>
+    <ol class="steps" style="counter-reset: step 2">
+      <li data-step="3" data-enter>
+        <p class="st">창을 모두 닫고 새 창에서 시작<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+        <dl class="say narrow">
+          <dt>Codex</dt><dd><code>cd C:\workspace</code> → <code>codex</code></dd>
+          <dt>Claude Code</dt><dd><code>cd C:\workspace</code> → <code>claude</code></dd>
+          <dt>Antigravity</dt><dd>New Project → Add Folder → C:\workspace → Create</dd>
+        </dl>
+        <p class="sub">재시작하라고 하면 <code>codex resume --last</code> · <code>claude --continue</code> · Antigravity는 앱을 다시 열고 같은 대화 · 모드는 Local mode</p>
+      </li>
+      <li data-step="4" data-enter>
+        <p class="st">점검 시키기<span class="who ai-who"><span class="ai">AI</span>에이전트에게</span></p>
+        <p class="say-one"><code>00_환경설정.md</code> 파일을 읽고 Part B를 순서대로 진행해줘</p>
+        <p class="sub">브라우저 로그인은 직접 — GitHub · Vercel · 막히면 빨강 컵</p>
+      </li>
+    </ol>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>결과 표가 나온다</span><span>환경점검결과.md 를 강사에게 제출</span></footer>
+  <p class="foot">1일차 1교시 · 환경설정</p>
+</section>
+
+<section class="slide" data-day="1" data-period="2" data-time="14:25–14:35" aria-label="오늘 만드는 웹앱의 구조">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">2교시 · 14:25–14:35 · 강의</p>
+    <h2 class="title">웹앱은 내 PC에서 에이전트와 만들고, Vercel에 올립니다</h2>
+    <p class="lead">번호는 오늘 만드는 순서 — 명령은 <em>vibe-plan · vibe-develop · vibe-design</em> 3개뿐입니다</p>
+  </header>
+  <figure class="arch" aria-label="1일차 실습 아키텍처">
+    <svg class="lines" viewBox="0 0 1744 600" aria-hidden="true">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#193957"/></marker>
+        <marker id="ah-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a56921"/></marker>
+      </defs>
+      <path class="ln" d="M460 127H514" marker-end="url(#ah)"/>
+      <path class="ln dash" d="M880 127H856" marker-end="url(#ah)"/>
+      <path class="ln" d="M685 164V184" marker-end="url(#ah)"/>
+      <path class="ln" data-step="1" d="M204 467H298" marker-end="url(#ah)"/>
+      <path class="ln" data-step="3" d="M560 399H586" marker-end="url(#ah)"/>
+      <path class="ln" data-step="3" d="M725 360V310" marker-end="url(#ah)"/>
+      <path class="ln" data-step="3" d="M860 269H886" marker-end="url(#ah)"/>
+      <path class="ln key" data-step="4" d="M725 490V440" marker-end="url(#ah-o)"/>
+      <path class="ln" data-step="4" d="M860 399H1266" marker-end="url(#ah)"/>
+      <path class="ln" data-step="5" d="M1150 210H1246" marker-end="url(#ah)"/>
+      <path class="ln" data-step="5" d="M1497 290V356" marker-end="url(#ah)"/>
+      <path class="ln" data-step="5" d="M1610 40V16H180V88" marker-end="url(#ah)"/>
+    </svg>
+
+    <div class="az hub" style="left:0;top:40px;width:220px;height:560px"><p class="az-h"><svg class="ic"><use href="#i-globe"/></svg>교육 허브</p></div>
+    <div class="az mypc" style="left:280px;top:40px;width:870px;height:560px"><p class="az-tab"><b>내 PC</b>Windows · PowerShell</p></div>
+    <div class="az folder" style="left:300px;top:186px;width:830px;height:400px"><p class="az-h"><svg class="ic"><use href="#i-folder"/></svg>C:\workspace\vibe — 시작 폴더</p></div>
+    <div class="az cloud" style="left:1250px;top:40px;width:494px;height:250px"><p class="az-tab"><b>Vercel</b>서울 리전 icn1</p></div>
+    <div class="az ext" style="left:1250px;top:320px;width:494px;height:280px"><p class="az-h"><svg class="ic"><use href="#i-globe"/></svg>공공데이터포털</p><p class="az-note">키 승인 전 · 한도 초과면 예시 데이터 그대로</p></div>
+
+    <div class="an" data-step="5" style="left:16px;top:92px;width:188px"><i class="bd">5</i><b>갤러리</b><small>기본 주소 등록</small></div>
+    <div class="an" data-step="1" style="left:16px;top:236px;width:188px"><b>주제 카드</b><small>웹앱 주제 10개</small></div>
+    <div class="an" data-step="1" style="left:16px;top:430px;width:188px"><i class="bd">1</i><b>시작 폴더</b><small>vibe.zip 받기</small></div>
+
+    <div class="an" style="left:300px;top:90px;width:160px"><b><svg class="ic"><use href="#i-person"/></svg>나</b><small>말로 시키고 확인</small></div>
+    <div class="an agent" style="left:520px;top:90px;width:330px"><b><span class="ai">AI</span>코드 에이전트</b><small>Codex · Claude Code · Antigravity</small></div>
+    <div class="an rules" style="left:880px;top:90px;width:250px"><b>AGENTS.md · 스킬</b><small>think · impeccable</small></div>
+    <p class="al" style="left:700px;top:165px">파일을 고친다</p>
+
+    <div class="an" data-step="2" style="left:320px;top:232px;width:240px"><i class="bd">2</i><b>PRD.md · PLAN.md</b><small>vibe-plan</small></div>
+    <div class="an" data-step="3" style="left:590px;top:232px;width:270px"><i class="bd">3</i><b>화면</b><small>vibe-develop → vibe-design</small></div>
+    <div class="an" data-step="3" style="left:890px;top:232px;width:220px"><b><svg class="ic"><use href="#i-screen"/></svg>브라우저</b><small>npm.cmd run dev</small></div>
+    <div class="an" data-step="3" style="left:320px;top:362px;width:240px"><i class="bd">3</i><b>snapshot.json</b><small>예시 데이터</small></div>
+    <div class="an hubnode" style="left:590px;top:362px;width:270px"><b>/api/data</b><small>서버 통로</small></div>
+    <div class="an key" data-step="4" style="left:590px;top:492px;width:270px"><i class="bd">4</i><b><svg class="ic"><use href="#i-lock"/></svg>.env.local</b><small>DATA_GO_KR_KEY · 직접</small></div>
+    <div class="an no" data-step="4" style="left:890px;top:492px;width:220px"><b><svg class="ic"><use href="#i-ban"/></svg>git 커밋</b><small>.env.local 은 빠진다</small></div>
+    <p class="pill" data-step="4" style="left:900px;top:382px">4 실제 API — 키로 요청</p>
+
+    <p class="pill" data-step="5" style="left:1160px;top:194px">5 배포</p>
+    <div class="an" data-step="5" style="left:1270px;top:96px;width:220px"><b>같은 웹앱</b><small>화면 · /api/data</small></div>
+    <div class="an key" data-step="5" style="left:1510px;top:96px;width:214px"><b><svg class="ic"><use href="#i-lock"/></svg>환경변수</b><small>직접 넣는 키</small></div>
+    <div class="an" data-step="5" style="left:1270px;top:190px;width:454px"><i class="bd">5</i><b>프로젝트이름.vercel.app</b><small>기본 주소 · vibe-develop 배포 전 점검 뒤 배포</small></div>
+    <p class="pill" data-step="5" style="left:640px;top:2px">5 기본 주소를 갤러리에</p>
+    <p class="al" data-step="5" style="left:1510px;top:300px">같은 길</p>
+
+    <div class="an" data-step="4" style="left:1270px;top:362px;width:454px"><i class="bd">4</i><b><svg class="ic"><use href="#i-globe"/></svg>data.go.kr</b><small>공공데이터 API — 서버 통로가 키를 붙여 부른다</small></div>
+  </figure>
+  <footer class="done"><b>핵심</b><span>키는 사람이 직접 넣는다</span><span>에이전트는 시작 폴더 안 파일을 고친다</span><span>단계마다 확인 기준으로 본다</span></footer>
+  <p class="foot">1일차 2교시 · 오늘 만드는 웹앱의 구조</p>
+</section>
+
+<section class="slide" data-day="1" data-period="2" data-time="14:35–15:05" aria-label="기획 PRD와 PLAN">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">2교시 · 14:35–15:05 · 실습</p>
+    <h2 class="title">PRD에는 무엇을, PLAN에는 순서와 확인 기준을 씁니다</h2>
+  </header>
+  <div class="split">
+    <ol class="steps">
+      <li data-step="1" data-enter>
+        <p class="st">시작 폴더 받기<span class="t">14:35–14:40</span></p>
+        <p class="sub">허브 <b>웹앱 주제</b> → 내 주제 → <b>시작 폴더 준비</b> 한 줄을 PowerShell에 → <code>C:\workspace\vibe</code> 에서 에이전트 시작</p>
+        <p class="say-one"><span><span class="ai">AI</span>에이전트에게</span>시작하기.md 대로 준비해줘</p>
+      </li>
+      <li data-step="2" data-enter>
+        <p class="st">인터뷰 → PRD.md → PLAN.md<span class="t">02 = 내 주제 번호 · 질문 5개 이하</span></p>
+        <dl class="say">
+          <dt>Claude Code</dt><dd><code>/vibe-plan 02</code></dd>
+          <dt>Codex · Antigravity</dt><dd>vibe-plan 스킬로 주제 02 시작해줘</dd>
+        </dl>
+        <p class="sub">범위가 막히면 vibe-plan 이 think 스킬로 따져 준다</p>
+      </li>
+      <li data-step="3" data-enter>
+        <p class="st">PLAN.md 를 직접 읽기<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+        <p class="sub">단계마다 확인 기준이 눈으로 확인할 문장인가 — 오른쪽 예시</p>
+      </li>
+    </ol>
+    <figure class="doc" data-step="3" aria-label="PLAN.md 예시" data-enter>
+      <p class="doc-h"><b>PLAN.md</b><span>예시</span></p>
+      <ol class="plan">
+        <li><b>화면 1 · 목록</b><span>확인: 데이터 5건이 카드로 보인다</span></li>
+        <li><b>화면 2 · 검색</b><span>확인: 검색어를 넣으면 2건으로 줄어든다</span></li>
+        <li class="api"><b>실제 API</b><span>확인: 실제 데이터 · 키를 지우면 '예시 데이터'</span></li>
+      </ol>
+      <div class="vs">
+        <p class="bad"><span>나쁜 확인 기준</span><s>화면 완성</s></p>
+        <p class="good"><span>좋은 확인 기준</span>첫 화면에 데이터 5건이 카드로 보이고, 검색어를 넣으면 2건으로 줄어든다</p>
+      </div>
+    </figure>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>준비가 끝나면 주제 번호를 묻는다</span><span>PRD.md</span><span>PLAN.md — 단계마다 확인 기준</span><em class="when">코드는 아직 고치지 않는다</em></footer>
+  <p class="foot">1일차 2교시 · 기획 PRD · PLAN</p>
+</section>
+
+<section class="slide" data-day="1" data-period="3" data-time="15:15–15:45" aria-label="예시 데이터로 화면 만들기">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">3교시 · 15:15–15:45 · 실습</p>
+    <h2 class="title">화면은 예시 데이터로 한 단계씩 만들고 확인합니다</h2>
+    <p class="lead"><em>15:45</em>에는 화면 단계가 남아도 실제 API 단계로 — 남은 화면은 16:10 이후</p>
+  </header>
+  <div class="split">
+    <ol class="steps cycle" style="--loop-end: 64px">
+      <li data-step="1" data-enter>
+        <p class="st">다음 단계 하나 만들기<span class="who ai-who"><span class="ai">AI</span>에이전트에게</span></p>
+        <dl class="say">
+          <dt>Claude Code</dt><dd><code>/vibe-develop</code></dd>
+          <dt>Codex · Antigravity</dt><dd>vibe-develop 스킬로 다음 단계 해줘</dd>
+        </dl>
+      </li>
+      <li data-step="2" data-enter>
+        <p class="st">브라우저로 확인 기준 보기<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+        <div class="term"><span class="term-label">PowerShell · 켜 둔다</span>
+<pre><span class="ps">PS&gt;</span> <span class="type">npm.cmd run dev</span></pre></div>
+        <p class="sub">PLAN.md 의 그 단계 확인 기준을 하나씩 본다</p>
+      </li>
+      <li data-step="3" data-enter>
+        <p class="st">통과하면 01로 — 다음 단계</p>
+        <p class="sub">안 되면 같은 말을 반복하지 말고 오류 원문을 붙여 <code>/vibe-develop</code> (7번 장)</p>
+      </li>
+    </ol>
+    <figure class="zones" aria-label="예시 데이터가 지나가는 길" data-enter>
+      <div class="zone local">
+        <p class="zh"><svg class="ic"><use href="#i-laptop"/></svg>내 PC · C:\workspace\vibe</p>
+        <div class="nd key"><b>data/snapshot.json</b><small>예시 데이터 — 비어 있으면 에이전트가 주제 카드로 5건</small></div>
+        <i class="vline"></i>
+        <div class="nd"><b>/api/data</b><small>서버 통로 — 3번 장 구조의 같은 자리</small></div>
+        <i class="vline"></i>
+        <div class="nd"><b><svg class="ic"><use href="#i-screen"/></svg>화면</b><small>단계마다 하나씩</small></div>
+      </div>
+      <p class="note">다음 장에서 맨 위 칸만 실제 API로 바뀌고, 화면은 그대로입니다</p>
+    </figure>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>단계마다 PLAN.md 의 확인 기준 통과</span></footer>
+  <p class="foot">1일차 3교시 · 예시 데이터로 화면</p>
+</section>
+
+<section class="slide" data-day="1" data-period="3" data-time="15:45–16:10" aria-label="실제 API와 키">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">3교시 · 15:45–16:10 · 실습</p>
+    <h2 class="title">키는 내 PC에만 두고, 데이터는 실제 API로 받습니다</h2>
+    <p class="lead">키 값은 에이전트에게 <em>말하지 않습니다</em> — 대화 기록에 남습니다</p>
+  </header>
+  <div class="split">
+    <ol class="steps">
+      <li data-step="1" data-enter>
+        <p class="st">키를 <code>.env.local</code> 에 넣기<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span><span class="t">15:45–15:50</span></p>
+        <p class="sub">공공데이터포털 마이페이지 → <b>Decoding 키</b> 복사 → 별도 PowerShell 창</p>
+        <div class="term"><span class="term-label">PowerShell</span>
+<pre><span class="ps">PS&gt;</span> <span class="type">cd C:\workspace\vibe</span>
+<span class="ps">PS&gt;</span> <span class="type">Copy-Item .env.example .env.local</span>
+<span class="ps">PS&gt;</span> <span class="type">notepad .env.local</span></pre></div>
+        <p class="sub">메모장에서 <code>DATA_GO_KR_KEY=붙여넣기</code> → 저장</p>
+      </li>
+      <li data-step="2" data-enter>
+        <p class="st">실제 API 단계<span class="who ai-who"><span class="ai">AI</span>에이전트에게</span><span class="t">15:50–16:10</span></p>
+        <dl class="say">
+          <dt>Claude Code</dt><dd><code>/vibe-develop</code></dd>
+          <dt>Codex · Antigravity</dt><dd>vibe-develop 스킬로 다음 단계 해줘</dd>
+        </dl>
+      </li>
+      <li data-step="3" data-enter>
+        <p class="st">새로고침해 확인하고 커밋<span class="t">아래 완료 기준 3가지</span></p>
+      </li>
+    </ol>
+    <figure class="zones" aria-label="데이터와 키가 지나가는 길" data-enter>
+      <div class="zone ext">
+        <p class="zh"><svg class="ic"><use href="#i-globe"/></svg>인터넷</p>
+        <div class="nd" data-step="2"><b>data.go.kr</b><small>공공데이터 API</small></div>
+      </div>
+      <i class="vline" data-step="2"></i>
+      <div class="zone local">
+        <p class="zh"><svg class="ic"><use href="#i-laptop"/></svg>내 PC · C:\workspace\vibe</p>
+        <div class="pair">
+          <div class="nd" data-step="2"><b>/api/data</b><small>서버 통로</small></div>
+          <i class="hline" data-step="1"><svg class="ic lock"><use href="#i-lock"/></svg></i>
+          <div class="nd key" data-step="1"><b>.env.local</b><small>Decoding 키</small></div>
+        </div>
+        <i class="vline" data-step="3"></i>
+        <div class="nd" data-step="3"><b><svg class="ic"><use href="#i-screen"/></svg>화면</b><small>그대로 · 실제 데이터</small></div>
+      </div>
+      <div class="zone no" data-step="1">
+        <p class="zh"><svg class="ic"><use href="#i-ban"/></svg>키가 가면 안 되는 곳</p>
+        <p>git 저장소 · 에이전트 대화 · 이름에 <code>NEXT_PUBLIC_</code></p>
+      </div>
+    </figure>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>실제 데이터가 뜬다</span><span>키를 지우면 '예시 데이터'</span><span>커밋</span></footer>
+  <p class="foot">1일차 3교시 · 실제 API와 키</p>
+</section>
+
+<section class="slide" data-day="1" data-period="3" data-time="16:10–16:25" aria-label="막혔을 때와 다듬기">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">3교시 · 16:10–16:25 · 실습</p>
+    <h2 class="title">막히면 원인부터 찾고, 통과하면 화면을 다듬습니다</h2>
+  </header>
+  <div class="pipe">
+    <div class="pc wide" data-step="1"><small>막히면</small><b>오류 원문 그대로</b><p><code>/vibe-develop</code> · vibe-develop 스킬로 이 오류 고쳐줘 — 다음 줄에 붙여 넣기</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="1"><small>에이전트</small><b>원인 가설 3개</b><p>확인 방법과 함께 · 안 보이면 think</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="1"><small>하나씩</small><b>확인하고 고치기</b><p>고친 뒤 확인 기준 다시</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="1"><small>두 번 실패</small><b>접근 바꾸기</b><p>대화가 길면 새 세션 → PLAN.md 부터</p></div>
+    <i class="arr"></i>
+    <div class="pc help" data-step="1"><small>그래도 안 되면</small><b>빨강 컵</b><p>강사 · 조교</p></div>
+  </div>
+  <div class="cols2">
+    <div data-step="1" data-enter>
+      <p class="how-h">실제 API 오류일 때</p>
+      <table class="tbl">
+        <thead><tr><th>증상</th><th>확인 순서 → 대안</th></tr></thead>
+        <tbody>
+          <tr><td>인증 오류 <code>…NOT_REGISTERED…</code></td><td>.env.local 에 Decoding 키인가 → 브라우저 테스트 URL(Encoding 키)로 키만 확인 → 예시 데이터로</td></tr>
+          <tr><td>JSON 대신 XML</td><td>주제 카드의 JSON 파라미터</td></tr>
+          <tr><td>한도 초과 <code>…EXCEEDS…</code></td><td>오늘은 예시 데이터</td></tr>
+          <tr><td>키 승인 전</td><td>예시 데이터 그대로 — 배포도 같다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <p class="how-h" data-enter>다듬기 · 16:10–16:25</p>
+      <ol class="steps">
+        <li data-step="2" data-enter><p class="st">남은 단계 — <code>vibe-develop</code></p></li>
+        <li data-step="3" data-enter><p class="st">확인 기준을 하나씩 브라우저로 → 커밋</p></li>
+        <li data-step="4" data-enter>
+          <p class="st">화면 다듬기<span class="t">impeccable 스킬로 다듬고 확인 기준을 다시 본다</span></p>
+          <dl class="say">
+            <dt>Claude Code</dt><dd><code>/vibe-design</code></dd>
+            <dt>Codex · Antigravity</dt><dd>vibe-design 스킬로 화면 다듬어줘</dd>
+          </dl>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>PLAN.md 확인 기준 통과</span><span>커밋</span></footer>
+  <p class="foot">1일차 3교시 · 막혔을 때와 다듬기</p>
+</section>
+
+<section class="slide" data-day="1" data-period="4" data-time="16:30–16:50" aria-label="배포">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">4교시 · 16:30–16:50 · 실습</p>
+    <h2 class="title">점검 3가지를 통과하면 Vercel에 올립니다</h2>
+  </header>
+  <div class="pipe">
+    <div class="pc"><small>내 PC</small><b>vibe 폴더</b><p>C:\workspace\vibe · 키는 .env.local</p></div>
+    <i class="arr"></i>
+    <div class="pc gate" data-step="1"><small>점검 1</small><b>키가 git에 없다</b><p><code>git status</code> 에 .env.local 이 안 보인다</p></div>
+    <i class="arr"></i>
+    <div class="pc gate" data-step="1"><small>점검 2</small><b>키 없이 빌드된다</b><p><code>npm.cmd run build</code> 통과</p></div>
+    <i class="arr"></i>
+    <div class="pc gate" data-step="1"><small>점검 3</small><b>오류 원문이 없다</b><p>잘못된 입력에 일반 문구만</p></div>
+    <i class="arr"></i>
+    <div class="pc dark" data-step="2"><small>Vercel 프로덕션</small><b>기본 주소</b><p>프로젝트이름.vercel.app · icn1</p></div>
+  </div>
+  <div class="cols2">
+    <ol class="steps">
+      <li data-step="1" data-enter>
+        <p class="st">점검</p>
+        <dl class="say">
+          <dt>Claude Code</dt><dd><code>/vibe-develop 배포 전 점검</code></dd>
+          <dt>Codex · Antigravity</dt><dd>vibe-develop 스킬로 배포 전 점검해줘</dd>
+        </dl>
+      </li>
+      <li data-step="2" data-enter>
+        <p class="st">배포 시키기<span class="who ai-who"><span class="ai">AI</span>에이전트에게</span></p>
+        <p class="say-one">이 폴더를 Vercel 프로덕션으로 배포해줘. 환경변수는 내가 직접 넣을 테니 넣을 이름만 알려줘</p>
+      </li>
+    </ol>
+    <ol class="steps" style="counter-reset: step 2">
+      <li data-step="3" data-enter>
+        <p class="st">키는 직접 Vercel 환경변수로<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+        <div class="term"><span class="term-label">별도 PowerShell 창</span>
+<pre><span class="ps">PS&gt;</span> <span class="type">cd C:\workspace\vibe</span>
+<span class="ps">PS&gt;</span> <span class="type">vercel.cmd env add DATA_GO_KR_KEY production</span></pre></div>
+        <p class="sub">키 있는 사람만 · 값을 물으면 붙여 넣기 · 종류는 Enter → 에이전트에게 다시 배포</p>
+      </li>
+      <li data-step="4" data-enter>
+        <p class="st">기본 주소 열기 → 개발자도구</p>
+        <p class="sub">API 응답 헤더 x-vercel-id 에 icn1 · 소스에서 키 앞부분 검색 → 없음 · 공유는 기본 주소로</p>
+      </li>
+    </ol>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>점검 3가지 통과</span><span>기본 주소가 열린다</span><span>icn1</span><span>소스에 키가 없다</span></footer>
+  <p class="foot">1일차 4교시 · 배포</p>
+</section>
+
+<section class="slide" data-day="1" data-period="4" data-time="16:50–17:00" aria-label="갤러리 등록과 마무리">
+  <p class="band-title"><b>Ⅰ</b>1일차 · 내 웹앱을 만들어 인터넷에 올린다</p>
+  <header class="sh">
+    <p class="kicker">4교시 · 16:50–17:00 · 실습</p>
+    <h2 class="title">기본 주소를 갤러리에 올리고 서로 열어 봅니다</h2>
+    <p class="lead">1일차만 오신 분은 여기서 <em>수료 · 설문</em> — 공용 PC는 로그아웃합니다</p>
+  </header>
+  <div class="pipe">
+    <div class="pc" data-step="1"><small>방금 받은</small><b>기본 주소</b><p>프로젝트이름.vercel.app</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="1"><small>교육 허브 → 로그인</small><b>내 프로젝트</b><p>주소 · 앱 이름 · 한 줄 소개</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="2"><small>교육 허브</small><b>갤러리</b><p>옆 사람 카드를 휴대폰으로 열기 → 좋아요</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="2"><small>서로 확인</small><b>열리나</b><p>잘못된 입력에 오류 원문이 없나</p></div>
+  </div>
+  <p class="how-h" data-enter>오늘 이후</p>
+  <div class="branch">
+    <article class="bc" data-step="3">
+      <p class="tag">1일차만</p>
+      <p class="bc-b">수료 · 설문 → 공용 PC 로그아웃</p>
+      <dl class="say narrow">
+        <dt>Codex</dt><dd><code>codex logout</code></dd>
+        <dt>Claude Code</dt><dd><code>claude auth logout</code></dd>
+        <dt>Antigravity</dt><dd>앱에서 로그아웃</dd>
+      </dl>
+    </article>
+    <article class="bc" data-step="3">
+      <p class="tag">내일 오는 사람</p>
+      <p class="bc-b">주제 카드 '향후 고도화' 1개 고르기</p>
+      <p class="bc-b">보고서용 공개자료 2~3건 (hwpx · pdf) → <code>C:\workspace</code></p>
+    </article>
+    <article class="bc" data-step="3">
+      <p class="tag">Vercel 주소</p>
+      <p class="bc-b">공개 상태 — 내리려면 Vercel 대시보드에서 프로젝트 삭제</p>
+    </article>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>내 카드가 갤러리에 보인다</span><span>옆 사람 앱이 열린다</span></footer>
+  <p class="foot">1일차 4교시 · 갤러리 등록과 마무리</p>
+</section>
+
+<section class="slide" data-day="2" data-period="1 2" data-time="09:35–10:32" aria-label="출발선 맞추기와 일을 맡기는 3요소">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">1–2교시 · 09:35–10:32</p>
+    <h2 class="title">출발선을 맞추고, 일은 3요소를 갖춰 맡깁니다</h2>
+  </header>
+  <div class="lanes">
+    <article class="lane" data-step="1" data-enter>
+      <p class="tag">오늘 처음</p>
+      <p class="big">2번 장 — 환경설정</p>
+      <p class="sub">설치 실행 <span class="nw">09:35–10:00</span> → 새 창에서 점검 <span class="nw">10:00–10:15</span> · 조교가 돕는다</p>
+    </article>
+    <article class="lane" data-step="2" data-enter>
+      <p class="tag">어제도 참여</p>
+      <p class="st">① 보고서 도구 설치<span class="t">허브 자료 → 2일차 당일 → C:\workspace</span></p>
+      <p class="say-one"><span><span class="ai">AI</span>에이전트에게</span><code>00_보고서도구.md</code> 파일을 읽고 Part B를 순서대로 진행해줘</p>
+      <p class="st">② 웹앱 이어 하기 — 하나</p>
+      <p class="sub"><code>/vibe-develop 배포 전 점검</code> → 배포 · <code>/vibe-plan</code> → <code>/vibe-develop</code> 고도화 · GitHub 비공개 저장소</p>
+    </article>
+  </div>
+  <div class="ask" data-enter>
+    <p class="ask-tag"><b>2교시 10:25</b>일을 맡길 때 넣는 3요소</p>
+    <p class="ask-say"><span class="mk" data-step="3">이 공개 CSV를 항목별로 집계해 summary.md로 저장해줘.</span> <span class="mk" data-step="4">원본과 집계의 총건수가 같은지 확인하고,</span> <span class="mk" data-step="5">원본 파일은 바꾸지 마.</span></p>
+    <ol class="three">
+      <li data-step="3"><b>1</b>입력 → 결과 파일</li>
+      <li data-step="4"><b>2</b>끝났다는 기준</li>
+      <li data-step="5"><b>3</b>하지 말 것</li>
+    </ol>
+    <div class="map" data-step="6">
+      <p class="map-h"><b>구성요소 지도</b>에이전트가 읽는 것 — 4교시에 내 명령을 스킬로 만든다</p>
+      <ul class="map-row">
+        <li><b>전역 규칙</b><span>AGENTS.global.md · 세션 시작마다</span></li>
+        <li><b>프로젝트 규칙</b><span>작업 폴더의 AGENTS.md · 그 폴더에서 시작할 때</span></li>
+        <li><b>스킬</b><span>impeccable · humanize-korean · 보고서 도구 · 필요할 때</span></li>
+        <li><b>MCP</b><span>sequential-thinking · kordoc · korean-law · 도구가 필요할 때</span></li>
+        <li><b>커스텀 명령</b><span>think (Claude Code는 /think) · 사람이 부를 때</span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="foot">2일차 1–2교시 · 출발선과 일을 맡기는 3요소</p>
+</section>
+
+<section class="slide" data-day="2" data-period="2" data-time="10:32–11:00" aria-label="과제 카드">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">2교시 · 10:32–11:00 · 실습</p>
+    <h2 class="title">과제 카드 하나를 골라 결과 파일까지 받습니다</h2>
+    <p class="lead">네 카드 모두 <em>입력 → 도구 → 결과 파일</em> 모양입니다</p>
+  </header>
+  <div class="cards4">
+    <article class="card" data-step="1">
+      <p class="card-h"><b>A</b>한글문서 표 정리</p>
+      <p class="chain"><span>공개 hwpx 1건</span><i></i><span class="tool">kordoc MCP</span><i></i><span class="out">tables.md</span></p>
+      <p class="say-one bare">이 hwpx의 표를 모두 뽑아 표마다 한 줄 요약을 붙여 tables.md로 정리해줘</p>
+    </article>
+    <article class="card" data-step="2">
+      <p class="card-h"><b>B</b>법령 조문 찾기<span class="t">LAW_OC 등록자</span></p>
+      <p class="chain"><span>법령 · 조문</span><i></i><span class="tool">korean-law MCP</span><i></i><span class="out">law-summary.md</span></p>
+      <p class="say-one bare">전파법에서 무선국 개설 허가 관련 조문을 찾아 요약하고 조문 번호·출처를 law-summary.md로 저장해줘</p>
+    </article>
+    <article class="card" data-step="3">
+      <p class="card-h"><b>C</b>반복 작업 자동화</p>
+      <p class="chain"><span>공개 CSV 1건</span><i></i><span class="tool">스크립트</span><i></i><span class="out">summary.md</span></p>
+      <p class="say-one bare">이 CSV를 항목별로 집계해 summary.md 표로 만들고, 다시 돌릴 수 있게 스크립트도 남겨줘</p>
+    </article>
+    <article class="card" data-step="4">
+      <p class="card-h"><b>D</b>커스텀 명령 써 보기<span class="t">Claude Code는 /think</span></p>
+      <p class="chain"><span>가져온 공개자료</span><i></i><span class="tool">think 스킬 + sequential-thinking MCP</span><i></i><span class="out">topics.md</span></p>
+      <p class="say-one bare">think 스킬로 내가 가져온 공개자료로 쓸 보고서 주제 3개와 각각의 결론 한 줄을 정리하고 topics.md로 저장해줘</p>
+    </article>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>결과 파일을 열어 확인</span><em class="when">10:55 정리 — 무엇이 불렸나 · 다음 주에도 할 일 한 줄 메모(4교시 재료)</em></footer>
+  <p class="foot">2일차 2교시 · 과제 카드</p>
+</section>
+
+<section class="slide" data-day="2" data-period="3" data-time="13:30–15:00" aria-label="보고서">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">3교시 · 13:30–15:00 · 실습</p>
+    <h2 class="title">보고서는 에이전트가 만들고, 사람이 세 번 정합니다</h2>
+    <p class="lead">새 웹 조사 없이 <em>가져온 공개자료 2~3건</em>만으로 개조식 초안과 hwpx를 받습니다</p>
+  </header>
+  <div class="swim">
+    <p class="lane-h"><span class="ai">AI</span>에이전트</p>
+    <div class="sc blank" data-step="1"></div>
+    <div class="sc ai-c" data-step="2"><b>자료 분석</b></div>
+    <div class="sc ai-c" data-step="3"><b>아웃라인</b></div>
+    <div class="sc ai-c" data-step="4"><b>개조식 초안</b></div>
+    <div class="sc ai-c" data-step="5"><b>hwpx 변환</b></div>
+    <p class="lane-h"><svg class="ic"><use href="#i-person"/></svg>사람</p>
+    <div class="sc me" data-step="1"><b>자료 넣고 시키기</b><span>공개자료 2~3건</span></div>
+    <div class="sc me gate" data-step="2"><i>1</i><b>유형 · 수신 · 분량</b><span>고르기</span></div>
+    <div class="sc me gate" data-step="3"><i>2</i><b>아웃라인 승인</b><span>또는 한 줄로 수정</span></div>
+    <div class="sc me gate" data-step="4"><i>3</i><b>초안 승인</b><span>사실 · 숫자 · 출처 대조 · 팩트체크는 가벼운 쪽</span></div>
+    <div class="sc me" data-step="5"><b>hwpx 열어 확인</b><span>한글 · 뷰어로 내용 · 표</span></div>
+  </div>
+  <div class="cols3">
+    <div class="card" data-step="1" data-enter>
+      <p class="card-h"><span class="no">01</span>폴더에 자료를 넣고 거기서 시작<span class="who"><svg class="ic"><use href="#i-person"/></svg>직접</span></p>
+      <div class="term">
+<pre><span class="ps">PS&gt;</span> <span class="type">mkdir C:\workspace\report</span>
+<span class="ps">PS&gt;</span> <span class="type">cd C:\workspace\report</span></pre></div>
+      <p class="sub">Antigravity: New Project → Add Folder → C:\workspace\report → Create</p>
+    </div>
+    <div class="card" data-step="1" data-enter>
+      <p class="card-h"><span class="no">02</span>초안 시키기</p>
+      <p class="say-one"><span><span class="ai">AI</span>에이전트에게</span>이 폴더의 자료로 개조식 보고서 초안 만들어줘</p>
+      <p class="sub">한도에 닿으면 강사에게 — API 키 · 추가 결제로 넘기지 않는다</p>
+    </div>
+    <div class="card" data-step="5" data-enter>
+      <p class="card-h"><span class="no">03</span>시간이 남으면</p>
+      <p class="say-one"><span><span class="ai">AI</span>에이전트에게</span>humanize-korean으로 보고서의 서술 문단만 다듬어줘</p>
+      <p class="sub">Claude Code는 보고서 도구가 자동으로 쓴다</p>
+    </div>
+  </div>
+  <p class="note" data-enter><b>보고서 도구</b> Claude Code — report-harness 플러그인 · 진단 <code>/report-doctor</code> &nbsp;·&nbsp; Codex · Antigravity — kca-report-hwpx 스킬 &nbsp;·&nbsp; <b>강사 시연</b> 위키(claudian) · <code>/cross-verify</code></p>
+  <footer class="done"><b>완료 기준</b><span>아웃라인 승인</span><span>초안 승인</span><span>hwpx 를 열어 내용 · 표 확인</span></footer>
+  <p class="foot">2일차 3교시 · 보고서</p>
+</section>
+
+<section class="slide" data-day="2" data-period="4" data-time="15:10–15:20" aria-label="스킬 파일의 구조">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">4교시 · 15:10–15:20 · 강의</p>
+    <h2 class="title">내 명령은 스킬 폴더 하나, 언제 불릴지는 description이 정합니다</h2>
+    <p class="lead">오전에 쓴 <em>think</em> 도, 3교시 보고서 도구도 같은 구조입니다 — 강사 화면에서 SKILL.md 를 엽니다</p>
+  </header>
+  <div class="split half">
+    <figure class="doc" data-step="1" aria-label="SKILL.md 해부도" data-enter>
+      <p class="doc-h"><b>SKILL.md</b><span>my-weekly-table\SKILL.md — 폴더 하나 + 파일 하나 · 본문은 줄임</span></p>
+      <div class="anat">
+        <pre>name: my-weekly-table</pre><p>영문 소문자 · <code>-</code> · 머리말 <code>my-</code></p>
+        <pre>description: 공개 hwpx 문서의 표를 주간 요약표로 정리할 때 사용한다.</pre><p><b>□</b> 언제 불릴지 — 넓으면 엉뚱하게, 좁으면 안 불린다</p>
+        <pre>## 단계 — 표 추출 → 한 줄 요약 → tables.md</pre><p><b>□</b> 입력 · 결과물 — 파일 이름 · 형식을 못 박는다 · 쓸 MCP도 적는다 (예: kordoc MCP로 표를 읽는다)</p>
+        <pre>## 확인 기준 — 원문과 표 개수 대조</pre><p><b>□</b> 확인 기준</p>
+        <pre>## 하지 말 것 — 원본 수정 · 없는 수치</pre><p><b>□</b> 하지 말 것</p>
+      </div>
+    </figure>
+    <div class="agents3" data-step="2" data-enter>
+      <p class="how-h">전역 스킬 폴더에 두면 어느 폴더에서든 부른다 — setup.ps1 이 think 를 둔 곳</p>
+      <article><b>Codex</b><code>~\.agents\skills\&lt;이름&gt;\</code><span>부르기 &lt;이름&gt; 스킬로 ~해줘 · 목록 <code>/skills</code></span></article>
+      <article><b>Claude Code</b><code>~\.claude\skills\&lt;이름&gt;\</code><span>부르기 <code>/&lt;이름&gt;</code> · 목록 <code>/skills</code></span></article>
+      <article><b>Antigravity</b><code>~\.gemini\config\skills\&lt;이름&gt;\</code><span>부르기 &lt;이름&gt; 스킬로 ~해줘 · 목록 Settings → Customizations</span></article>
+    </div>
+  </div>
+  <footer class="done"><b>핵심</b><span>스킬 = 폴더 하나 + SKILL.md</span><span>description = 언제 불릴지</span><span>저장한 뒤 에이전트를 닫고 다시 연다</span></footer>
+  <p class="foot">2일차 4교시 · 스킬 파일의 구조</p>
+</section>
+
+<section class="slide" data-day="2" data-period="4" data-time="15:20–16:20" aria-label="내 명령 만들기">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">4교시 · 15:20–16:20 · 실습</p>
+    <h2 class="title">반복 업무를 인터뷰로 스킬에 담고, 새 대화에서 부릅니다</h2>
+  </header>
+  <div class="pipe">
+    <div class="pc" data-step="1"><small>5분</small><b>재료 고르기</b><p>매주 · 매달 하는 일 1개</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="2"><small>20분</small><b>인터뷰</b><p>질문 5개 이하 → 전역 스킬 폴더에 저장</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="3"><small>10분</small><b>새 대화에서 부르기</b><p>닫고 다시 열기 → 목록 → 한 줄로</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="4"><small>10분</small><b>한 번 고치기</b><p>SKILL.md 의 확인 기준을 ~로 바꿔줘 → 다시 부르기</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="5"><small>16:05</small><b>점검</b><p>오른쪽 □ 4가지</p></div>
+  </div>
+  <div class="split wide">
+    <div class="stack">
+      <p class="say-one" data-step="2" data-enter><span><span class="ai">AI</span>인터뷰 — 에이전트에게</span>내가 반복하는 업무를 스킬로 만들고 싶어. 질문을 하나씩, 5개 이하로 해서 입력 · 결과물 · 확인 기준 · 하지 말 것을 정해 줘. 다 정해지면 내 에이전트의 전역 스킬 폴더에 <code>&lt;이름&gt;/SKILL.md</code> 로 저장하고 파일 내용을 보여줘</p>
+      <dl class="say" data-step="3" data-enter>
+        <dt>Claude Code</dt><dd><code>/&lt;이름&gt;</code></dd>
+        <dt>Codex · Antigravity</dt><dd>&lt;이름&gt; 스킬로 ~해줘</dd>
+      </dl>
+    </div>
+    <div class="check" data-step="5" data-enter>
+      <p class="how-h">16:05 점검 — 내 SKILL.md</p>
+      <ul class="checks">
+        <li>입력 · 결과물이 정해져 있다</li>
+        <li>확인 기준이 있다</li>
+        <li>하지 말 것이 있다</li>
+        <li>description이 구체적이다</li>
+      </ul>
+      <p class="how-h">막히면</p>
+      <table class="tbl">
+        <tbody>
+          <tr><td>목록에 없다</td><td>전역 폴더에 있나 → 에이전트 다시 열기</td></tr>
+          <tr><td>다른 스킬이 돈다</td><td>이름에 머리말 <code>my-</code></td></tr>
+          <tr><td>결과가 매번 다르다</td><td>결과 파일 이름 · 형식 못 박기</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>새 대화에서 한 줄로 불린다</span><span>확인 기준대로 결과가 나온다</span></footer>
+  <p class="foot">2일차 4교시 · 내 명령 만들기</p>
+</section>
+
+<section class="slide closing" data-day="2" data-period="5" data-time="16:30–17:00" aria-label="명령 나누기와 수료">
+  <p class="band-title"><b>Ⅱ</b>2일차 · 업무를 자동화한다 — 보고서와 나만의 명령</p>
+  <header class="sh">
+    <p class="kicker">5교시 · 16:30–17:00</p>
+    <h2 class="title">만든 명령을 서로 시연하고 수료합니다</h2>
+  </header>
+  <div class="pipe">
+    <div class="pc" data-step="1"><small>각 5분</small><b>옆 사람과 서로 시연</b><p>입력 파일 → 한 줄 호출 → 결과 파일</p></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="2"><small>다음</small><b>강사가 3~4명 화면 소개</b></div>
+    <i class="arr"></i>
+    <div class="pc" data-step="3"><small>16:50</small><b>수료 · 설문</b></div>
+  </div>
+  <p class="how-h" data-enter>내 PC에 남는 것 — 내 명령은 전역이라 어느 폴더에서든 부른다</p>
+  <div class="branch">
+    <article class="bc"><p class="tag">2교시</p><p class="bc-b">결과 파일</p></article>
+    <article class="bc"><p class="tag">3교시</p><p class="bc-b">보고서 .hwpx</p></article>
+    <article class="bc"><p class="tag">4교시</p><p class="bc-b">내 명령 SKILL.md</p></article>
+  </div>
+  <div class="cols2">
+    <div data-enter>
+      <p class="how-h">남이 만든 스킬 찾기</p>
+      <div class="term"><span class="term-label">PowerShell</span>
+<pre><span class="ps">PS&gt;</span> npx.cmd skills find 키워드</pre></div>
+      <p class="sub">skills.sh — 설치 전 만든 곳 · 라이선스 · 최근 업데이트 · SKILL.md 내용 확인</p>
+    </div>
+    <div data-enter>
+      <p class="how-h">공용 PC 로그아웃</p>
+      <dl class="say">
+        <dt>Codex</dt><dd><code>codex logout</code></dd>
+        <dt>Claude Code</dt><dd><code>claude auth logout</code></dd>
+        <dt>Antigravity</dt><dd>앱에서 로그아웃</dd>
+      </dl>
+      <p class="sub">이틀 참여자: Vercel 주소는 공개 상태 — 둘지 · 지울지 정하고, 키가 저장소에 없는지 다시 확인 · 구독 유지 · 해지는 각자</p>
+    </div>
+  </div>
+  <p class="foot">2일차 5교시 · 명령 나누기와 수료</p>
+</section>
+
+<p class="count" aria-live="polite"></p>
+</main>
+<script src="vendor/gsap.min.js"></script>
+<script src="slides.js"></script>
+</body>
+</html>

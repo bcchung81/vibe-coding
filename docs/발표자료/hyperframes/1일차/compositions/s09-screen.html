@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"></head>
+<body>
+<template>
+  <div class="slide" id="s09-screen" data-composition-id="s09-screen" data-width="1920" data-height="1080">
+  <header class="head"><h2>예시 데이터로 먼저 화면을 만든다</h2><p class="meta">3교시 · 15:15–15:45</p></header>
+  <div class="body">
+    <div class="flow"><span class="on">snapshot.json<small>예시 데이터</small></span><i>→</i><span>/api/data<small>서버 통로</small></span><i>→</i><span>화면</span></div>
+    <ol class="steps">
+      <li><span class="lead">다음 단계 만들기</span>
+        <div class="in"><span>Claude Code</span><b class="code">/vibe-step</b><span>Codex · Antigravity</span><b>vibe-step 스킬로 다음 단계 해줘</b></div></li>
+      <li><span class="lead">개발 서버를 켜 두고 브라우저에서 PLAN.md 의 그 단계 확인 기준 보기</span>
+        <div class="in"><span>PowerShell</span><pre>npm.cmd run dev</pre></div></li>
+      <li>통과하면 처음으로</li>
+    </ol>
+    <ul class="notes"><li><b>15:45</b> 화면 단계가 남아도 API 단계로 · 남은 화면은 16:10 이후</li><li><code>data/snapshot.json</code> 이 비어 있으면 에이전트가 주제 카드 항목으로 예시 5건을 만든다</li></ul>
+  </div>
+  <footer class="done"><b>완료 기준</b><span>단계마다 PLAN.md 의 확인 기준 통과</span></footer>
+  </div>
+  <script>
+    // 공개 순서: 누를 때마다 한 묶음씩 (reveal.js)
+    window.__timelines = window.__timelines || {};
+    window.__timelines["s09-screen"] = hfReveal("s09-screen", [[".flow", ".steps > li:nth-child(1)"], [".steps > li:nth-child(2)"], [".steps > li:nth-child(3)", ".notes"], [".done"]]);
+  </script>
+</template>
+</body>
+</html>
