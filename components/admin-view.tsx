@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
-import type { StatusRow } from "../lib/db";
+import type { StatusRow, SurveyPerson } from "../lib/db";
 import { planRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
 import { Band } from "./band";
@@ -51,7 +51,7 @@ export function AdminLogin() {
 
 type Show = "all" | "site" | "survey";
 
-export function AdminView({ status, titles, anonymous }: { status: StatusRow[]; titles: Record<string, string>; anonymous: number }) {
+export function AdminView({ status, titles, people }: { status: StatusRow[]; titles: Record<string, string>; people: SurveyPerson[] }) {
   const [rows, setRows] = useState<GridRow[]>(() => padRows([]));
   const [notice, setNotice] = useState<{ title: string; lead: string } | null>(null);
   const [show, setShow] = useState<Show>("all");
@@ -62,6 +62,7 @@ export function AdminView({ status, titles, anonymous }: { status: StatusRow[]; 
   const broken = plans.filter((p) => p?.state === "error" || p?.state === "duplicate").length;
   const missing = status.filter((s) => !s.url);
   const unsurveyed = status.filter((s) => !s.surveyed);
+  const rosterNames = new Set(status.map((s) => s.name));
   const shown = show === "site" ? missing : show === "survey" ? unsurveyed : status;
   const counts: Record<string, number> = {};
   for (const s of status) if (s.topic) counts[s.topic] = (counts[s.topic] ?? 0) + 1;
@@ -162,8 +163,32 @@ export function AdminView({ status, titles, anonymous }: { status: StatusRow[]; 
             </Link>
           </div>
           <p>
-            명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 이름으로, <b>{anonymous}건</b>이 무기명으로 답했습니다. <Link href="/survey/answer">/survey/answer</Link> 에서 로그인하면 이름으로, 로그인하지 않으면 무기명으로 내고 같은 브라우저에서 고칠 수 있습니다. 이름으로 아직 안 낸 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
+            응답 <b>{people.length}건</b> · 명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 명단과 같은 이름으로 냈습니다. 누구나 로그인 없이 <Link href="/survey/answer">/survey/answer</Link> 에서 이름 · 이메일을 적고 내며, 같은 이메일로 다시 내면 바뀝니다. 아직인 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
           </p>
+          {people.length > 0 && (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>낸 때</th>
+                    <th>명단</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {people.map((p) => (
+                    <tr key={p.email}>
+                      <td>{p.name}</td>
+                      <td>{p.email}</td>
+                      <td>{p.at.slice(5, 16)}</td>
+                      <td>{rosterNames.has(p.name) ? <span className="chip done">있음</span> : <span className="chip todo">없음</span>}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         <section className="panel" aria-labelledby="close-title">

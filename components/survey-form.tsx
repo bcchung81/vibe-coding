@@ -3,32 +3,36 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { answerSurvey } from "../app/actions";
-import { asked, checkAnswers, QUESTIONS, TEXT_LIMIT, toDraft, type Draft, type Question, type Response } from "../lib/survey";
+import { asked, checkAnswers, checkPerson, EMAIL_LIMIT, NAME_LIMIT, QUESTIONS, TEXT_LIMIT, toDraft, type Draft, type Question, type Response } from "../lib/survey";
 import { Band } from "./band";
 import { Icon } from "./icon";
 
 type Problem = { no: number; error: string };
+type Person = { name: string; email: string };
 const DAY = { day1: "1일차 참여자", day2: "2일차 참여자" };
 
 const answered = (q: Question, d: Draft[string]) => (q.kind === "text" ? Boolean(d.text.trim()) : d.picked.length > 0 || Boolean(q.other && d.text.trim()));
 
-// The pre-course survey on one page. Question 1 decides whether 5 and 7 are asked; the band counts what is left
-// and turns into "냈습니다" once the answers on screen are the saved ones.
-// `name` is null for someone not logged in: their sheet is saved without a name and this browser can change it later.
-export function SurveyForm({ name, saved: first }: { name: string | null; saved: Response | null }) {
+// The pre-course survey on one page, under the person's own name and e-mail. Question 1 decides whether 5 and 7 are asked;
+// the band counts what is left and turns into "냈습니다" once the name, e-mail and answers on screen are the saved ones.
+// `person` and `saved` come from what this browser sent last; "다른 사람으로 새로 쓰기" clears them on a shared PC.
+export function SurveyForm({ person, saved: first }: { person: Person; saved: Response | null }) {
   const [saved, setSaved] = useState(first);
+  const [savedAs, setSavedAs] = useState<Person | null>(first ? person : null);
+  const [name, setName] = useState(person.name);
+  const [email, setEmail] = useState(person.email);
   const [draft, setDraft] = useState(() => toDraft(first));
   const [problem, setProblem] = useState<Problem | null>(null);
   const [pending, start] = useTransition();
 
   const shown = QUESTIONS.filter((q) => asked(q, draft));
-  const left = shown.filter((q) => q.required && !answered(q, draft[q.no])).length;
+  const left = shown.filter((q) => q.required && !answered(q, draft[q.no])).length + (name.trim() ? 0 : 1) + (email.trim() ? 0 : 1);
   const check = checkAnswers(draft);
-  const done = Boolean(saved) && "answers" in check && JSON.stringify(check.answers) === JSON.stringify(saved);
+  const who = checkPerson({ name, email });
+  const same = "name" in who && savedAs !== null && who.name === savedAs.name && who.email === savedAs.email;
+  const done = Boolean(saved) && same && "answers" in check && JSON.stringify(check.answers) === JSON.stringify(saved);
 
-  const lead = name
-    ? `${name} 님 · 약 3분 · 답은 교육 준비에만 씁니다. 결과 화면에는 이름이 보이지 않습니다.`
-    : "무기명 · 약 3분 · 답은 교육 준비에만 씁니다. 이 브라우저에서 다시 열면 고칠 수 있습니다.";
+  const lead = "약 3분 · 이름 · 이메일은 교육 준비 연락에만 씁니다. 결과 화면에는 이름이 보이지 않습니다.";
   const band = done
     ? { title: "수요조사를 냈습니다", lead: "고칠 것이 있으면 바꾸고 다시 내면 됩니다. 결과는 수업 때 함께 봅니다.", action: { href: "/survey", label: "결과 보기" } }
     : left
@@ -52,17 +56,35 @@ export function SurveyForm({ name, saved: first }: { name: string | null; saved:
 
   const show = (p: Problem) => {
     setProblem(p);
-    document.querySelector<HTMLElement>(`#q-${p.no} input:not(:disabled), #q-${p.no} textarea`)?.focus();
+    const field = p.no === -1 ? "#person-name" : p.no === -2 ? "#person-email" : `#q-${p.no} input:not(:disabled), #q-${p.no} textarea`;
+    document.querySelector<HTMLElement>(field)?.focus();
   };
 
   const submit = () => {
+    if ("error" in who) return show(who);
     if ("error" in check) return show(check);
     start(async () => {
-      const r = await answerSurvey(draft, name !== null);
+      const r = await answerSurvey(draft, { name, email });
       if ("error" in r) return show(r);
       setSaved(r.saved);
+      setSavedAs(who);
       setProblem(null);
     });
+  };
+
+  // someone else at the same browser: start from an empty sheet
+  const startOver = () => {
+    setName("");
+    setEmail("");
+    setDraft(toDraft(null));
+    setSaved(null);
+    setSavedAs(null);
+    setProblem(null);
+  };
+
+  const typed = (field: "name" | "email", value: string) => {
+    (field === "name" ? setName : setEmail)(value);
+    setProblem((p) => (p && p.no === (field === "name" ? -1 : -2) ? null : p));
   };
 
   return (
@@ -75,6 +97,34 @@ export function SurveyForm({ name, saved: first }: { name: string | null; saved:
           submit();
         }}
       >
+        <section id="q-person" className="panel question" role="group" aria-labelledby="q-person-title" data-error={Boolean(problem && problem.no < 0)}>
+          <div className="panel-head">
+            <h2 id="q-person-title">이름 · 이메일</h2>
+            <span className="meta">필수</span>
+          </div>
+          <div className="person">
+            <label className="form">
+              <span>이름</span>
+              <input id="person-name" value={name} maxLength={NAME_LIMIT} autoComplete="name" aria-invalid={problem?.no === -1} onChange={(e) => typed("name", e.target.value)} />
+            </label>
+            <label className="form">
+              <span>이메일</span>
+              <input id="person-email" type="email" inputMode="email" value={email} maxLength={EMAIL_LIMIT} autoComplete="email" placeholder="name@kca.kr" aria-invalid={problem?.no === -2} onChange={(e) => typed("email", e.target.value)} />
+            </label>
+          </div>
+          <p className="hint">같은 이메일로 다시 내면 앞의 답이 바뀝니다.</p>
+          {problem && problem.no < 0 && (
+            <p className="hint error" role="alert">
+              {problem.error}
+            </p>
+          )}
+          {savedAs && (
+            <button type="button" className="ghost" onClick={startOver}>
+              다른 사람으로 새로 쓰기
+            </button>
+          )}
+        </section>
+
         {shown.map((q) => {
           const d = draft[q.no];
           const full = q.max !== undefined && d.picked.length >= q.max;
@@ -146,8 +196,8 @@ export function SurveyForm({ name, saved: first }: { name: string | null; saved:
             {done && <Icon name="check" size={18} />}
             {pending ? "내는 중…" : done ? "냈습니다" : saved ? "고친 답 내기" : "답 내기"}
           </button>
-          <span className={`hint ${problem && !problem.no ? "error" : ""}`} aria-live="polite">
-            {problem && !problem.no ? problem.error : done ? <Link href="/survey">결과 보기</Link> : left ? `필수 ${left}문항이 남았습니다` : "모두 답했습니다"}
+          <span className={`hint ${problem && problem.no === 0 ? "error" : ""}`} aria-live="polite">
+            {problem && problem.no === 0 ? problem.error : done ? <Link href="/survey">결과 보기</Link> : left ? `필수 ${left}문항이 남았습니다` : "모두 답했습니다"}
           </span>
         </div>
       </form>

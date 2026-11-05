@@ -6,9 +6,9 @@ import { after } from "next/server";
 import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
 import { captureProject } from "../lib/capture";
-import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveAnonSurvey, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
 import { adminAtLogin, pinLocked, type PinKind } from "../lib/pin-limit";
-import { checkAnswers, isSurveyToken, SURVEY_COOKIE, type Response as SurveyAnswers } from "../lib/survey";
+import { checkAnswers, checkPerson, isSurveyToken, SURVEY_COOKIE, type Response as SurveyAnswers } from "../lib/survey";
 import { canApply, cleanCell, planRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
@@ -135,23 +135,19 @@ export async function wipeEverything(confirm: string) {
   return true;
 }
 
-// The pre-course survey, checked the same way the form checks it; answering again replaces it.
-// A logged-in trainee answers under their name (`named`); anyone else answers without one, tied to this browser by a random key.
-export async function answerSurvey(draft: unknown, named: boolean): Promise<{ error: string; no: number } | { saved: SurveyAnswers }> {
-  const me = await signedIn("student");
-  if (named && !me) return { error: "로그인이 풀렸습니다. 다시 로그인해 주세요.", no: 0 };
+// The pre-course survey under the person's own name and e-mail, checked the same way the form checks it.
+// Answering again with the same e-mail replaces the sheet; this browser keeps a random key to open it again.
+export async function answerSurvey(draft: unknown, person: unknown): Promise<{ error: string; no: number } | { saved: SurveyAnswers }> {
+  const who = checkPerson(person);
+  if ("error" in who) return who;
   const result = checkAnswers(draft);
   if ("error" in result) return result;
-  if (me) {
-    await saveSurvey(me.id, result.answers);
-    return { saved: result.answers };
-  }
   const jar = await cookies();
   let token = jar.get(SURVEY_COOKIE)?.value;
   if (!isSurveyToken(token)) {
     token = crypto.randomUUID();
     jar.set(SURVEY_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 120 });
   }
-  await saveAnonSurvey(token, result.answers);
+  await saveSurvey(who, token, result.answers);
   return { saved: result.answers };
 }

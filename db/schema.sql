@@ -39,15 +39,13 @@ create table if not exists pin_failures (
 alter table pin_failures add column if not exists kind text not null default 'course';
 create index if not exists pin_failures_ip_at on pin_failures (ip, at);
 
--- 사전 수요조사 응답: 수강생이 허브(/survey/answer)에서 낸다. 한 사람에 하나, 다시 내면 바뀐다. 결과 화면에는 집계만 나가고 이름은 나가지 않는다 (lib/survey.ts)
-create table if not exists survey_responses (
-  student_id int primary key references students(id) on delete cascade,
-  answers jsonb not null                -- {"1": ["이틀 모두"], "2": ["자료 조사", "기타에 적은 글"], ...}
-);
-
--- 무기명 수요조사 응답: 로그인하지 않은 사람이 허브(/survey/answer)에서 낸다. 브라우저 쿠키(vibe-survey)의 무작위 열쇠로 같은 브라우저에서 고친다. 결과 화면은 실명 응답과 합쳐 집계만 보인다
-create table if not exists survey_anon (
-  token text primary key,               -- 무작위 열쇠(UUID), 이 브라우저의 쿠키에만 있다
-  answers jsonb not null,
+-- 사전 수요조사 응답: 로그인 없이 허브(/survey/answer)에서 이름 · 이메일을 적고 낸다. 이메일 하나에 하나, 같은 이메일로 다시 내면 바뀐다.
+-- 결과 화면에는 집계만, 이름 · 이메일은 관리 화면에만 나간다 (lib/survey.ts)
+create table if not exists survey_answers (
+  email text primary key,               -- 소문자로 맞춰 저장
+  name text not null,
+  answers jsonb not null,               -- {"1": ["이틀 모두"], "2": ["자료 조사", "기타에 적은 글"], ...}
+  token text not null,                  -- 답한 브라우저의 쿠키(vibe-survey)에만 있는 무작위 열쇠. 그 브라우저에서 다시 열면 낸 답을 채운다
   at timestamptz not null default now()
 );
+create index if not exists survey_answers_token on survey_answers (token);

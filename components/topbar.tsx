@@ -8,15 +8,15 @@ import { sessionChanged, useWho, type Who } from "./session";
 
 type Item = { href: string; title: string; match: string; show?: (who: Who) => boolean };
 
-// The wall comes first; preparation follows. What else shows depends on who is in:
-// a trainee gets their own site and the survey to answer, the admin gets 관리, everyone else sees the survey results.
+// In the order trainees use the hub: before the course the survey and the handouts, then the topic,
+// their own site and the gallery on day 1. Everyone answers the survey; the admin goes to its results and gets 관리.
 const NAV: Item[] = [
-  { href: "/", title: "갤러리", match: "/" },
+  { href: "/survey/answer", title: "수요조사", match: "/survey", show: (w) => !w.admin },
+  { href: "/survey", title: "수요조사", match: "/survey", show: (w) => w.admin },
   { href: "/materials", title: "자료", match: "/materials" },
   { href: "/topics", title: "웹앱 주제", match: "/topics" },
   { href: "/me", title: "내 프로젝트", match: "/me", show: (w) => Boolean(w.student) },
-  { href: "/survey/answer", title: "수요조사", match: "/survey", show: (w) => Boolean(w.student) && !w.admin },
-  { href: "/survey", title: "수요조사", match: "/survey", show: (w) => !w.student || w.admin },
+  { href: "/", title: "갤러리", match: "/" },
   { href: "/admin", title: "관리", match: "/admin", show: (w) => w.admin },
 ];
 

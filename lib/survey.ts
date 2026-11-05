@@ -1,4 +1,4 @@
-// The pre-course survey (docs/05_사전수요조사_초안.md). Trainees answer it in the hub (/survey/answer); keep questions and options in step with that file.
+// The pre-course survey (docs/05_사전수요조사_초안.md). Trainees answer it in the hub (/survey/answer) under their name and e-mail; keep questions and options in step with that file.
 // `ask` is the question on the form, `title` the short heading on the results. `notes` sit beside an option on the form and are not stored.
 export type Question = {
   no: number;
@@ -38,8 +38,24 @@ export type Draft = Record<string, { picked: string[]; text: string }>;
 
 export type Day = "all" | "day1" | "day2";
 
-// Someone not logged in answers without a name; their browser keeps a random key in this cookie so they can change the sheet later
+// The answering browser keeps a random key in this cookie, so opening the form again fills in what it sent
 export const SURVEY_COOKIE = "vibe-survey";
+
+export const NAME_LIMIT = 20;
+export const EMAIL_LIMIT = 100;
+
+// Who answers: their own name and e-mail, typed on the form. The e-mail keys the sheet, so answering again with it replaces the answers.
+// A problem points at the field: no -1 is the name, -2 the e-mail.
+export function checkPerson(input: unknown): { name: string; email: string } | { error: string; no: number } {
+  const p = (input && typeof input === "object" ? input : {}) as { name?: unknown; email?: unknown };
+  const name = typeof p.name === "string" ? p.name.replace(/\s+/g, " ").trim() : "";
+  const email = typeof p.email === "string" ? p.email.trim().toLowerCase() : "";
+  if (!name) return { no: -1, error: "이름을 적어 주세요" };
+  if (name.length > NAME_LIMIT) return { no: -1, error: `이름은 ${NAME_LIMIT}자까지 적습니다` };
+  if (!email) return { no: -2, error: "이메일을 적어 주세요" };
+  if (email.length > EMAIL_LIMIT || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { no: -2, error: "이메일 주소를 확인해 주세요 (예: name@kca.kr)" };
+  return { name, email };
+}
 
 export const isSurveyToken = (v: unknown): v is string => typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(v);
 

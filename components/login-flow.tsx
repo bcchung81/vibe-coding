@@ -24,7 +24,7 @@ const BANDS: Record<Step, { title: string; lead: string }> = {
 };
 
 // Course-wide PIN first (the server hands out the roster only then), then pick your own name
-export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean }) {
+export function LoginFlow({ me }: { me?: Person }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(me ? "done" : "pin");
   const [pin, setPin] = useState("");
@@ -35,11 +35,7 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
   const [who, setWho] = useState(me);
   const [pending, start] = useTransition();
   const order = STEPS.findIndex(([s]) => s === step);
-  const band = !toSurvey
-    ? BANDS[step]
-    : step === "done"
-      ? { title: BANDS.done.title, lead: "수요조사로 넘어갑니다." }
-      : { ...BANDS[step], lead: `${BANDS[step].lead} 로그인하면 수요조사로 돌아갑니다.` };
+  const band = BANDS[step];
 
   const wrongPin = (message: string) => {
     setPin("");
@@ -55,7 +51,7 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
         return wrongPin(result.locked ? "여러 번 틀려 잠시 막았습니다. 10분 뒤에 다시 해 주세요." : "PIN이 맞지 않습니다. 공지 문자를 다시 확인해 주세요.");
       if ("admin" in result) {
         sessionChanged();
-        return router.push(toSurvey ? "/survey" : "/admin");
+        return router.push("/admin");
       }
       setPin(value);
       setRoster(result.roster);
@@ -69,7 +65,6 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
       setWho(person);
       setStep("done");
       sessionChanged();
-      if (toSurvey) router.push("/survey/answer");
     });
 
   const leave = () =>
@@ -83,7 +78,7 @@ export function LoginFlow({ me, toSurvey }: { me?: Person; toSurvey?: boolean })
 
   return (
     <>
-      <Band {...band} action={step === "done" ? (toSurvey ? { href: "/survey/answer", label: "수요조사 답하기" } : { href: "/me", label: "내 프로젝트" }) : undefined} />
+      <Band {...band} action={step === "done" ? { href: "/me", label: "내 프로젝트" } : undefined} />
       <div className="content">
         <section className="panel login-panel" aria-label="로그인" aria-busy={pending}>
           <ol className="stepper">

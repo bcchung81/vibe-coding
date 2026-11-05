@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { asked, attends, checkAnswers, isSurveyToken, QUESTIONS, tally, toDraft, type Draft, type Response } from "./survey";
+import { asked, attends, checkAnswers, checkPerson, isSurveyToken, QUESTIONS, tally, toDraft, type Draft, type Response } from "./survey";
 
 const q = (no: number) => QUESTIONS.find((x) => x.no === no)!;
 
@@ -121,5 +121,20 @@ describe("isSurveyToken", () => {
   });
   test("refuses anything else, so a made-up cookie never reads or writes a sheet", () => {
     for (const v of [undefined, "", "abc", "00000000-0000-0000-0000-00000000000G", "' or 1=1 --", 42]) expect(isSurveyToken(v)).toBe(false);
+  });
+});
+
+describe("checkPerson", () => {
+  test("keeps the name tidy and the e-mail in small letters", () => {
+    expect(checkPerson({ name: "  홍  길동 ", email: " Hong@KCA.kr " })).toEqual({ name: "홍 길동", email: "hong@kca.kr" });
+  });
+  test("asks for each field and points at it", () => {
+    expect(checkPerson({ name: "", email: "a@kca.kr" })).toMatchObject({ no: -1 });
+    expect(checkPerson({ name: "홍길동", email: "" })).toMatchObject({ no: -2 });
+    for (const email of ["hong", "hong@kca", "@kca.kr", "hong @kca.kr"]) expect(checkPerson({ name: "홍길동", email })).toMatchObject({ no: -2 });
+  });
+  test("refuses anything that is not text", () => {
+    expect(checkPerson(null)).toMatchObject({ no: -1 });
+    expect(checkPerson({ name: 42, email: "a@kca.kr" })).toMatchObject({ no: -1 });
   });
 });

@@ -97,48 +97,33 @@ export async function toggleLike(studentId: number, projectId: number) {
 export async function wipeAll() {
   await sql()`delete from students`;
   await sql()`delete from pin_failures`;
-  await sql()`delete from survey_responses`;
-  await sql()`delete from survey_anon`;
+  await sql()`delete from survey_answers`;
 }
 
-// One answer sheet per trainee; answering again replaces it
-export async function saveSurvey(studentId: number, answers: Response) {
+// One sheet per e-mail; answering again with it replaces the sheet and hands it to this browser's key
+export async function saveSurvey(person: { name: string; email: string }, token: string, answers: Response) {
   await sql()`
-    insert into survey_responses (student_id, answers) values (${studentId}, ${JSON.stringify(answers)}::jsonb)
-    on conflict (student_id) do update set answers = excluded.answers`;
+    insert into survey_answers (email, name, answers, token) values (${person.email}, ${person.name}, ${JSON.stringify(answers)}::jsonb, ${token})
+    on conflict (email) do update set name = excluded.name, answers = excluded.answers, token = excluded.token, at = now()`;
 }
 
-// An unnamed sheet, keyed by the random key in the answering browser's cookie; answering again from that browser replaces it
-export async function saveAnonSurvey(token: string, answers: Response) {
-  await sql()`
-    insert into survey_anon (token, answers) values (${token}, ${JSON.stringify(answers)}::jsonb)
-    on conflict (token) do update set answers = excluded.answers, at = now()`;
+// The sheet this browser sent last, to fill the form in again
+export async function surveyByToken(token: string) {
+  const rows = (await sql()`select name, email, answers from survey_answers where token = ${token} order by at desc limit 1`) as { name: string; email: string; answers: Response }[];
+  return rows[0] ?? null;
 }
 
-export async function anonSurvey(token: string) {
-  const rows = (await sql()`select answers from survey_anon where token = ${token}`) as { answers: Response }[];
-  return rows[0]?.answers ?? null;
-}
-
-export async function anonSurveyCount() {
-  const rows = (await sql()`select count(*)::int as n from survey_anon`) as { n: number }[];
-  return rows[0]?.n ?? 0;
-}
-
-export async function mySurvey(studentId: number) {
-  const rows = (await sql()`select answers from survey_responses where student_id = ${studentId}`) as { answers: Response }[];
-  return rows[0]?.answers ?? null;
-}
-
-// Answers only — named and unnamed sheets together, in an order that is not the roster's, so a written answer does not point to its writer
+// Answers only, in an order that is not the order they came in, so a written answer does not point to its writer
 export async function surveyResponses() {
-  const rows = (await sql()`
-    select answers from (
-      select answers, md5(student_id::text) as k from survey_responses
-      union all
-      select answers, md5(token) as k from survey_anon
-    ) t order by k`) as { answers: Response }[];
+  const rows = (await sql()`select answers from survey_answers order by md5(email)`) as { answers: Response }[];
   return rows.map((r) => r.answers);
+}
+
+export type SurveyPerson = { name: string; email: string; at: string };
+
+// Who answered — for the admin's screen only
+export async function surveyPeople() {
+  return (await sql()`select name, email, at::text as at from survey_answers order by at desc`) as SurveyPerson[];
 }
 
 export async function setTopic(studentId: number, slug: string | null) {
@@ -155,7 +140,7 @@ export async function rosterStatus() {
   return (await sql()`
     select s.name, s.team, s.topic, p.app_name as app, p.app_url as url,
       (select count(*) from likes l where l.project_id = s.id)::int as likes,
-      exists (select 1 from survey_responses r where r.student_id = s.id) as surveyed
+      exists (select 1 from survey_answers a where a.name = s.name) as surveyed
     from students s left join projects p on p.student_id = s.id
     order by s.team, s.name`) as StatusRow[];
 }

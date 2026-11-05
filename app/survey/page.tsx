@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { SurveyView, type SurveyResults } from "../../components/survey-view";
 import { signedIn } from "../../lib/auth";
-import { anonSurvey, mySurvey, surveyResponses } from "../../lib/db";
+import { surveyByToken, surveyResponses } from "../../lib/db";
 import { attends, isSurveyToken, QUESTIONS, SURVEY_COOKIE, tally, type Day } from "../../lib/survey";
 
 export const metadata = { title: "사전 수요조사 결과" };
@@ -11,9 +11,8 @@ const DAYS: Day[] = ["all", "day1", "day2"];
 // Counts only for everyone; written answers (8 · 10 · 기타) only on the admin's screen, the one on the projector. Answering is at /survey/answer
 export default async function SurveyPage() {
   const admin = Boolean(await signedIn("admin"));
-  const student = await signedIn("student");
   const token = (await cookies()).get(SURVEY_COOKIE)?.value;
-  const answered = Boolean(student ? await mySurvey(student.id) : isSurveyToken(token) && (await anonSurvey(token)));
+  const answered = isSurveyToken(token) && Boolean(await surveyByToken(token));
   const responses = await surveyResponses();
   const results = Object.fromEntries(
     DAYS.map((day) => {
