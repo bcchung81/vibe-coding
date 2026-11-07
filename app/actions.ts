@@ -1,14 +1,14 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { after } from "next/server";
 import { del, list } from "@vercel/blob";
 import { signIn, signOut, signedIn } from "../lib/auth";
 import { captureProject } from "../lib/capture";
-import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveProject, saveSurvey, setTopic, toggleLike, wipeAll } from "../lib/db";
+import { checkCourseInfo } from "../lib/course";
+import { addStudents, captureState, findStudent, listStudents, pinFailures, recordPinFailure, saveCourseInfo, saveProject, setTopic, toggleLike, wipeAll } from "../lib/db";
 import { adminAtLogin, pinLocked, type PinKind } from "../lib/pin-limit";
-import { checkAnswers, checkPerson, isSurveyToken, SURVEY_COOKIE, type Response as SurveyAnswers } from "../lib/survey";
 import { canApply, cleanCell, planRoster } from "../lib/roster";
 import { matchesSecret } from "../lib/session";
 import { checkSiteUrl } from "../lib/site-url";
@@ -121,6 +121,16 @@ export async function saveRoster(input: unknown) {
   return { results: rows.map((r, i) => (canApply(plan[i]) && went.has(`${r.name}\u0000${r.team}`) ? { ok: true as const } : { ok: false as const, note: plan[i]?.note || "이미 명단에 있습니다" })) };
 }
 
+// The admin's date · place · deadlines · contact for /course; empty fields show as 확정되면 안내
+export async function saveCourse(input: unknown): Promise<{ ok: true } | { error: string }> {
+  if (!(await signedIn("admin"))) return { error: "관리자 로그인이 풀렸습니다. 새로 고침 후 다시 들어오세요." };
+  const r = checkCourseInfo(input);
+  if ("error" in r) return r;
+  await saveCourseInfo(r.info);
+  refresh();
+  return { ok: true as const };
+}
+
 // Removes every trainee, project, like, survey answer and capture image. The admin types 삭제 to confirm.
 export async function wipeEverything(confirm: string) {
   if (!(await signedIn("admin")) || confirm !== "삭제") return false;
@@ -135,19 +145,3 @@ export async function wipeEverything(confirm: string) {
   return true;
 }
 
-// The pre-course survey under the person's own name and e-mail, checked the same way the form checks it.
-// Answering again with the same e-mail replaces the sheet; this browser keeps a random key to open it again.
-export async function answerSurvey(draft: unknown, person: unknown): Promise<{ error: string; no: number } | { saved: SurveyAnswers }> {
-  const who = checkPerson(person);
-  if ("error" in who) return who;
-  const result = checkAnswers(draft);
-  if ("error" in result) return result;
-  const jar = await cookies();
-  let token = jar.get(SURVEY_COOKIE)?.value;
-  if (!isSurveyToken(token)) {
-    token = crypto.randomUUID();
-    jar.set(SURVEY_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 120 });
-  }
-  await saveSurvey(who, token, result.answers);
-  return { saved: result.answers };
-}

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { adminLogIn, saveRoster, wipeEverything } from "../app/actions";
-import type { StatusRow, SurveyPerson } from "../lib/db";
+import { adminLogIn, saveCourse, saveRoster, wipeEverything } from "../app/actions";
+import { COURSE_FIELDS, INFO_LIMIT, type CourseInfo } from "../lib/course";
+import type { StatusRow } from "../lib/db";
 import { planRoster } from "../lib/roster";
 import { topTopics } from "../lib/topic-counts";
 import { Band } from "./band";
@@ -36,7 +37,7 @@ export function AdminLogin() {
     });
   return (
     <>
-      <Band title="다음: 관리 PIN 4자리" lead="강사 · 조교만 들어옵니다." />
+      <Band kicker="관리" title="다음: 관리 PIN 4자리" lead="강사 · 조교만 들어옵니다." />
       <div className="content">
         <section className="panel form login-panel" aria-label="관리 로그인" aria-busy={pending}>
           <PinInput key={attempt} label="관리 PIN 4자리" error={Boolean(error)} disabled={pending} onEdit={() => setError("")} onDone={send} />
@@ -49,9 +50,55 @@ export function AdminLogin() {
   );
 }
 
-type Show = "all" | "site" | "survey";
+type Show = "all" | "site";
 
-export function AdminView({ status, titles, people }: { status: StatusRow[]; titles: Record<string, string>; people: SurveyPerson[] }) {
+// Date · place · deadlines · contact for /course. Kept in the DB, not in the public repo
+function CourseInfoPanel({ info }: { info: CourseInfo }) {
+  const [draft, setDraft] = useState<CourseInfo>(info);
+  const [note, setNote] = useState("");
+  const [pending, start] = useTransition();
+  const save = () =>
+    start(async () => {
+      const r = await saveCourse(draft);
+      setNote("error" in r ? r.error : "저장했습니다. 교육 안내 화면에 바로 나옵니다.");
+    });
+  return (
+    <section className="panel" aria-labelledby="course-title" aria-busy={pending}>
+      <div className="panel-head">
+        <h2 id="course-title">교육 안내</h2>
+        <Link className="ghost" href="/course">
+          화면 보기
+        </Link>
+      </div>
+      <div className="person">
+        {COURSE_FIELDS.map((f) => (
+          <label className="form" key={f.key}>
+            <span>{f.label}</span>
+            <input
+              value={draft[f.key] ?? ""}
+              maxLength={INFO_LIMIT}
+              placeholder={f.example}
+              onChange={(e) => {
+                setDraft({ ...draft, [f.key]: e.target.value });
+                setNote("");
+              }}
+            />
+          </label>
+        ))}
+      </div>
+      <div className="tools">
+        <button className="btn-primary" type="button" disabled={pending} onClick={save}>
+          저장
+        </button>
+        <span className="hint" aria-live="polite">
+          {pending ? "저장하는 중…" : note || "비운 칸은 교육 안내에 '확정되면 안내'로 나옵니다. 누구나 보는 화면입니다."}
+        </span>
+      </div>
+    </section>
+  );
+}
+
+export function AdminView({ status, titles, info }: { status: StatusRow[]; titles: Record<string, string>; info: CourseInfo }) {
   const [rows, setRows] = useState<GridRow[]>(() => padRows([]));
   const [notice, setNotice] = useState<{ title: string; lead: string } | null>(null);
   const [show, setShow] = useState<Show>("all");
@@ -61,9 +108,7 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
   const sending = rows.filter((r, i) => isTicked(r, plans[i]));
   const broken = plans.filter((p) => p?.state === "error" || p?.state === "duplicate").length;
   const missing = status.filter((s) => !s.url);
-  const unsurveyed = status.filter((s) => !s.surveyed);
-  const rosterNames = new Set(status.map((s) => s.name));
-  const shown = show === "site" ? missing : show === "survey" ? unsurveyed : status;
+  const shown = show === "site" ? missing : status;
   const counts: Record<string, number> = {};
   for (const s of status) if (s.topic) counts[s.topic] = (counts[s.topic] ?? 0) + 1;
   const top = topTopics(counts);
@@ -83,7 +128,7 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
       setRows(padRows(rows.filter((row) => !added.has(row))));
       setNotice({
         title: `명단에 ${added.size}명을 더했습니다`,
-        lead: failed.length ? `${failed.length}줄은 넣지 못해 표에 남겼습니다 — ${failed[0].note}` : "다음: 주소 · 공통 PIN · 수요조사 주소를 공지합니다.",
+        lead: failed.length ? `${failed.length}줄은 넣지 못해 표에 남겼습니다 — ${failed[0].note}` : "다음: 주소 · 공통 PIN을 공지합니다.",
       });
     });
 
@@ -97,7 +142,7 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
 
   return (
     <>
-      <Band {...band} />
+      <Band kicker="관리" {...band} />
       <div className="content">
         <section className="panel" aria-labelledby="roster-title">
           <div className="panel-head">
@@ -113,9 +158,6 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
             <div className="tabs" role="group" aria-label="보기">
               <button type="button" aria-pressed={show === "all"} onClick={() => setShow("all")}>
                 전체 {status.length}
-              </button>
-              <button type="button" aria-pressed={show === "survey"} onClick={() => setShow("survey")}>
-                수요조사 아직 {unsurveyed.length}
               </button>
               <button type="button" aria-pressed={show === "site"} onClick={() => setShow("site")}>
                 사이트 아직 {missing.length}
@@ -133,7 +175,6 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
                 <tr>
                   <th>이름</th>
                   <th>팀</th>
-                  <th>수요조사</th>
                   <th>주제</th>
                   <th>사이트</th>
                   <th>좋아요</th>
@@ -144,7 +185,6 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
                   <tr key={`${s.name}-${s.team}`}>
                     <td>{s.name}</td>
                     <td>{s.team}</td>
-                    <td>{s.surveyed ? <span className="chip done">냈음</span> : <span className="chip todo">아직</span>}</td>
                     <td>{s.topic ? `${s.topic} ${titles[s.topic] ?? ""}` : <span className="meta">—</span>}</td>
                     <td>{s.url ? <span className="chip done">올림 · {s.app}</span> : <span className="chip todo">아직</span>}</td>
                     <td className="num">{s.likes}</td>
@@ -155,41 +195,8 @@ export function AdminView({ status, titles, people }: { status: StatusRow[]; tit
           </div>
         </section>
 
-        <section className="panel" aria-labelledby="survey-title">
-          <div className="panel-head">
-            <h2 id="survey-title">사전 수요조사</h2>
-            <Link className="ghost" href="/survey">
-              결과 보기
-            </Link>
-          </div>
-          <p>
-            응답 <b>{people.length}건</b> · 명단 {status.length}명 중 <b>{status.length - unsurveyed.length}명</b>이 명단과 같은 이름으로 냈습니다. 누구나 로그인 없이 <Link href="/survey/answer">/survey/answer</Link> 에서 이름 · 이메일을 적고 내며, 같은 이메일로 다시 내면 바뀝니다. 아직인 사람은 현황의 &lsquo;수요조사 아직&rsquo;에서 봅니다.
-          </p>
-          {people.length > 0 && (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>이메일</th>
-                    <th>낸 때</th>
-                    <th>명단</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {people.map((p) => (
-                    <tr key={p.email}>
-                      <td>{p.name}</td>
-                      <td>{p.email}</td>
-                      <td>{p.at.slice(5, 16)}</td>
-                      <td>{rosterNames.has(p.name) ? <span className="chip done">있음</span> : <span className="chip todo">없음</span>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+
+        <CourseInfoPanel info={info} />
 
         <section className="panel" aria-labelledby="close-title">
           <h2 id="close-title">교육이 끝나면</h2>

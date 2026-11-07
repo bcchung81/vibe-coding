@@ -1,17 +1,18 @@
 import { Band } from "../../components/band";
+import { DeckStart } from "../../components/deck-start";
 import { Guide } from "../../components/guide";
 import { guideItems } from "../../lib/materials";
-import { topicItems } from "../../lib/topics";
 
 export const metadata = { title: "자료" };
 
 export default function MaterialsPage() {
   return (
-    <>
-      <Band title="준비 자료" lead="로그인 없이 읽고 이어서 준비하세요. 열어 본 자료는 이 브라우저가 기억합니다." />
+    <div className="materials-page">
+      <Band title="교육 자료" lead="사전 준비부터 당일 실습까지, 순서대로 읽고 내려받으세요." action={{ href: "/course", label: "준비할 것 확인" }} />
       <div className="content">
-        <Guide items={guideItems()} topics={topicItems()} />
+        <Guide items={guideItems()} />
+        <DeckStart />
       </div>
-    </>
+    </div>
   );
 }

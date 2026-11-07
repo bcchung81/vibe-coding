@@ -78,7 +78,7 @@ export function LoginFlow({ me }: { me?: Person }) {
 
   return (
     <>
-      <Band {...band} action={step === "done" ? { href: "/me", label: "내 프로젝트" } : undefined} />
+      <Band kicker="로그인" {...band} action={step === "done" ? { href: "/me", label: "내 프로젝트" } : undefined} />
       <div className="content">
         <section className="panel login-panel" aria-label="로그인" aria-busy={pending}>
           <ol className="stepper">

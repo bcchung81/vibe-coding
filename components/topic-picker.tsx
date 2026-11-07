@@ -14,7 +14,7 @@ export type TopicItem = { slug: string; title: string; summary: string };
 // "날씨 · 기상청 단기예보 · 난이도 중" → the area and API, and the difficulty on its own
 const split = (summary: string) => summary.split(" · 난이도 ");
 
-// The ten day-1 topics, five across, then the start folder in three steps. Picking one marks it "내 주제" in this browser,
+// The day-1 topics, then the start folder in three steps. Picking one marks it "내 주제" in this browser,
 // and for a logged-in trainee counts toward the live picks every card shows.
 export function TopicPicker({ items }: { items: TopicItem[] }) {
   const [mine, setMine] = useState<string | null>(null);
@@ -43,8 +43,9 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
   return (
     <>
       <Band
+        kicker="웹앱 주제"
         title="어떤 웹앱을 만들어 볼까요?"
-        lead={chosen ? `내 주제 ${chosen.slug} · ${chosen.title} — 아래 시작 폴더 3단계로 시작합니다.` : `생활 속 질문 ${items.length}개. 하나를 골라 공공데이터로 답을 만듭니다.`}
+        lead={chosen ? `선택한 주제: ${chosen.title}. 시작 폴더를 준비하면 실습을 시작할 수 있습니다.` : `${items.length}개 주제 중 하나를 골라 보세요. 기관 공공데이터로 업무 웹앱을 만듭니다.`}
         action={chosen ? { href: "#start-folder", label: "시작 폴더 안내" } : undefined}
       />
       <div className="content">
@@ -52,8 +53,8 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
           <p className="topic-live" aria-live="polite">
             {total > 0
               ? `지금 ${total}명이 골랐습니다 · 가장 많이 고른 주제: ${top.map((slug) => `${slug} ${items.find((t) => t.slug === slug)?.title ?? ""}`).join(", ")} (${counts[top[0]]}명)`
-              : "아직 아무도 고르지 않았습니다. 첫 번째로 골라 보세요."}
-            {counted === false && <span className="meta"> · 로그인하면 내 선택도 여기에 셉니다</span>}
+              : "주제를 고르면 아래에서 실습 시작 방법을 안내합니다."}
+            {counted === false && <span className="meta"> · 선택은 이 브라우저에 저장됩니다. 로그인하면 참여 인원에도 반영됩니다.</span>}
           </p>
         )}
         <ul className="topics">
@@ -113,8 +114,7 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
             </li>
             <li>
               <p>고른 주제 번호로 시작합니다.</p>
-              <code>/vibe-plan {no}</code>
-              <p className="meta">Codex · Antigravity: vibe-plan 스킬로 주제 {no} 시작해줘</p>
+              <code>vibe-plan 스킬로 주제 {no} 시작해줘</code>
             </li>
           </ol>
         </section>

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Noto_Sans_KR } from "next/font/google";
 import { TopBar } from "../components/topbar";
+// Pretendard (OFL), the deck's typeface; the dynamic subset loads only the Korean blocks a page uses
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
-
-const noto = Noto_Sans_KR({ subsets: ["latin"], weight: ["400", "700", "900"], variable: "--font-noto" });
 
 export const metadata: Metadata = {
   title: { default: "바이브코딩 중급", template: "%s · 바이브코딩 중급" },
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko" className={noto.variable}>
+    <html lang="ko">
       <body>
         <TopBar />
         <main>{children}</main>

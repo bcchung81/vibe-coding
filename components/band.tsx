@@ -6,15 +6,16 @@ import { Icon } from "./icon";
 
 export type BandAction = { href: string; label: string; download?: string };
 
-// The page title: what this screen is for in one big line, and the one next action on the right.
-// When the line changes after the first paint it fades in, so the change is seen.
-export function Band({ title, lead, action }: { title: string; lead?: string; action?: BandAction }) {
+// The page title after the deck's slide head: the screen's name as a kicker, what this screen is for in one big line,
+// a lead with an ochre bar, and the one next action on the right. When the line changes after the first paint it fades in.
+export function Band({ kicker, title, lead, action }: { kicker?: string; title: string; lead?: string; action?: BandAction }) {
   const [live, setLive] = useState(false);
   useEffect(() => setLive(true), []);
   const flip = live ? "flip" : undefined;
   return (
     <section className="band" aria-labelledby="band-title">
       <div className="band-text" aria-live="polite">
+        {kicker && <p className="kicker">{kicker}</p>}
         <h1 id="band-title">
           <span key={title} className={flip}>
             {title}

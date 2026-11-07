@@ -12,7 +12,8 @@
 
 - Next.js App Router · TypeScript. 화면은 `app/page.tsx`. 데이터는 반드시 서버 라우트 `app/api/data/route.ts` 를 거친다.
 - 처음에는 라우트가 `data/snapshot.json` 을 돌려준다. 실제 API 단계에서 **같은 라우트**가 실제 API를 부른다. 화면 코드는 바꾸지 않는다.
-- `data/snapshot.json` 이 비어 있으면(강사 파일을 아직 못 받았으면) 주제 카드의 "응답에서 쓸 항목" 이름으로 예시 5건을 만들고 `"source": "예시"` 라고 적는다.
+- 주제별 예시 데이터는 `data/01.json` 처럼 카드 번호로 들어 있다. 주제를 고르면 그 파일을 `data/snapshot.json` 으로 복사해 쓴다 (`vibe-plan` 이 한다). 모양은 `{ "source": 출처, "items": [응답 항목 그대로] }` 이고, 실제 API 단계에서도 라우트는 같은 모양으로 돌려준다.
+- 그 번호 파일이 없으면 주제 카드의 "응답에서 쓸 항목" 이름으로 예시 5건을 만들고 `"source": "예시"` 라고 적는다.
 - 배포 지역은 서울(`vercel.json` 의 `icn1`)이다. 바꾸지 않는다.
 
 ## 3. 키와 오류
@@ -26,22 +27,19 @@
 1. `git init` — 이미 저장소면 건너뛴다
 2. `npm.cmd install`
 3. `npm.cmd run build` 로 뼈대가 빌드되는지 확인한다
-4. 3줄로 보고하고 사용자의 주제 번호를 묻는다. 다음은 `/vibe-plan 번호`
+4. 3줄로 보고하고 사용자의 주제 번호를 묻는다. 다음은 `vibe-plan 스킬로 주제 02 시작해줘` (02 = 주제 번호)
 
 ## 5. 명령 (스킬)
 
-- `vibe-plan`(인터뷰 → PRD → PLAN) · `vibe-develop`(한 단계 만들기 · 고치기 · 배포 전 점검) · `vibe-design`(화면 다듬기) 3개가 `.agents/skills/` (Codex · Antigravity) 와 `.claude/skills/` (Claude Code) 에 같은 내용으로 있다. 하나를 고치면 다른 쪽도 똑같이 고친다.
+- `vibe-plan`(인터뷰 → PRD → PLAN) · `vibe-develop`(한 단계 만들기 · 고치기 · 배포 전 점검) · `vibe-design`(화면 다듬기) 3개가 `.agents/skills/` 에 있다. 사용자는 `vibe-plan 스킬로 주제 02 시작해줘` 처럼 부른다.
 - 이 명령들은 `setup.ps1` 이 전역에 설치한 스킬을 불러 쓴다: `think`(sequential-thinking MCP — 범위 · 원인을 단계별로 따질 때), `impeccable`(화면 디자인).
 - **전역 설치** — 사용자가 "vibe 명령을 전역에도 설치해줘" 하면 `.agents/skills/vibe-*` 폴더를 아래 전역 스킬 폴더에 복사한다. `setup.ps1` 이 `think` 를 둔 곳과 같다.
-  - 이 PC에 있는 폴더에만 복사한다 (없는 에이전트 폴더는 만들지 않는다).
   - 같은 이름 폴더가 이미 있으면 덮어쓰기 전에 묻는다.
-  - 끝나면 에이전트를 다시 열라고 안내한다.
+  - 끝나면 Codex를 다시 열라고 안내한다.
 
 | 에이전트 | 전역 스킬 폴더 |
 |---|---|
 | Codex | `~\.agents\skills` |
-| Claude Code | `~\.claude\skills` |
-| Antigravity | `~\.gemini\config\skills` · `~\.gemini\antigravity-cli\skills` |
 
 ## 6. 커밋
 

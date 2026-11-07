@@ -55,7 +55,7 @@ export function MyProject({ me, saved: first, capture: firstCapture }: { me: { n
 
   return (
     <>
-      <Band {...band} />
+      <Band kicker="내 프로젝트" {...band} />
       <div className="content split">
         <form
           className="panel form"
@@ -88,7 +88,7 @@ export function MyProject({ me, saved: first, capture: firstCapture }: { me: { n
           </label>
           <label>
             <span>앱 이름</span>
-            <input value={app} onChange={(e) => setApp(e.target.value)} maxLength={20} placeholder="예: 우산 챙겨?" />
+            <input value={app} onChange={(e) => setApp(e.target.value)} maxLength={20} placeholder="예: 가까운 시험장 찾기" />
             <span className="hint">{app.length} / 20</span>
           </label>
           <label>

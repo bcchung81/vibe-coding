@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main>
       <h1>내 웹앱</h1>
-      <p>에이전트에게 주제 번호와 함께 /vibe-plan 을 부르면 시작합니다.</p>
+      <p>Codex에게 “vibe-plan 스킬로 주제 02 시작해줘”처럼 주제 번호와 함께 말하면 시작합니다.</p>
       {failed ? <p>데이터를 불러오지 못했습니다.</p> : <pre>{data ? JSON.stringify(data, null, 2) : "불러오는 중…"}</pre>}
     </main>
   );

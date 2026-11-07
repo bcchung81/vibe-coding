@@ -39,8 +39,7 @@ create table if not exists pin_failures (
 alter table pin_failures add column if not exists kind text not null default 'course';
 create index if not exists pin_failures_ip_at on pin_failures (ip, at);
 
--- 사전 수요조사 응답: 로그인 없이 허브(/survey/answer)에서 이름 · 이메일을 적고 낸다. 이메일 하나에 하나, 같은 이메일로 다시 내면 바뀐다.
--- 결과 화면에는 집계만, 이름 · 이메일은 관리 화면에만 나간다 (lib/survey.ts)
+-- 사전 수요조사 응답 — 수요조사 기능은 2026-11-07 뺐다. 이미 받은 응답을 지우지 않으려고 표만 남기고, 교육 끝 일괄 삭제(lib/db.ts wipeAll)가 지운다.
 create table if not exists survey_answers (
   email text primary key,               -- 소문자로 맞춰 저장
   name text not null,
@@ -49,3 +48,9 @@ create table if not exists survey_answers (
   at timestamptz not null default now()
 );
 create index if not exists survey_answers_token on survey_answers (token);
+
+-- 교육 안내(/course) 맨 위의 일시 · 장소 · 마감 · 문의. 관리 화면에서 적는다 — 문의처를 공개 저장소에 두지 않으려고 DB에 둔다 (lib/course.ts)
+create table if not exists course_info (
+  id int primary key default 1 check (id = 1),  -- 한 줄만
+  info jsonb not null default '{}'::jsonb       -- {"when": "...", "place": "...", "prepDue": "...", "contact": "..."}
+);

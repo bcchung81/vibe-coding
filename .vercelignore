@@ -3,5 +3,4 @@
 # 시작 폴더(vibe.zip)에 들어가는 빈 예시 파일은 올린다
 !docs/교육생_배포/vibe/.env.example
 .impeccable/
-docs/index.html
 docs/발표자료/

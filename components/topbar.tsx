@@ -6,29 +6,28 @@ import { useTransition } from "react";
 import { adminLogOut, logOut } from "../app/actions";
 import { sessionChanged, useWho, type Who } from "./session";
 
-type Item = { href: string; title: string; match: string; show?: (who: Who) => boolean };
+type Item = { href: string; title: string; match: string | string[]; show?: (who: Who) => boolean };
 
-// In the order trainees use the hub: before the course the survey and the handouts, then the topic,
-// their own site and the gallery on day 1. Everyone answers the survey; the admin goes to its results and gets 관리.
+// In the order trainees use the hub: the course guide before the course,
+// the handouts, the topic, their own site and the gallery on day 1.
 const NAV: Item[] = [
-  { href: "/survey/answer", title: "수요조사", match: "/survey", show: (w) => !w.admin },
-  { href: "/survey", title: "수요조사", match: "/survey", show: (w) => w.admin },
+  { href: "/course", title: "교육 안내", match: "/course" },
   { href: "/materials", title: "자료", match: "/materials" },
   { href: "/topics", title: "웹앱 주제", match: "/topics" },
   { href: "/me", title: "내 프로젝트", match: "/me", show: (w) => Boolean(w.student) },
-  { href: "/", title: "갤러리", match: "/" },
+  { href: "/gallery", title: "갤러리", match: "/gallery" },
   { href: "/admin", title: "관리", match: "/admin", show: (w) => w.admin },
 ];
 
 const GUEST: Who = { student: null, admin: false };
 
-// Dark plum bar; a pale underline marks where you are. Until the session answer comes, it shows what anyone may see.
+// Navy bar; an ochre underline marks where you are. Until the session answer comes, it shows what anyone may see.
 export function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
   const who = useWho();
   const [pending, start] = useTransition();
-  const here = (match: string) => (match === "/" ? pathname === "/" : pathname.startsWith(match));
+  const here = (match: string | string[]) => [match].flat().some((m) => pathname.startsWith(m));
   const items = NAV.filter((item) => !item.show || item.show(who ?? GUEST));
 
   // pages that need the login send the person on after the refresh

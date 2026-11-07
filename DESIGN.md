@@ -1,54 +1,66 @@
 ---
 name: 바이브코딩 중급 운영 허브
-description: 갤러리 우선. 수강생 사이트의 첫 화면이 벽을 채우고, 준비 자료는 그 위 서랍으로 물러서는 교육 운영 허브
+description: 발표자료와 한 벌. 네이비 구조 · 오커 강조 하나 · Pretendard로, 수업 화면에서 본 모양 그대로 교육 안내 · 자료 · 갤러리를 여는 교육 운영 허브
 colors:
-  accent: "#633b86"
-  nav: "#342443"
-  nav-mark: "#dcc5ed"
+  accent: "#8a5617"
+  accent-bar: "#a56921"
+  accent-soft: "#fbf1e3"
+  nav: "#193957"
+  nav-mark: "#f0c38a"
+  on-nav: "#c9d8e5"
   red: "#b3261e"
-  bg: "#eeeaf5"
+  bg: "#e8edf1"
   paper: "#ffffff"
-  soft: "#e5dcef"
-  line: "#cbbfd8"
-  ink: "#30233e"
-  muted: "#65566f"
+  soft: "#edf3f7"
+  line: "#ccd6de"
+  ink: "#193957"
+  ink-2: "#2d5574"
+  text: "#202f3d"
+  muted: "#536675"
 typography:
   display:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "clamp(30px, 3.4vw, 46px)"
-    fontWeight: 900
-    lineHeight: 1.2
-    letterSpacing: "-0.025em"
+    fontWeight: 800
+    lineHeight: 1.22
+    letterSpacing: "-0.03em"
   headline:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "24px"
-    fontWeight: 900
+    fontWeight: 800
     lineHeight: 1.3
     letterSpacing: "-0.025em"
   title:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "21px"
-    fontWeight: 900
+    fontWeight: 800
     lineHeight: 1.3
     letterSpacing: "-0.025em"
   body:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "16px"
     fontWeight: 400
     lineHeight: 1.65
+    letterSpacing: "-0.01em"
     fontFeature: "tnum"
+  lead:
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
+    fontSize: "16px"
+    fontWeight: 600
+    lineHeight: 1.65
   label:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "14px"
     fontWeight: 700
     lineHeight: 1.65
   meta:
-    fontFamily: "Noto Sans KR, sans-serif"
+    fontFamily: "Pretendard Variable, Pretendard, sans-serif"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.65
 rounded:
-  base: "4px"
+  base: "8px"
+  sm: "6px"
   full: "50%"
 spacing:
   xs: "8px"
@@ -63,6 +75,12 @@ components:
     typography: "{typography.body}"
     padding: "0 clamp(18px, 3vw, 36px)"
     height: "72px"
+  kicker:
+    backgroundColor: "#fffaf3"
+    textColor: "{colors.accent}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "1px 12px"
   button-primary:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.paper}"
@@ -80,7 +98,7 @@ components:
   button-ghost-hover:
     backgroundColor: "{colors.soft}"
   button-ghost-done:
-    backgroundColor: "{colors.accent}"
+    backgroundColor: "{colors.ink}"
     textColor: "{colors.paper}"
   button-danger:
     backgroundColor: "{colors.red}"
@@ -96,7 +114,7 @@ components:
     padding: "0 20px"
     height: "44px"
   tab-selected:
-    backgroundColor: "{colors.accent}"
+    backgroundColor: "{colors.ink}"
     textColor: "{colors.paper}"
   like-toggle:
     backgroundColor: "{colors.paper}"
@@ -106,13 +124,13 @@ components:
     padding: "0 12px"
     height: "42px"
   like-toggle-pressed:
-    backgroundColor: "{colors.accent}"
+    backgroundColor: "{colors.ink}"
     textColor: "{colors.paper}"
   status-todo:
     backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.text}"
     typography: "{typography.meta}"
-    rounded: "{rounded.base}"
+    rounded: "{rounded.sm}"
     padding: "2px 9px"
     height: "29px"
   status-done:
@@ -120,26 +138,17 @@ components:
   status-next:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.paper}"
-  now-card:
-    backgroundColor: "{colors.soft}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.base}"
-    padding: "30px 32px"
   panel:
     backgroundColor: "{colors.paper}"
     rounded: "{rounded.base}"
     padding: "26px clamp(18px, 3vw, 28px)"
-  drawer:
-    backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.base}"
-    padding: "18px 24px"
   gallery-shot:
     backgroundColor: "{colors.soft}"
     rounded: "{rounded.base}"
   rank-chip:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.paper}"
+    rounded: "{rounded.sm}"
     padding: "3px 8px"
   topic-card:
     backgroundColor: "{colors.paper}"
@@ -149,7 +158,7 @@ components:
     backgroundColor: "{colors.soft}"
   input-text:
     backgroundColor: "{colors.paper}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.text}"
     typography: "{typography.body}"
     rounded: "{rounded.base}"
     padding: "0 12px"
@@ -160,149 +169,163 @@ components:
 
 ## Overview
 
-**Creative North Star: "갤러리 우선 (The Gallery Wall)"**
+**Creative North Star: "발표자료와 한 벌 (The Report Deck)"**
 
-허브의 첫 화면은 전시 벽이다. 연보라 바닥 위에 수강생 사이트의 첫 화면 캡처가 세 줄로 크게 걸리고, 카드 자체는 테두리도 바탕도 없이 캡처 아래 글 몇 줄로 물러선다. 준비 자료와 웹앱 주제는 벽 위의 접힌 서랍 하나에 들어가고, 접힌 상태에서도 요약 줄이 "다음: ○○" 하나를 말한다. 화면마다 맨 위 큰 제목 한 줄이 이 화면이 무엇을 위한 곳인지 말하고, 오른쪽 보라 버튼 하나가 다음 행동을 맡는다.
+허브는 수업 때 프로젝터에 띄우는 발표자료(`docs/발표자료/발표.html` · `slides.css`)와 같은 옷을 입는다. 수강생이 슬라이드에서 본 네이비 띠 · 오커 꼬리표 · 문장 제목을 허브에서도 그대로 만나서, "지금 보는 화면이 수업의 어디인지"를 따로 배우지 않는다 (2026-11-06, 라벤더 · 자두색 갤러리 우선 방향에서 바꿨다).
 
-재료는 연보라 바닥, 흰 종이, 짙은 자두색 상단 막대, 그리고 보라 강조 하나다. 모서리는 4px로 살짝 무르고, 그림자는 없다. 위계는 한 서체(Noto Sans KR)의 크기와 400 / 700 / 900 굵기, 그리고 바닥 · 종이 · 연보라 면의 단계로 만든다. 상태는 색만이 아니라 글자(완료 · 다음 · 아직)와 선 모양(실선 · 점선 · 채움)으로 읽힌다. 기준 환경은 노트북, 휴대폰은 보조다.
+첫 화면(`/`)은 교육 전까지 교육 안내(`/course`)로 넘긴다. 1일차에는 `next.config.ts` 의 넘기기 한 줄을 바꿔 갤러리(`/gallery`)를 첫 화면으로 되돌린다. 교육 전 할 일은 교육 안내(`/course`) 한 곳에 모은다. 화면마다 맨 위 제목 머리가 이 화면이 무엇을 위한 곳인지 말하고, 오른쪽 오커 버튼 하나가 다음 행동을 맡는다.
+
+재료는 청회색 책상(`bg`), 그 위 흰 종이 패널(1px 선), 네이비 잉크와 상단 띠, 그리고 오커 강조 하나다. 모서리는 8px(작은 칩 6px), 그림자는 없다. 위계는 한 서체(Pretendard)의 크기와 굵기, 네이비 제목 · 본문 잉크 · 흐린 잉크의 세 단계로 만든다. 상태는 색만이 아니라 글자(완료 · 다음 · 아직)와 선 모양(실선 · 점선 · 채움)으로 읽힌다. 기준 환경은 노트북, 휴대폰은 보조다.
 
 움직임은 PRODUCT.md의 "누르면 바로 보인다"를 맡는다. 제목이 바뀌면 살짝 내려앉고, 좋아요를 누르면 하트가 튀고 숫자가 올라가며 카드가 새 순위 자리로 미끄러진다. 동작 줄이기 설정에서는 이동이 빠지고 짧은 페이드만 남는다.
 
 **Key Characteristics:**
-- 갤러리가 첫 화면: 3열 벽, 16:10 큰 첫 화면 캡처, 카드는 캡처 + 글뿐
-- 준비는 벽 위 접히는 서랍 하나, 요약 줄에 다음 할 일 하나
-- 화면마다 큰 제목 한 줄과 보라 주 버튼 하나
-- 72px 자두색 상단 막대, 현재 위치는 연보라 3px 밑줄
-- 보라 하나가 "누름 · 선택 · 다음 · 지금"을 맡는다
-- 4px 모서리, 그림자 없음, 1px 선
-- 상태는 완료 · 다음 · 아직 글자 칩과 실선 · 점선 · 채움으로
+- 발표자료의 슬라이드 머리를 그대로: 오커 꼬리표(화면 이름) → 네이비 문장 제목 → 오커 막대가 붙은 리드 → 1px 가는 선
+- 72px 네이비 상단 띠, 현재 위치는 밝은 오커 3px 밑줄
+- 네이비 = 구조와 고른 것, 오커 = 지금 위치와 다음 할 일
+- 흰 종이 패널에 1px 선, 8px 모서리, 그림자 없음
+- 표는 위 2px 네이비 선과 옅은 머리 칸 (발표자료의 말하기 표)
+- 교육 전 첫 화면은 교육 안내, 1일차부터 갤러리
 
 ## Colors
 
-연보라 바닥과 흰 종이 위에 자두색 막대와 보라 강조 하나. 모든 중립색이 같은 보라 기운을 띤다.
+청회색 책상 위 흰 종이, 네이비 잉크와 띠, 오커 강조 하나. 발표자료 `slides.css` 의 값을 그대로 가져왔다.
 
 ### Primary
-- **자두 보라 (Plum Accent)** (`accent`): 행동과 현재 상태 전용. 주 버튼, 선택된 정렬 탭, 누른 좋아요 · 고른 주제 버튼, "다음" 상태 칩, 추천 1·2·3 칩, 끝난 동작(복사함) 반전, focus 테두리, 텍스트 선택색, 문서 목차의 현재 항목과 점, 읽기 진행 막대, 인용 왼쪽 선, 단계 번호, 통과 힌트, 서랍 펼침 표시, 고른 주제 카드의 2px 테두리.
+- **오커 (Ochre)** (`accent` #8a5617): 지금 · 다음 전용. 주 버튼, "다음" 상태 칩, 추천 1·2·3 칩, focus 테두리, 입력칸 focus 테두리, 문서 목차의 현재 항목과 점, 통과 힌트, 꼬리표 글자, 로그인 "지금" 단계 글자, 명단 "새로" · "확인" 표시. 흰 글자와 6.1:1.
+- **오커 막대 (Ochre Bar)** (`accent-bar` #a56921): 발표자료 원래 오커. 글자가 아닌 선 · 막대에만 — 리드 왼쪽 4px 막대, 꼬리표 테두리, 읽기 진행 막대, 인용 왼쪽 선, 로그인 "지금" 단계 테두리. 책상 위 3.8:1이라 글자에 쓰지 않는다.
+- **연한 오커 (Ochre Soft)** (`accent-soft`): 인용 바탕, 로그인 "지금" 단계 칸, 명단 "새로" 칩 바탕.
 
 ### Secondary
-- **밤 자두 (Night Plum)** (`nav`): 상단 막대 바탕, 캡처 중 칸의 바탕.
-- **연보라 표시 (Pale Mark)** (`nav-mark`): 자두색 면 위에서만. 현재 메뉴 3px 밑줄, 로그인 칸의 현재 테두리, 막대 안 focus 테두리, 캡처 중 훑는 선.
+- **네이비 (Navy)** (`ink` · `nav` #193957): 상단 띠, 제목 글자, 표 위 2px 선, 그리고 "고른 것"의 채움 — 선택된 탭, 누른 좋아요 · 고르기, 체크한 선택지의 표시 칸, 끝난 동작(복사함) 반전, 고른 주제 카드의 2px 테두리, 캡처 중 칸 바탕.
+- **둘째 네이비 (Navy 2)** (`ink-2` #2d5574): 로그인 "끝낸" 단계 칸, 스크롤 막대.
+- **밝은 오커 (Light Ochre)** (`nav-mark` #f0c38a): 네이비 위에서만. 현재 메뉴 3px 밑줄, 로그인 칸의 현재 테두리, 띠 안 focus 테두리, 캡처 중 훑는 선. 네이비 위 7.3:1.
+- **띠 위 흐린 글자 (On Navy)** (`on-nav` #c9d8e5): 띠 안 이름 옆 팀명.
 
 ### Tertiary
-- **오류 빨강 (Error Red)** (`red`): 잘못된 입력칸 테두리, 오류 힌트, 명단의 중복 이름, "모두 삭제" 버튼. 그 밖에는 쓰지 않는다.
+- **오류 빨강 (Error Red)** (`red`): 잘못된 입력칸 테두리, 오류 힌트, 명단의 중복 이름, "모두 지우기" 버튼. 그 밖에는 쓰지 않는다.
 
 ### Neutral
-- **연보라 바닥 (Lavender Ground)** (`bg`): 페이지 바닥, 펼친 서랍 안쪽, 코드 블록 바탕.
-- **종이 (Paper)** (`paper`): 패널 · 서랍 · 문서 본문 · 주제 카드 · 입력칸 · 고스트 버튼 바탕, 보라 · 자두 위 글자.
-- **연보라 면 (Soft Lilac)** (`soft`): "지금 할 일" 카드, 캡처 칸의 빈 바탕, 버튼 hover, "완료" 칩, 고른 주제 카드, 표 머리 · 인라인 코드 · 인용 바탕.
-- **선 (Line)** (`line`): 1px 테두리와 구분선. 고스트 · 탭 · 좋아요 · 입력칸 테두리, 자료 행 사이 선, 서랍 테두리, 표 칸 선. 장식이 아니라 경계를 보여 주는 선이다.
-- **잉크 (Ink)** (`ink`): 본문과 제목 글자, 관리 표 머리 아래 2px 선.
-- **흐린 잉크 (Muted Ink)** (`muted`): 설명 · 보조 줄 · 카드 주소 · 목차 · 힌트 · placeholder, "아직" 칩과 빈 캡처 칸 · 비활성 버튼의 점선. 바닥 · 종이 · 연보라 면 위 모두 4.5:1 이상.
+- **책상 (Desk)** (`bg` #e8edf1): 페이지 바닥.
+- **종이 (Paper)** (`paper`): 패널 · 문서 본문 · 주제 카드 · 입력칸 · 고스트 버튼 바탕, 네이비 · 오커 위 글자.
+- **옅은 면 (Pale)** (`soft` #edf3f7): 표 머리 칸, 인라인 코드 · 코드 블록, 버튼 hover, "완료" 칩, 체크한 선택지 · 고른 주제 카드 바탕, 캡처 칸의 빈 바탕, 주관식 답 목록.
+- **선 (Line)** (`line` #ccd6de): 패널 · 버튼 · 입력칸 1px 테두리, 제목 머리 아래 가는 선, 자료 행 · 표 칸 사이 선, 문서 소제목 위 선.
+- **본문 잉크 (Text)** (`text` #202f3d): 본문 · 리드 · 입력값.
+- **흐린 잉크 (Muted Ink)** (`muted` #536675): 설명 · 보조 줄 · 카드 주소 · 목차 · 힌트 · placeholder · 표 머리 글자, "아직" 칩과 빈 캡처 칸 · 비활성 버튼의 점선. 책상 · 종이 · 옅은 면 위 모두 5:1 이상.
 
 ### Named Rules
-**The One Plum Rule.** 보라는 "누른 것 · 고른 것 · 다음 것 · 지금 위치"에만 쓴다. 보라 면은 주 버튼, 눌린 버튼 · 탭, "다음" 칩, 추천 칩뿐이고 구역 바탕이나 장식으로 깔지 않는다.
+**The Navy-Chosen, Ochre-Next Rule.** 네이비는 구조와 "이미 고른 것", 오커는 "지금 위치와 다음 할 일"이다. 오커 면은 주 버튼, "다음" 칩, 추천 칩뿐이고 구역 바탕이나 장식으로 깔지 않는다 (발표자료의 `.cur` · `.now` 와 같은 뜻).
 
-**The Plum Bar Rule.** 연보라 표시(`nav-mark`)는 자두색 막대 · 캡처 중 칸 위에서만 쓴다. 밝은 면 위의 현재 표시는 보라(`accent`)다.
+**The Text-Safe Ochre Rule.** 글자 오커는 `accent`(#8a5617)만 쓴다. 발표자료 원래 오커(`accent-bar`)는 막대 · 선 · 차트 막대에만 쓴다.
+
+**The Navy Band Rule.** 밝은 오커(`nav-mark`)와 띠 위 흐린 글자(`on-nav`)는 네이비 면 위에서만 쓴다.
 
 ## Typography
 
-**Display Font:** Noto Sans KR (with sans-serif)
-**Body Font:** Noto Sans KR (with sans-serif)
+**Display Font:** Pretendard Variable (OFL, npm `pretendard` 1.3.9 의 dynamic subset — 화면에 쓰인 한글 구역만 내려받는다)
+**Body Font:** Pretendard Variable
 
-**Character:** 한 서체, 세 굵기(400 / 700 / 900). 큰 제목 한 줄이 화면의 목적을 말하고, 나머지는 굵기로 정리한다. 숫자는 `tabular-nums`, 한글은 `word-break: keep-all`, 제목은 `text-wrap: balance`.
+**Character:** 발표자료와 같은 서체. 제목은 800에 자간 -0.03em, 리드는 600, 본문은 400에 자간 -0.01em. 숫자는 `tabular-nums`, 한글은 `word-break: keep-all`, 제목은 `text-wrap: balance`.
 
 ### Hierarchy
 | 역할 | 토큰 | 쓰는 곳 |
 |---|---|---|
-| Display | `display` | 화면 맨 위 제목 한 줄 하나 |
-| Headline | `headline` | 패널 · 단계 · 시작 폴더 구역 제목 |
-| Title | `title` | 갤러리 카드 앱 이름, 주제 카드 이름 |
-| Body | `body` | 본문 · 입력값 · 주 버튼(700) · 상단 막대 메뉴(700). 문서 본문은 줄 간격 1.75 |
-| Label | `label` | 고스트 · 좋아요 · 고르기 버튼, 입력 레이블, 표, 목차, 카드 아래 이름 · 팀 |
-| Meta | `meta` | 상태 칩, 힌트, 카드 주소, 예시 안내 줄, 관리 칩 |
+| Display | `display` | 화면 맨 위 제목 한 줄 하나 (네이비) |
+| Headline | `headline` | 패널 · 단계 · 시작 폴더 구역 제목 (네이비) |
+| Title | `title` | 갤러리 카드 앱 이름, 주제 카드 이름 (네이비) |
+| Lead | `lead` | 제목 아래 오커 막대가 붙은 한 줄 |
+| Body | `body` | 본문 · 입력값 · 주 버튼(700) · 상단 띠 메뉴(700). 문서 본문은 줄 간격 1.75 |
+| Label | `label` | 꼬리표, 고스트 · 좋아요 · 고르기 버튼, 입력 레이블, 표, 목차, 카드 아래 이름 · 팀 |
+| Meta | `meta` | 상태 칩, 힌트, 카드 주소, 표 머리, 관리 칩 |
 
-상단 막대 과정명은 20px/900. 갤러리 카드의 첫 화면은 서버가 찍은 수강생 사이트 이미지(`.shot-img`)라 그 안의 글자 · 색은 UI 단계가 아니다.
+상단 띠 과정명은 20px/900. 자료 단계 번호는 30px/800 네이비(발표자료의 단계 숫자). 갤러리 카드의 첫 화면은 서버가 찍은 수강생 사이트 이미지(`.shot-img`)라 그 안의 글자 · 색은 UI 단계가 아니다. 캡처 서버의 한글 글꼴(`fonts/` Noto Sans KR)은 수강생 사이트를 찍을 때만 쓰며 허브 UI와 무관하다.
 
 ### Named Rules
-**The One Family Rule.** 허브 UI는 Noto Sans KR 하나, 400 / 700 / 900만 쓴다. 새 화면은 위 여섯 단계 안에서 크기를 고른다.
+**The One Family Rule.** 허브 UI는 Pretendard 하나만 쓴다. 굵기는 400 · 600(리드) · 700 · 800(제목) · 900(과정명)만. 새 화면은 위 단계 안에서 크기를 고른다.
 
 ## Layout
 
-- **뼈대:** 72px 자두색 상단 막대 → 큰 제목 줄(위 36px) → 콘텐츠. 콘텐츠는 왼쪽 정렬, 최대 폭 1440px, 좌우 `gutter`, 아래 64px, 구역 사이 24px.
-- **제목 줄:** 왼쪽 제목과 보조 한 줄(최대 72ch), 오른쪽 주 버튼, 아래쪽 정렬. 좁으면 버튼이 아래로 내려간다.
-- **홈 (`/`):** 접힌 준비 서랍 → 정렬 탭과 개수 줄 → 갤러리 벽. 벽은 3열(간격 32px 30px), 1100px 이하 2열, 640px 이하 1열. `/gallery` 는 `/` 로 넘긴다.
-- **자료 (`/materials`):** "지금 할 일" 카드 하나 → 단계 패널. 자료 행은 `84px | 1fr | auto` (상태 칩 · 제목과 파일명 · 버튼), 위 1px 선, 위아래 16px.
-- **웹앱 주제:** 주제 카드 5열(간격 14px), 1180px 이하 3열, 760px 이하 1열. 아래 시작 폴더 패널은 세 단계를 `2fr 1fr 1fr` 로 나란히, 1000px 이하 세로로.
-- **문서 보기:** 왼쪽 220px 고정 목차 + 본문, 간격 32px. 1000px 이하 목차를 숨긴다.
+- **뼈대:** 72px 네이비 상단 띠 → 제목 머리(위 36px, 아래 1px 가는 선) → 콘텐츠. 콘텐츠는 왼쪽 정렬, 최대 폭 1440px, 좌우 `gutter`, 아래 64px, 구역 사이 24px.
+- **제목 머리:** 꼬리표(있으면) → 제목 → 리드(최대 72ch, 왼쪽 4px 오커 막대), 오른쪽 주 버튼, 아래쪽 정렬. 좁으면 버튼이 아래로 내려간다. 꼬리표는 제목이 상태 문장일 때 화면 이름을 붙인다 — 갤러리 · 웹앱 주제(03) · 자료 · 내 프로젝트 · 로그인 · 관리. 제목이 곧 화면 이름이면(교육 안내 · 교육 자료) 꼬리표를 붙이지 않는다.
+- **첫 화면 (`/`):** 교육 전까지 `/course` 로 넘긴다(`next.config.ts`). 1일차에 갤러리로 되돌린다.
+- **갤러리 (`/gallery`):** 정렬 탭과 개수 줄 → 갤러리 벽. 3열(간격 32px 30px), 1100px 이하 2열, 640px 이하 1열. 올린 사이트가 없으면 맨 위 버튼이 교육 안내로 간다.
+- **자료 (`/materials`):** 단계 패널. 자료 행은 `84px | 1fr | auto` (상태 칩 · 제목과 파일명 · 버튼), 위 1px 선, 위아래 16px.
+- **웹앱 주제:** 주제 카드 4열(간격 20px), 1180px 이하 3열, 940px 이하 2열, 760px 이하 1열. 아래 시작 폴더 패널은 세 단계를 `2fr 1fr 1fr` 로 나란히, 1000px 이하 세로로.
+- **교육 안내·자료:** 넓은 화면에서 일정 정보와 준비 목록을 나란히 둔다(1000px 이하 세로). 자료 화면은 최대 1200px로 모은다. 준비 완료 막대는 상태가 바뀔 때 400ms로 채우고, 동작 줄이기 설정에서는 즉시 반영한다.
+- **문서 보기:** 왼쪽 220px 고정 목차 + 본문 종이, 간격 32px. 소제목 위 1px 선. 1000px 이하 목차를 숨긴다.
 - **두 열 작업:** `repeat(auto-fit, minmax(min(340px, 100%), 1fr))`, 간격 24px (내 프로젝트 · 관리).
 - **간격 리듬:** 8 / 16 / 24 / 32px.
-- **휴대폰 (≤760px):** 상단 막대 메뉴가 둘째 줄 전체 폭 4칸(48px)으로 내려간다. 자료 행은 버튼이 제목 아래로.
-
-**The Wall First Rule.** 홈에서 갤러리 벽 위에 놓이는 것은 제목 줄과 접힌 서랍 하나뿐이다. 준비 내용은 펼치기 전에는 한 줄이다.
+- **휴대폰 (≤760px):** 상단 띠 메뉴가 둘째 줄 전체 폭 칸(48px)으로 내려간다. 자료 행은 버튼이 제목 아래로.
 
 ## Elevation & Depth
 
-그림자는 없다. 깊이는 면의 단계로 만든다: 연보라 바닥 → 흰 종이(패널 · 서랍 · 주제 카드) → 연보라 면("지금 할 일" · 고른 주제). 갤러리 카드는 종이조차 없이 캡처가 바닥 위에 바로 놓인다. 펼친 서랍 안쪽은 다시 바닥색이라 "한 단계 안"으로 읽힌다.
+그림자는 없다. 깊이는 면과 선으로 만든다: 청회색 책상 → 1px 선을 두른 흰 종이(패널 · 문서 · 주제 카드) → 옅은 면(표 머리 · 고른 것). 갤러리 카드는 종이 없이 캡처가 책상 위에 바로 놓인다.
 
 ### Named Rules
-**The Flat Wall Rule.** 허브 UI에 그림자를 넣지 않는다. 떠 보여야 할 것은 면 색 단계와 1px 선으로 구분한다.
+**The Flat Sheet Rule.** 허브 UI에 그림자를 넣지 않는다. 떠 보여야 할 것은 면 색 단계와 1px 선으로 구분한다.
 
 ## Shapes
 
-모서리는 4px(`rounded.base`) 하나로 통일한다: 버튼 · 칩 · 입력 · 패널 · 서랍 · 캡처 칸 · 주제 카드. 원(`rounded.full`)은 작은 상태 표시에만 쓴다 — 로그인 단계 28px 칸, 목차 현재 점 8px. 선은 1px(`line`)이 기본이고, 고른 주제 카드와 "지금" 단계 칸만 2px 보라. 점선은 "아직 · 비어 있음 · 비활성"의 모양이다. 픽토그램은 24 그리드, `stroke-width: 2.6`, `stroke-linecap: square`의 SVG로 버튼 글자 옆에 둔다.
+모서리는 8px(`rounded.base`): 버튼 · 입력 · 패널 · 문서 · 캡처 칸 · 주제 카드 · 코드 블록. 작은 칩은 6px(`rounded.sm`): 꼬리표 · 상태 칩 · 관리 칩 · 추천 칩 · 체크 칸. 원(`rounded.full`)은 작은 상태 표시에만 — 로그인 단계 28px 칸, 목차 현재 점 8px, 라디오 표시. 선은 1px(`line`)이 기본이고, 표 위 · 제출 줄 위와 고른 주제 카드만 2px 네이비. 점선은 "아직 · 비어 있음 · 비활성"의 모양이다. 픽토그램은 24 그리드, `stroke-width: 2.6`, `stroke-linecap: square`의 SVG로 버튼 글자 옆에 둔다.
 
 ## Components
 
+### Page head
+- **Kicker (`kicker`):** 1.5px 오커 막대색 테두리, 따뜻한 흰 바탕(#fffaf3), 오커 14px/700, 6px 모서리. 화면 이름 하나.
+- **Title:** `display`, 네이비 800.
+- **Lead:** 600, 본문 잉크, 왼쪽 4px 오커 막대(위아래 4px 띄움).
+- **Rule:** 제목 머리 아래 전체 폭 1px 선.
+
 ### Buttons
-- **Primary (`button-primary`):** 보라 채움 흰 글자 16px/700, 46px, 화살표 · 내려받기 픽토그램. 화면당 하나, 제목 줄 오른쪽. hover는 `brightness(1.12)`. 폼 안에서는 왼쪽 정렬.
-- **Ghost (`button-ghost`):** 종이 바탕 1px 선 테두리 42px. hover는 연보라 면 + 보라 테두리, 끝난 동작(복사함)은 보라 반전. "지금 할 일" 카드 안에서는 16px · 46px로 커지고 테두리를 숨긴다.
-- **Pick (주제 고르기):** 고스트와 같은 모양, 누르면 보라 반전 + 하트 튐.
+- **Primary (`button-primary`):** 오커 채움 흰 글자 16px/700, 46px, 화살표 · 내려받기 픽토그램. 화면당 하나, 제목 머리 오른쪽. hover는 `brightness(1.12)`. 폼 안에서는 왼쪽 정렬.
+- **Ghost (`button-ghost`):** 종이 바탕 1px 선 테두리 42px, 네이비 글자. hover는 옅은 면 + 네이비 테두리, 끝난 동작(복사함)은 네이비 반전.
+- **Pick (주제 고르기):** 고스트와 같은 모양, 누르면 네이비 반전 + 하트 튐.
 - **Text button:** 테두리 없는 밑줄 14px/700. 작은 되돌리기.
 - **Danger (`button-danger`):** 빨강 채움 흰 글자 44px. "삭제"를 직접 입력해야 켜진다.
 - **Disabled:** 투명 바탕, 흐린 잉크, 점선 테두리, `not-allowed`. 주 · 좋아요 · 삭제 버튼 같은 모양.
-- **Focus:** `outline: 3px solid` 보라, offset 3px. 상단 막대 안에서는 연보라 표시. 입력칸은 offset 0 + 보라 테두리.
+- **Focus:** `outline: 3px solid` 오커, offset 3px. 상단 띠 안에서는 밝은 오커. 입력칸은 offset 0 + 오커 테두리.
 
 ### Chips
 | 상태 | 자료 행 상태 칩 | 관리 칩 | 로그인 단계 칸 |
 |---|---|---|---|
-| 완료 · 고름 · 올림 | 연보라 면 + 1px 선 실선 (`status-done`) | 연보라 면 (`chip.done`) | 보라 채움 + 체크 |
-| 다음 · 지금 | 보라 채움 흰 글자 700 (`status-next`) | — | 연보라 면 + 2px 보라 |
+| 완료 · 고름 · 올림 | 옅은 면 + 1px 선 실선 (`status-done`) | 옅은 면 네이비 글자 (`chip.done`) | 둘째 네이비 채움 + 체크 |
+| 다음 · 지금 | 오커 채움 흰 글자 700 (`status-next`) | — | 연한 오커 + 2px 오커 막대색 |
 | 아직 | 투명 + 1px 흐린 점선 (`status-todo`) | 종이 + 안쪽 1px 점선 | 종이 + 점선, 흐린 글자 |
-| 추천 순위 | — | 보라 채움 "추천 1·2·3" (`rank-chip`), 앱 이름 앞 | — |
+| 추천 순위 | — | 오커 채움 "추천 1·2·3" (`rank-chip`), 앱 이름 앞 | — |
 
 **The Say-It Rule.** 상태는 색을 빼도 읽혀야 한다. 칩에는 항상 낱말(완료 · 다음 · 아직 · 고름)을 쓰고, 채움 · 실선 · 점선으로 모양도 다르게 한다.
 
 ### Cards / Containers
-- **Gallery card (서명):** 위 16:10 캡처 칸(4px, 빈 바탕은 연보라 면), 아래 16px 띄워 추천 칩 + 앱 이름(`title`), 한 줄 소개(흐린 잉크), 주소(`meta`), 이름 · 팀과 좋아요 버튼. 카드에 바탕 · 테두리는 없다. 캡처 hover 1.03배. 찍는 중이면 자두색 칸 + 흰 글 + 훑는 선, 주소가 없으면 종이 위 흐린 점선 칸. 예시 캡처에는 "예시 화면"을 늘 표시한다.
-- **Like toggle (`like-toggle`):** 종이 1px 선 42px, 하트 + 숫자. 누르면 보라 반전 + 채운 하트. 내 카드이거나 누를 수 없을 때는 점선 비활성.
-- **Panel (`panel`):** 종이, 4px, 안 간격 16px.
-- **Drawer (`drawer`):** 종이 + 1px 선. 요약 줄은 700 굵기 한 줄 + "다음: ○○" 흐린 글자, 보라 펼침 표시. 펼치면 선 아래 바닥색 안쪽(24px)에 "지금 할 일"과 단계 패널.
-- **Now card (`now-card`):** 연보라 면, 할 일 제목(30px/900, 휴대폰 24px)과 보조 줄, 오른쪽 큰 고스트 버튼 하나. 화면에 하나.
-- **Topic card (`topic-card`):** 종이 1px 선, 최소 250px, 위 번호와 데이터 출처, 이름(`title`), 설명, 아래 고르기 · 보기 버튼. 고른 카드는 2px 보라 테두리 + 연보라 면.
+- **Gallery card (서명):** 위 16:10 캡처 칸(8px, 빈 바탕은 옅은 면), 아래 16px 띄워 추천 칩 + 앱 이름(`title`), 한 줄 소개(흐린 잉크), 주소(`meta`), 이름 · 팀과 좋아요 버튼. 카드에 바탕 · 테두리는 없다. 캡처 hover 1.03배. 찍는 중이면 네이비 칸 + 흰 글 + 밝은 오커 훑는 선, 주소가 없으면 종이 위 흐린 점선 칸. 예시 캡처에는 "예시 화면"을 늘 표시한다.
+- **Like toggle (`like-toggle`):** 종이 1px 선 42px, 하트 + 숫자. 누르면 네이비 반전 + 채운 하트. 내 카드이거나 누를 수 없을 때는 점선 비활성.
+- **Panel (`panel`):** 종이, 1px 선, 8px, 안 간격 16px.
+- **Topic card (`topic-card`):** 종이 1px 선, 최소 250px, 위 번호와 데이터 출처, 이름(`title`), 설명, 아래 고르기 · 보기 버튼. 고른 카드는 2px 네이비 테두리 + 옅은 면.
+- **Table:** 위 2px 네이비 선, 머리 칸은 옅은 면 · 흐린 잉크 13px, 칸 사이 1px 선. 문서 안 표도 같다.
 
 ### Inputs / Fields
-- **Style:** 종이, 1px 선, 46px, 4px. 레이블 위 14px/700, 힌트 아래 13px.
-- **Error:** 빨강 테두리 + 빨강 700 힌트. 통과는 보라 700 힌트.
-- **PIN:** 56×64px 칸, 28px/900 숫자, 비어 있으면 점선.
-- **Name picker:** 1px 선 44px 칸 격자, hover에서 보라 테두리 + 연보라 면.
+- **Style:** 종이, 1px 선, 46px, 8px. 레이블 위 14px/700, 힌트 아래 13px.
+- **Choice:** 1px 선 48px 칸. hover · 체크는 네이비 테두리 + 옅은 면, 체크 표시 칸은 네이비 채움.
+- **Error:** 빨강 테두리 + 빨강 700 힌트. 통과는 오커 700 힌트.
+- **PIN:** 56×64px 칸, 28px/800 네이비 숫자, 비어 있으면 점선.
+- **Name picker:** 1px 선 44px 칸 격자, hover에서 네이비 테두리 + 옅은 면.
 
 ### Navigation
-- **Top bar (`top-bar`):** 72px 자두색. 왼쪽 흰 과정명 20px/900, 메뉴 순서 갤러리 · 자료 · 웹앱 주제 · 내 프로젝트(16px/700 흰 글자), 현재 메뉴만 3px 연보라 밑줄. 오른쪽 "관리"와 반투명 흰 테두리 로그인 칸. 휴대폰에서 메뉴는 둘째 줄 4칸.
-- **Sort tabs (`tab`):** 4px 띄운 분리 버튼 44px, 선택은 보라 채움.
-- **Table of contents:** 14px 흐린 글자, 현재 항목은 보라 700 + 앞 8px 보라 점. 문서 위 3px 보라 읽기 진행 막대.
+- **Top bar (`top-bar`):** 72px 네이비. 왼쪽 흰 과정명 20px/900, 메뉴 순서 교육 안내 · 자료 · 웹앱 주제 · 내 프로젝트(로그인 시) · 갤러리 · 관리(관리자) (16px/700 흰 글자), 현재 메뉴만 3px 밝은 오커 밑줄. 오른쪽 반투명 흰 테두리 로그인 칸. 휴대폰에서 메뉴는 둘째 줄.
+- **Sort tabs (`tab`):** 4px 띄운 분리 버튼 44px, 선택은 네이비 채움.
+- **Table of contents:** 14px 흐린 글자, 현재 항목은 오커 700 + 앞 8px 오커 점. 문서 위 3px 오커 막대색 읽기 진행 막대.
 
 ### Motion
 움직임은 "방금 바뀌었다"는 설명에만 쓴다. 기본 곡선 `cubic-bezier(0.16, 1, 0.3, 1)`.
 
 | 움직임 | 어디 | 값 |
 |---|---|---|
-| 제목 페이드 | 첫 그리기 뒤 제목 · 보조 줄이 바뀌면 6px 위에서 내려앉으며 나타남 | 360ms |
+| 제목 페이드 | 첫 그리기 뒤 제목 · 리드가 바뀌면 6px 위에서 내려앉으며 나타남 | 360ms |
 | 순위 이동 | 정렬 · 좋아요 뒤 카드가 새 자리로 (View Transitions, 카드마다 이름) | 380ms |
 | 숫자 올림 | 좋아요 숫자가 아래에서 올라옴 (첫 그리기 제외) | 280ms |
 | 하트 튐 | 좋아요 · 주제 고르기를 누르면 하트 1.25배 | 260ms |
-| 훑는 선 | 캡처 중 칸을 연보라 3px 선이 반복해 내려감 | 1.3s, `cubic-bezier(0.45, 0, 0.55, 1)` |
+| 훑는 선 | 캡처 중 칸을 밝은 오커 3px 선이 반복해 내려감 | 1.3s, `cubic-bezier(0.45, 0, 0.55, 1)` |
 | 현상 | 캡처 미리보기가 위에서 아래로 드러남 | 640ms |
-| 읽기 진행 | 문서 위 3px 보라 막대 | 80ms linear |
+| 읽기 진행 | 문서 위 3px 오커 막대 | 80ms linear |
 | 상태 전환 | 버튼 · 탭 hover 150ms, 메뉴 밑줄 · 목차 점 200ms, 칩 · 주제 카드 220ms, 캡처 확대 300ms | — |
 
 **The Changed-Just-Now Rule.** 움직임은 할 일 · 숫자 · 순서 · 진행이 바뀐 순간에만 돈다. 들어올 때 장식으로 움직이는 요소는 없다. `prefers-reduced-motion`에서는 제목 160ms · 현상 200ms linear 페이드만 남고, 순위 이동 · 숫자 · 하트 · 훑는 선 · 캡처 확대 · 칩 전환 · 진행 막대 전환은 돌지 않는다.
@@ -310,20 +333,19 @@ components:
 ## Do's and Don'ts
 
 ### Do:
-- **Do** 홈에서는 갤러리 벽을 첫 화면 주인공으로 두고, 준비는 접힌 서랍 한 줄로 둔다.
-- **Do** 화면마다 큰 제목 한 줄과 보라 주 버튼 하나를 둔다.
-- **Do** 보라는 누름 · 선택 · 다음 · 지금에만 쓴다.
+- **Do** 새 색 · 모양은 발표자료 `slides.css` 에서 먼저 찾아 같은 값을 쓴다.
+- **Do** 화면마다 제목 머리(꼬리표 · 문장 제목 · 오커 막대 리드)와 오커 주 버튼 하나를 둔다.
+- **Do** 고른 것은 네이비, 지금 · 다음은 오커로 칠한다.
 - **Do** 상태 칩에 낱말을 쓰고 실선 · 점선 · 채움으로도 구분한다.
-- **Do** 모서리는 4px, 원은 작은 상태 표시에만 쓴다.
 - **Do** 새 움직임은 상태 변화에만 붙이고 reduced-motion 대안을 함께 둔다.
 - **Do** 예시 데이터에는 "예시" · "예시 화면" 표시를 화면 안에 남긴다 (휴대폰 포함).
 
 ### Don't:
 - **Don't** 갤러리 카드에 바탕 · 테두리 · 그림자를 둘러 캡처보다 카드가 보이게 하지 않는다.
-- **Don't** 보라를 구역 바탕이나 장식 강조로 깔지 않는다.
+- **Don't** 오커를 구역 바탕이나 장식으로 깔지 않는다. 오커 막대색(#a56921)을 글자에 쓰지 않는다.
 - **Don't** 빨강을 오류 · 되돌릴 수 없는 삭제 밖에서 쓰지 않는다.
 - **Don't** 패널 · 카드에 그림자를 넣지 않는다.
-- **Don't** 제목 위에 작은 머리글(kicker · eyebrow)을 얹지 않는다.
-- **Don't** Noto Sans KR 밖의 서체나 500 · 600 굵기를 허브 UI에 쓰지 않는다.
+- **Don't** 꼬리표를 한 화면에 둘 이상 두거나 장식 문구로 쓰지 않는다. 화면 이름 하나만.
+- **Don't** Pretendard 밖의 서체를 허브 UI에 쓰지 않는다.
 
 `docs/교육생_배포/vibe/` 는 수강생이 내려받는 시작 프로젝트(별도 Next.js 뼈대)로, 이 디자인 시스템 밖이다. 여기 규칙을 거기에 적용하지 않는다.

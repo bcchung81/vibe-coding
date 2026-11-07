@@ -29,13 +29,14 @@ export default async function MaterialPage({ params }: { params: Promise<Params>
   return (
     <>
       <Band
+        kicker="자료"
         title={item.kind === "doc" ? item.title : `다음: ${item.short} 내려받기`}
         lead={`${item.stage} · ${item.stageTitle} · ${item.name}`}
         action={item.kind === "file" ? { href: download, label: "내려받기", download: item.name } : undefined}
       />
       <div className="content wide">
         <div className="tools">
-          <Link className="ghost" href="/">
+          <Link className="ghost" href="/materials">
             ← 자료 목록
           </Link>
           {item.kind === "doc" && (

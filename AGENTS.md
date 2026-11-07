@@ -11,7 +11,7 @@
 | 위치 | 내용 | 기준 |
 |---|---|---|
 | `README.md` (root) · `docs/00_전체목차.md` · `docs/01_1일차_계획.md` · `docs/02_2일차_계획.md` · `docs/03_추천_명령어_스킬.md` · `docs/04_교육운영_웹앱_기획.md` | 과정 안내 · 목차 · 일차별 계획 · 추천 명령/스킬 · 웹앱 기획 | 비개발자용 쉬운 한국어 |
-| `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (`00_사전안내.md` · `setup.ps1` · `00_환경설정.md` · `AGENTS.global.md` · `00_보고서도구.md`). 번호 없는 `웹앱_주제/` 는 주제 카드 10개로 `/topics` 가 읽고, `vibe/` 는 시작 폴더 원본으로 `/vibe.zip` 이 주제 카드와 함께 묶는다(명령은 `.agents/skills` 에만 쓰면 `.claude/skills` 복사본은 ZIP이 만든다) | **Windows 11 · PowerShell** |
+| `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (교육 전 `00_사전안내.md` · `setup.ps1` · `AGENTS.global.md`, 교육 당일 `00_환경설정.md` — 1 · 2일차 구분 없음). 번호 없는 `웹앱_주제/` 는 주제 카드 3개(기관 데이터)로 `/topics` 가 읽고, `vibe/` 는 1일차 시작 폴더 원본으로 `/vibe.zip` 이 주제 카드와 함께 묶고, `deck/` 은 2일차 덱 시작 폴더 원본으로 `/deck.zip` 이 묶는다(명령은 `.agents/skills` 에 쓴다 — 수강생 코드 에이전트는 Codex CLI 하나다) | **Windows 11 · PowerShell** |
 | `package.json` · `tsconfig.json` · `vercel.json` | 교육 운영 허브 웹앱 — Next.js 16.4.2 · React 19.3.1 · TypeScript · vitest 5.0.5 | macOS에서 개발, Vercel 배포 |
 
 - 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`), 첫 화면 캡처는 Vercel Blob(`lib/capture.ts`, 한글 폰트 `fonts/`).
@@ -23,7 +23,7 @@
 - `setup.ps1` 은 ASCII만 쓰고 Windows PowerShell 5.1에서 돌아가야 한다. 고친 뒤 `iconv -f ASCII -t ASCII <파일> >/dev/null` 로 ASCII만 확인하고, 실행은 Windows에서 확인해야 한다고 보고한다.
 - 파일 이름을 바꾸지 않는다. `setup.ps1` 이 `AGENTS.global.md` · `00_*.md` 를 이름으로 찾는다. 폴더를 옮기면 `lib/materials.ts` 의 `MATERIALS_DIR` 도 고친다.
 - `AGENTS.global.md` 는 수강생 전역 규칙이다. 모델 상한 · `npm.cmd` 같은 수강생용 규칙은 거기에만 두고 이 파일과 섞지 않는다.
-- `setup.ps1` 이 하는 일을 바꾸면 `00_환경설정.md` 와 `01_1일차_계획.md` 의 설명도 맞춘다.
+- `setup.ps1` 은 교육 전에 1 · 2일차 도구를 모두 설치한다. 하는 일을 바꾸면 `00_사전안내.md` 3장과 `00_환경설정.md`(당일 점검)의 설명도 맞춘다.
 
 ## 3. 코딩 전에
 
@@ -59,7 +59,7 @@
 
 ## 8. 토큰 아끼기
 
-- 필요한 부분만 읽는다. `grep -rn` · `find` 로 위치를 먼저 찾는다. `setup.ps1`(1,000줄 넘음)은 통째로 읽지 않는다.
+- 필요한 부분만 읽는다. `grep -rn` · `find` 로 위치를 먼저 찾는다. `setup.ps1`(800줄 넘음)은 통째로 읽지 않는다.
 - 읽지 않는다: `node_modules`(단 `node_modules/next/dist/docs/` 는 필요한 쪽만) · `.next` · `package-lock.json` · 빌드 결과물 · 이미지 · 영상.
 - 긴 출력(설치 · 빌드 로그)은 끝부분만 본다: `... | tail -30`
 - 이미 읽은 파일을 통째로 다시 읽거나, 고친 파일 전체를 다시 보여 주지 않는다.
@@ -83,4 +83,4 @@
 - 끝나면 3줄 이내: 바꾼 것 · 확인한 방법 · 다음에 할 일. 확인하지 못한 것은 그렇다고 말한다.
 
 ---
-원본: `docs/교육생_배포/2_1일차_당일/AGENTS.global.md` 를 이 저장소(macOS 관리 작업)에 맞게 고침 — 수강생 전용(Windows 명령 바꾸기 · 모델 상한)은 뺐다.
+원본: `docs/교육생_배포/1_교육전_사전안내/AGENTS.global.md` 를 이 저장소(macOS 관리 작업)에 맞게 고침 — 수강생 전용(Windows 명령 바꾸기 · 모델 상한)은 뺐다.

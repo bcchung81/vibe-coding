@@ -79,6 +79,24 @@
         ],
         "createdAt": "2026-11-04T05:47:26.806Z",
         "reason": "matches the reference deck the user asked to follow (~/Downloads/블랙인증과정/최종_슬라이드덱): ochre bar beside the lead line and a full-width navy rule on the cover top, not card side tabs"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "docs/발표자료/slides.css"
+        ],
+        "createdAt": "2026-11-06T19:58:49.074Z",
+        "reason": "Claude triage: .pk ol li (L277) has no border-radius; the 3px top rule is the deck-wide 'navy rule on top' pattern (.card, .bc, .legend li), not an accent border on a rounded card"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-11-06T21:41:43.449Z",
+        "reason": "Agent review: DESIGN.md specifies the 4px ochre lead marker and quotation rule as the existing Report Deck visual language; these mark explanatory text and quotations, not decorative card edges."
       }
     ]
   }

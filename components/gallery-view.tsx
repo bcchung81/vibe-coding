@@ -64,7 +64,10 @@ export function GalleryWall({ projects, liked: likedFirst, myId }: { projects: G
         </span>
       </div>
       {items.length === 0 ? (
-        <p className="wall-empty">아직 올라온 사이트가 없습니다. 1일차 4교시에 배포한 주소를 올리면 여기에 모입니다.</p>
+        <div className="wall-empty">
+          <h2>첫 번째 웹앱을 기다리고 있습니다</h2>
+          <p>1일차 4교시에 배포한 사이트 주소를 올리면 이곳에서 서로의 작품을 볼 수 있습니다.</p>
+        </div>
       ) : (
         <div className="cards" data-live={live}>
           {sortGallery(items, sort).map((p) => (

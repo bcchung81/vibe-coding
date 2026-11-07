@@ -1,7 +1,7 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import type { CourseInfo } from "./course";
 import type { PinFailures, PinKind } from "./pin-limit";
 import type { RosterRow } from "./roster";
-import type { Response } from "./survey";
 
 // Neon over HTTP, created on first use so `next build` runs without DATABASE_URL. Tables: db/schema.sql
 let client: NeonQueryFunction<false, false> | null = null;
@@ -9,7 +9,7 @@ const sql = () => (client ??= neon(process.env.DATABASE_URL!));
 
 export type Student = { id: number; name: string; team: string; topic: string | null };
 export type SavedProject = { url: string; app: string; tagline: string };
-export type StatusRow = { name: string; team: string; topic: string | null; app: string | null; url: string | null; likes: number; surveyed: boolean };
+export type StatusRow = { name: string; team: string; topic: string | null; app: string | null; url: string | null; likes: number };
 
 export async function listStudents() {
   return (await sql()`select id, name, team from students order by team, name`) as Omit<Student, "topic">[];
@@ -93,37 +93,21 @@ export async function toggleLike(studentId: number, projectId: number) {
   return { liked: !removed.length, likes: rows[0].n };
 }
 
-// End of the course: every trainee, project, like, PIN record and survey answer (capture images are removed from Blob by the caller)
+// End of the course: every trainee, project, like, PIN record and survey answer left from the old pre-course survey (capture images are removed from Blob by the caller)
 export async function wipeAll() {
   await sql()`delete from students`;
   await sql()`delete from pin_failures`;
   await sql()`delete from survey_answers`;
 }
 
-// One sheet per e-mail; answering again with it replaces the sheet and hands it to this browser's key
-export async function saveSurvey(person: { name: string; email: string }, token: string, answers: Response) {
-  await sql()`
-    insert into survey_answers (email, name, answers, token) values (${person.email}, ${person.name}, ${JSON.stringify(answers)}::jsonb, ${token})
-    on conflict (email) do update set name = excluded.name, answers = excluded.answers, token = excluded.token, at = now()`;
+// The date · place · deadlines · contact on /course, typed in on the admin screen (one row)
+export async function courseInfo() {
+  const rows = (await sql()`select info from course_info where id = 1`) as { info: CourseInfo }[];
+  return rows[0]?.info ?? {};
 }
 
-// The sheet this browser sent last, to fill the form in again
-export async function surveyByToken(token: string) {
-  const rows = (await sql()`select name, email, answers from survey_answers where token = ${token} order by at desc limit 1`) as { name: string; email: string; answers: Response }[];
-  return rows[0] ?? null;
-}
-
-// Answers only, in an order that is not the order they came in, so a written answer does not point to its writer
-export async function surveyResponses() {
-  const rows = (await sql()`select answers from survey_answers order by md5(email)`) as { answers: Response }[];
-  return rows.map((r) => r.answers);
-}
-
-export type SurveyPerson = { name: string; email: string; at: string };
-
-// Who answered — for the admin's screen only
-export async function surveyPeople() {
-  return (await sql()`select name, email, at::text as at from survey_answers order by at desc`) as SurveyPerson[];
+export async function saveCourseInfo(info: CourseInfo) {
+  await sql()`insert into course_info (id, info) values (1, ${JSON.stringify(info)}::jsonb) on conflict (id) do update set info = excluded.info`;
 }
 
 export async function setTopic(studentId: number, slug: string | null) {
@@ -139,8 +123,7 @@ export async function topicCounts() {
 export async function rosterStatus() {
   return (await sql()`
     select s.name, s.team, s.topic, p.app_name as app, p.app_url as url,
-      (select count(*) from likes l where l.project_id = s.id)::int as likes,
-      exists (select 1 from survey_answers a where a.name = s.name) as surveyed
+      (select count(*) from likes l where l.project_id = s.id)::int as likes
     from students s left join projects p on p.student_id = s.id
     order by s.team, s.name`) as StatusRow[];
 }

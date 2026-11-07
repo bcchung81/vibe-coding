@@ -28,7 +28,7 @@ export default async function TopicPage({ params }: { params: Promise<Params> })
 
   return (
     <>
-      <Band title={topic.title} lead={`웹앱 주제 ${slug} · ${topic.summary}`} action={{ href: download, label: "주제 카드 내려받기", download: topic.name }} />
+      <Band kicker={`웹앱 주제 ${slug}`} title={topic.title} lead={topic.summary} action={{ href: download, label: "주제 카드 내려받기", download: topic.name }} />
       <div className="content wide">
         <div className="tools">
           <Link className="ghost" href="/topics">

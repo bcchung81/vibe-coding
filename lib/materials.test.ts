@@ -31,15 +31,16 @@ describe("listMaterials", () => {
   });
 
   test("offers non-markdown files as downloads", () => {
-    expect(items.find((m) => m.name === "setup.ps1")).toMatchObject({ stage: "2", slug: "setup", kind: "file", title: "설치 스크립트" });
+    expect(items.find((m) => m.name === "setup.ps1")).toMatchObject({ stage: "1", slug: "setup", kind: "file", title: "사전설치 스크립트" });
   });
 
   test("uses a plain label where the heading is a file name", () => {
     expect(items.find((m) => m.name === "AGENTS.global.md")).toMatchObject({ title: "AI 에이전트 공통 규칙", short: "공통 규칙" });
   });
 
-  test("puts the day 2 report tool hand-off in its own step", () => {
-    expect(items.find((m) => m.name === "00_보고서도구.md")).toMatchObject({ stage: "3", stageTitle: "2일차 당일", slug: "00", kind: "doc", short: "보고서 도구 설치" });
+  test("keeps one day-of guide for both days, after the pre-course step", () => {
+    expect(items.find((m) => m.name === "00_환경설정.md")).toMatchObject({ stage: "2", stageTitle: "교육당일", slug: "00", kind: "doc", short: "당일 로그인 · 점검" });
+    expect(items.some((m) => m.stage === "3")).toBe(false);
   });
 
   test("gives every handout a short name for the next-step band", () => {

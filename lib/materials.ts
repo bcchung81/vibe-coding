@@ -29,10 +29,9 @@ export function slugOf(name: string) {
 // Plain names for trainees: a list title where the heading or file name says little, and a short name for "다음: ○○"
 const NAMES: Record<string, { title?: string; short: string }> = {
   "00_사전안내.md": { short: "사전 안내" },
-  "00_환경설정.md": { short: "환경설정 안내" },
+  "00_환경설정.md": { short: "당일 로그인 · 점검" },
   "AGENTS.global.md": { title: "AI 에이전트 공통 규칙", short: "공통 규칙" },
-  "setup.ps1": { title: "설치 스크립트", short: "설치 스크립트" },
-  "00_보고서도구.md": { short: "보고서 도구 설치" },
+  "setup.ps1": { title: "사전설치 스크립트", short: "사전설치 스크립트" },
 };
 
 // Fixed to this folder so the server bundle traces only the handouts, not the whole project

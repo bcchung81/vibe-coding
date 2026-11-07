@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>발표 덱</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<!--
+  장 하나 = <section class="slide"> 하나. 순서대로 1장, 2장 …
+  data-scene  3D 장면: globe(지구본) · bars(막대) · wave(파동) — 없으면 3D 없이 배경만
+  data-sec    영상에서 이 장을 보여 줄 초 (기본 6)
+  data-in     등장 움직임: up(아래에서) · fade(서서히) · count(숫자 세기) — data-at 은 시작 시각(ms)
+  bars 장     data-values="숫자,숫자" · data-labels="이름,이름" · data-unit="단위" — 보고서 표의 숫자만 쓴다
+-->
+<main id="stage">
+  <canvas id="gl"></canvas>
+
+  <section class="slide cover" data-scene="globe" data-sec="6">
+    <p class="tag" data-in="fade">예시 덱 · ○○부 · 2026년 11월</p>
+    <h1 data-in="up" data-at="200">결론을 한 문장으로 쓴다 — 표지가 곧 요약이다</h1>
+    <p class="sub" data-in="up" data-at="500">deck-build 스킬이 보고서 내용으로 바꾼다</p>
+  </section>
+
+  <section class="slide big" data-sec="5">
+    <p class="tag" data-in="fade">왜 지금</p>
+    <h2 data-in="up" data-at="150">숫자 하나로 왜 지금인지 보여 준다</h2>
+    <p class="num"><span data-in="count" data-at="400">1,284</span><small>건</small></p>
+    <p class="note" data-in="fade" data-at="1200">예시 숫자 — 보고서 표에서 가져온다</p>
+  </section>
+
+  <section class="slide chart" data-scene="bars" data-sec="7" data-values="820,940,1100,1284" data-labels="2022,2023,2024,2025" data-unit="건">
+    <p class="tag" data-in="fade">현황</p>
+    <h2 data-in="up" data-at="150">4년 동안 꾸준히 늘었다</h2>
+    <p class="note" data-in="fade" data-at="1600">예시 숫자 · 출처는 보고서 출처.md 번호</p>
+    <div class="labels" aria-hidden="true"></div>
+  </section>
+
+  <section class="slide list" data-sec="6">
+    <p class="tag" data-in="fade">쟁점</p>
+    <h2 data-in="up" data-at="150">걸리는 것은 세 가지다</h2>
+    <ol>
+      <li data-in="up" data-at="400"><b>사람</b>맡을 사람이 모자라다</li>
+      <li data-in="up" data-at="600"><b>기준</b>기관마다 기준이 다르다</li>
+      <li data-in="up" data-at="800"><b>자료</b>최신 자료가 흩어져 있다</li>
+    </ol>
+  </section>
+
+  <section class="slide list steps" data-sec="6">
+    <p class="tag" data-in="fade">제안</p>
+    <h2 data-in="up" data-at="150">세 단계로 풀자</h2>
+    <ol>
+      <li data-in="up" data-at="400"><b>1</b>기준을 하나로 맞춘다</li>
+      <li data-in="up" data-at="600"><b>2</b>자료를 한곳에 모은다</li>
+      <li data-in="up" data-at="800"><b>3</b>사람 대신 도구로 먼저 걸러 낸다</li>
+    </ol>
+  </section>
+
+  <section class="slide end" data-scene="wave" data-sec="6">
+    <p class="tag" data-in="fade">맺음</p>
+    <h2 data-in="up" data-at="200">다음 달까지 기준안 하나를 만든다</h2>
+    <p class="sub" data-in="up" data-at="500">○○부 · 문의 내선 0000</p>
+  </section>
+
+  <p class="badge" hidden>가벼운 모드</p>
+  <p class="count"></p>
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

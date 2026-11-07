@@ -22,8 +22,8 @@ describe("topicBody", () => {
 describe("listTopics", () => {
   const topics = listTopics();
 
-  test("lists the ten topic cards in number order", () => {
-    expect(topics.map((t) => t.slug)).toEqual(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
+  test("lists the three topic cards in number order", () => {
+    expect(topics.map((t) => t.slug)).toEqual(["01", "02", "03"]);
   });
 
   test("gives every card a title and a summary with its difficulty", () => {
@@ -36,6 +36,6 @@ describe("listTopics", () => {
 
 describe("topicItems", () => {
   test("gives the browser number, title and summary only", () => {
-    expect(topicItems()[1]).toEqual({ slug: "02", title: "우산 챙겨?", summary: "날씨 · 기상청 단기예보 · 난이도 중" });
+    expect(topicItems()[1]).toEqual({ slug: "02", title: "자격시험 공지 모아보기", summary: "자격 · 한국방송통신전파진흥원 국가기술자격 공지사항 · 난이도 중" });
   });
 });
