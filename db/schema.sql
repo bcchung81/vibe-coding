@@ -1,5 +1,6 @@
 -- 교육 운영 허브 데이터 (Neon Postgres). 적용: npm run db:setup (다시 실행해도 된다)
--- 이 저장소는 공개다. 명단 · 프로젝트 같은 실제 데이터는 DB에만 둔다.
+-- 이 저장소는 공개다. 실제 데이터는 DB에만 둔다.
+-- students · projects · likes 는 2026-11-07 뺀 학생 로그인 · 갤러리의 표다. 남은 데이터를 지우지 않으려고 표만 두고, 관리 화면 '모두 지우기'(lib/db.ts wipeAll)가 지운다.
 
 create table if not exists students (
   id serial primary key,
@@ -30,8 +31,8 @@ create table if not exists likes (
   primary key (student_id, project_id)
 );
 
--- 틀린 PIN 기록 (lib/pin-limit.ts). 공통 PIN(course): 같은 곳(IP)에서 10분에 30번 틀리면 막는다 — 강의실은 IP 하나를 같이 쓰므로 넉넉하게.
--- 관리자 PIN(admin): 같은 곳에서 10분에 10번, 모든 곳 합쳐 1시간에 50번 틀리면 막는다. 하루 지난 기록은 지운다
+-- 틀린 관리자 PIN 기록 (lib/pin-limit.ts): 같은 곳(IP)에서 10분에 10번, 모든 곳 합쳐 1시간에 50번 틀리면 막는다. 하루 지난 기록은 지운다.
+-- kind 의 'course'(공통 PIN)는 학생 로그인을 뺀 뒤 쓰지 않는다
 create table if not exists pin_failures (
   ip text not null,
   at timestamptz not null default now()

@@ -2,25 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { movePick, topTopics } from "../lib/topic-counts";
 import { Band } from "./band";
 import { CodeBlock } from "./code-block";
 import { Icon } from "./icon";
-import { chooseTopic, myTopic } from "./my-topic";
-import { useTopicCounts } from "./topic-counts";
+import { myTopic, setMyTopic } from "./my-topic";
 
 export type TopicItem = { slug: string; title: string; summary: string };
 
 // "날씨 · 기상청 단기예보 · 난이도 중" → the area and API, and the difficulty on its own
 const split = (summary: string) => summary.split(" · 난이도 ");
 
-// The day-1 topics, then the start folder in three steps. Picking one marks it "내 주제" in this browser,
-// and for a logged-in trainee counts toward the live picks every card shows.
+// The day-1 topics, then the start folder in three steps. Picking one marks it "내 주제" in this browser.
 export function TopicPicker({ items }: { items: TopicItem[] }) {
   const [mine, setMine] = useState<string | null>(null);
-  const [counts, setCounts] = useTopicCounts();
-  // false after a pick that did not count (not logged in)
-  const [counted, setCounted] = useState<boolean | null>(null);
   // the download command names this site's own address, so it works from whichever URL the page was opened at
   const [origin, setOrigin] = useState("https://kca-vibe.vercel.app");
   useEffect(() => {
@@ -29,16 +23,8 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
   }, []);
   const chosen = items.find((t) => t.slug === mine);
   const no = chosen?.slug ?? "번호";
-  const top = counts ? topTopics(counts) : [];
-  const total = counts ? Object.values(counts).reduce((sum, n) => sum + n, 0) : 0;
 
-  const pick = async (slug: string | null) => {
-    const from = mine;
-    setMine(slug);
-    const saved = await chooseTopic(slug);
-    setCounted(saved);
-    if (saved) setCounts((c) => c && movePick(c, from, slug));
-  };
+  const pick = (slug: string | null) => setMine(setMyTopic(slug));
 
   return (
     <>
@@ -49,19 +35,10 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
         action={chosen ? { href: "#start-folder", label: "시작 폴더 안내" } : undefined}
       />
       <div className="content">
-        {counts && (
-          <p className="topic-live" aria-live="polite">
-            {total > 0
-              ? `지금 ${total}명이 골랐습니다 · 가장 많이 고른 주제: ${top.map((slug) => `${slug} ${items.find((t) => t.slug === slug)?.title ?? ""}`).join(", ")} (${counts[top[0]]}명)`
-              : "주제를 고르면 아래에서 실습 시작 방법을 안내합니다."}
-            {counted === false && <span className="meta"> · 선택은 이 브라우저에 저장됩니다. 로그인하면 참여 인원에도 반영됩니다.</span>}
-          </p>
-        )}
         <ul className="topics">
           {items.map((t) => {
             const on = t.slug === mine;
             const [about, level] = split(t.summary);
-            const lead = top.includes(t.slug);
             return (
               <li key={t.slug} className="topic" data-mine={on}>
                 <span className="topic-top">
@@ -72,12 +49,6 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
                   <Link href={`/topics/${t.slug}`}>{t.title}</Link>
                 </h3>
                 <p>{about}</p>
-                {counts && (
-                  <span className="topic-count" data-top={lead}>
-                    {lead && "가장 많이 · "}
-                    {counts[t.slug] ?? 0}명이 고름
-                  </span>
-                )}
                 <div className="topic-foot">
                   <button className="pick" type="button" aria-pressed={on} onClick={() => pick(on ? null : t.slug)}>
                     {on && <Icon name="check" size={16} />}
@@ -133,10 +104,7 @@ export function TopicPick({ slug }: { slug: string }) {
       className="pick"
       type="button"
       aria-pressed={on}
-      onClick={() => {
-        setMine(on ? null : slug);
-        chooseTopic(on ? null : slug);
-      }}
+      onClick={() => setMine(setMyTopic(on ? null : slug))}
     >
       {on && <Icon name="check" size={16} />}
       {on ? "내 주제" : "내 주제로 고르기"}

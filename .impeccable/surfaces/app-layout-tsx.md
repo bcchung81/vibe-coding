@@ -2,18 +2,20 @@
 version: 4
 slug: "app-layout-tsx"
 primary_target: "app/layout.tsx"
-related_targets: ["app/gallery/page.tsx","app/course/page.tsx","app/materials/page.tsx","app/materials/[stage]/[slug]/page.tsx","app/topics","app/login/page.tsx","app/me/page.tsx","app/admin/page.tsx"]
+related_targets: ["app/course/page.tsx","app/materials/page.tsx","app/materials/[stage]/[slug]/page.tsx","app/topics","app/admin/page.tsx"]
 ---
 
 # 교육 운영 허브 — 화면 전체 (발표자료와 한 벌)
 
+> 2026-11-07: 갤러리 · 내 프로젝트 · 첫 화면 캡처 · 좋아요 · 학생 로그인을 뺐다. 아래 STORY · FIRST VIEWPORT · FORM 에 나오는 갤러리 · 좋아요 · 캡처 · 로그인 · 수요조사는 지난 방향 기록이다. 지금 화면은 교육 안내 · 자료 · 웹앱 주제 · 관리다.
+
 ## Scope and mode
-- 대상: 교육 안내 · 자료 목록 · 문서 보기 · 웹앱 주제 · 갤러리(`/gallery`) · 로그인 · 내 프로젝트 · 관리. 첫 화면 `/` 는 교육 전까지 `/course` 로 넘기고 1일차에 갤러리로 되돌린다 (next.config.ts).
+- 대상: 교육 안내 · 자료 목록 · 문서 보기 · 웹앱 주제 · 관리. 첫 화면 `/` 는 `/course` 로 넘긴다 (next.config.ts).
 - 모드: Operate. 문서 보기는 Read.
 - 범위 밖: `docs/교육생_배포/vibe/` (수강생 시작 프로젝트, 이 디자인 시스템 밖).
 
 ## Audience, job, constraints
-- 수강생(비개발자, Windows 노트북): 교육 전 자료를 순서대로 읽고 웹앱 주제를 고르고, 1일차 4교시에 내 사이트를 올리고 서로 좋아요를 누른다. 강사 · 조교: 명단을 올리고 미제출자를 찾는다.
+- 수강생(비개발자, Windows 노트북): 교육 전 자료를 순서대로 읽고 웹앱 주제를 고르고, 당일 시작 폴더를 받는다. 강사 · 조교: 관리 화면에서 교육 안내를 적는다.
 - 노트북 기준, 휴대폰은 보조. 과정명 "바이브코딩 중급" 외 브랜드 없음. 예시 이름 · 앱 · 주소 · 캡처는 가짜로 표시.
 
 ## Chosen direction

@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-export type Who = { student: { name: string; team: string } | null; admin: boolean };
+export type Who = { admin: boolean };
 
 const EVENT = "vibe-session";
 
-// Call after logging in or out, so the top bar asks again
+// Call after the admin logs in or out, so the top bar asks again
 export function sessionChanged() {
   window.dispatchEvent(new Event(EVENT));
 }
@@ -20,7 +20,7 @@ export function useWho() {
       fetch("/api/session", { cache: "no-store" })
         .then((r) => r.json())
         .then((data: Who) => alive && setWho(data))
-        .catch(() => alive && setWho({ student: null, admin: false }));
+        .catch(() => alive && setWho({ admin: false }));
     load();
     window.addEventListener(EVENT, load);
     return () => {

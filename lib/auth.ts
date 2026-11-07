@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import { makeToken, readToken, type Session } from "./session";
+import { makeToken, readToken } from "./session";
 
-// One signed cookie per kind, so the instructor can be admin and a trainee in the same browser
-const NAME = { student: "vibe-student", admin: "vibe-admin" } as const;
+// The admin's signed cookie — the only login left on the hub
+const NAME = "vibe-admin";
 const DAYS = 3; // the course runs two days
 
 function secret() {
@@ -11,16 +11,15 @@ function secret() {
   return value;
 }
 
-export async function signedIn(kind: Session["kind"]) {
+export async function signedIn() {
   // cookies() first: it marks the page as per-request before the secret is needed
-  const token = (await cookies()).get(NAME[kind])?.value;
-  const session = readToken(secret(), token, Date.now());
-  return session?.kind === kind ? session : null;
+  const token = (await cookies()).get(NAME)?.value;
+  return readToken(secret(), token, Date.now());
 }
 
-export async function signIn(session: Session) {
+export async function signIn(session: { kind: "admin"; id: number }) {
   const expires = Date.now() + DAYS * 24 * 60 * 60 * 1000;
-  (await cookies()).set(NAME[session.kind], makeToken(secret(), session, expires), {
+  (await cookies()).set(NAME, makeToken(secret(), session, expires), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -29,6 +28,6 @@ export async function signIn(session: Session) {
   });
 }
 
-export async function signOut(kind: Session["kind"]) {
-  (await cookies()).delete(NAME[kind]);
+export async function signOut() {
+  (await cookies()).delete(NAME);
 }

@@ -2,26 +2,11 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { adminLogIn, saveCourse, saveRoster, wipeEverything } from "../app/actions";
+import { adminLogIn, saveCourse, wipeEverything } from "../app/actions";
 import { COURSE_FIELDS, INFO_LIMIT, type CourseInfo } from "../lib/course";
-import type { StatusRow } from "../lib/db";
-import { planRoster } from "../lib/roster";
-import { topTopics } from "../lib/topic-counts";
 import { Band } from "./band";
-import { Icon } from "./icon";
 import { PinInput } from "./pin-input";
-import { isTicked, padRows, RosterGrid, type GridRow } from "./roster-grid";
 import { sessionChanged } from "./session";
-
-function downloadCsv(status: StatusRow[]) {
-  const lines = [["이름", "팀", "주제", "앱", "주소", "좋아요"], ...status.map((s) => [s.name, s.team, s.topic ?? "", s.app ?? "", s.url ?? "", String(s.likes)])];
-  const csv = "﻿" + lines.map((l) => l.map((c) => `"${c.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-  a.download = "결과물.csv";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
 
 // The admin PIN (4 digits, ADMIN_PASSWORD in Vercel); the page reloads with the real view once it matches
 export function AdminLogin() {
@@ -42,15 +27,13 @@ export function AdminLogin() {
         <section className="panel form login-panel" aria-label="관리 로그인" aria-busy={pending}>
           <PinInput key={attempt} label="관리 PIN 4자리" error={Boolean(error)} disabled={pending} onEdit={() => setError("")} onDone={send} />
           <span className={`hint ${error ? "error" : ""}`} aria-live="polite">
-            {pending ? "확인하는 중…" : error || "수강생 공통 PIN과 다른 번호입니다."}
+            {pending ? "확인하는 중…" : error || "강사 · 조교에게 알려 준 4자리입니다."}
           </span>
         </section>
       </div>
     </>
   );
 }
-
-type Show = "all" | "site";
 
 // Date · place · deadlines · contact for /course. Kept in the DB, not in the public repo
 function CourseInfoPanel({ info }: { info: CourseInfo }) {
@@ -98,116 +81,21 @@ function CourseInfoPanel({ info }: { info: CourseInfo }) {
   );
 }
 
-export function AdminView({ status, titles, info }: { status: StatusRow[]; titles: Record<string, string>; info: CourseInfo }) {
-  const [rows, setRows] = useState<GridRow[]>(() => padRows([]));
+export function AdminView({ info }: { info: CourseInfo }) {
   const [notice, setNotice] = useState<{ title: string; lead: string } | null>(null);
-  const [show, setShow] = useState<Show>("all");
   const [confirm, setConfirm] = useState("");
   const [pending, start] = useTransition();
-  const plans = planRoster(rows, status);
-  const sending = rows.filter((r, i) => isTicked(r, plans[i]));
-  const broken = plans.filter((p) => p?.state === "error" || p?.state === "duplicate").length;
-  const missing = status.filter((s) => !s.url);
-  const shown = show === "site" ? missing : status;
-  const counts: Record<string, number> = {};
-  for (const s of status) if (s.topic) counts[s.topic] = (counts[s.topic] ?? 0) + 1;
-  const top = topTopics(counts);
-
-  const changeRows = (next: GridRow[]) => {
-    setRows(next);
-    setNotice(null);
-  };
-
-  // Rows that went in leave the sheet (they show in 현황); the rest stay with the reason
-  const apply = () =>
-    start(async () => {
-      const r = await saveRoster(sending.map(({ name, team }) => ({ name, team })));
-      if ("error" in r) return setNotice({ title: "다음: 다시 로그인", lead: r.error ?? "" });
-      const added = new Set(sending.filter((_, k) => r.results[k]?.ok));
-      const failed = r.results.filter((x) => !x.ok);
-      setRows(padRows(rows.filter((row) => !added.has(row))));
-      setNotice({
-        title: `명단에 ${added.size}명을 더했습니다`,
-        lead: failed.length ? `${failed.length}줄은 넣지 못해 표에 남겼습니다 — ${failed[0].note}` : "다음: 주소 · 공통 PIN을 공지합니다.",
-      });
-    });
-
-  const band =
-    notice ??
-    (broken
-      ? { title: `다음: 빨간 줄 ${broken}개 고치기`, lead: "중복 · 오류 줄은 반영하지 않습니다. 고치거나 지우면 바로 다시 판정합니다." }
-      : sending.length
-        ? { title: `다음: 명단 ${sending.length}명 반영`, lead: "체크한 줄만 들어갑니다. 이미 있는 이름과 그 사람의 사이트는 그대로 둡니다." }
-        : { title: status.length ? `명단 ${status.length}명 · 사이트 아직 ${missing.length}명` : "다음: 명단 붙여넣기", lead: "엑셀에서 이름 · 팀 열을 복사해 아래 표의 이름 칸에 붙여넣습니다." });
 
   return (
     <>
-      <Band kicker="관리" {...band} />
+      <Band kicker="관리" {...(notice ?? { title: "교육 안내를 채웁니다", lead: "일시 · 장소 · 회신 마감 · 문의를 적으면 교육 안내 화면에 바로 나옵니다." })} />
       <div className="content">
-        <section className="panel" aria-labelledby="roster-title">
-          <div className="panel-head">
-            <h2 id="roster-title">명단</h2>
-            <span className="meta">저장된 {status.length}명 · 머리글 줄이 있어도 됩니다 · 칸을 고치면 바로 다시 판정합니다</span>
-          </div>
-          <RosterGrid rows={rows} plans={plans} onRows={changeRows} onApply={apply} onClear={() => changeRows(padRows([]))} pending={pending} />
-        </section>
-
-        <section className="panel" id="status" aria-labelledby="status-title">
-          <div className="panel-head">
-            <h2 id="status-title">현황</h2>
-            <div className="tabs" role="group" aria-label="보기">
-              <button type="button" aria-pressed={show === "all"} onClick={() => setShow("all")}>
-                전체 {status.length}
-              </button>
-              <button type="button" aria-pressed={show === "site"} onClick={() => setShow("site")}>
-                사이트 아직 {missing.length}
-              </button>
-            </div>
-          </div>
-          {top.length > 0 && (
-            <p className="topic-live">
-              가장 많이 고른 주제: {top.map((slug) => `${slug} ${titles[slug] ?? ""}`).join(", ")} ({counts[top[0]]}명)
-            </p>
-          )}
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>이름</th>
-                  <th>팀</th>
-                  <th>주제</th>
-                  <th>사이트</th>
-                  <th>좋아요</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shown.map((s) => (
-                  <tr key={`${s.name}-${s.team}`}>
-                    <td>{s.name}</td>
-                    <td>{s.team}</td>
-                    <td>{s.topic ? `${s.topic} ${titles[s.topic] ?? ""}` : <span className="meta">—</span>}</td>
-                    <td>{s.url ? <span className="chip done">올림 · {s.app}</span> : <span className="chip todo">아직</span>}</td>
-                    <td className="num">{s.likes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-
         <CourseInfoPanel info={info} />
 
         <section className="panel" aria-labelledby="close-title">
-          <h2 id="close-title">교육이 끝나면</h2>
-          <div className="tools">
-            <button className="ghost" type="button" onClick={() => downloadCsv(status)}>
-              <Icon name="download" size={16} />
-              결과물 CSV 내려받기
-            </button>
-          </div>
+          <h2 id="close-title">남은 데이터 지우기</h2>
           <label className="form danger">
-            <span>명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과를 모두 지웁니다. 되돌릴 수 없습니다. CSV를 먼저 받으세요. 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
+            <span>예전 명단 · 수요조사 응답 · PIN 기록을 모두 지웁니다. 되돌릴 수 없습니다. 확인하려면 &lsquo;삭제&rsquo;를 입력하세요.</span>
             <span className="tools">
               <input value={confirm} onChange={(e) => setConfirm(e.target.value)} aria-label="확인 문구" />
               <button
@@ -218,7 +106,7 @@ export function AdminView({ status, titles, info }: { status: StatusRow[]; title
                   start(async () => {
                     const done = await wipeEverything(confirm);
                     setConfirm("");
-                    setNotice(done ? { title: "모두 지웠습니다", lead: "명단 · 프로젝트 · 좋아요 · 캡처 · 수요조사 결과가 없어졌습니다." } : { title: "지우지 못했습니다", lead: "관리 PIN으로 다시 들어와 주세요." });
+                    setNotice(done ? { title: "모두 지웠습니다", lead: "예전 명단 · 수요조사 응답 · PIN 기록이 없어졌습니다." } : { title: "지우지 못했습니다", lead: "관리 PIN으로 다시 들어와 주세요." });
                   })
                 }
               >

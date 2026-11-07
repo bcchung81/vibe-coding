@@ -14,7 +14,7 @@
 | `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (교육 전 `00_사전안내.md` · `setup.ps1` · `AGENTS.global.md`, 교육 당일 `00_환경설정.md` — 1 · 2일차 구분 없음). 번호 없는 `웹앱_주제/` 는 주제 카드 3개(기관 데이터)로 `/topics` 가 읽고, `vibe/` 는 1일차 시작 폴더 원본으로 `/vibe.zip` 이 주제 카드와 함께 묶고, `deck/` 은 2일차 덱 시작 폴더 원본으로 `/deck.zip` 이 묶는다(명령은 `.agents/skills` 에 쓴다 — 수강생 코드 에이전트는 Codex CLI 하나다) | **Windows 11 · PowerShell** |
 | `package.json` · `tsconfig.json` · `vercel.json` | 교육 운영 허브 웹앱 — Next.js 16.4.2 · React 19.3.1 · TypeScript · vitest 5.0.5 | macOS에서 개발, Vercel 배포 |
 
-- 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`), 첫 화면 캡처는 Vercel Blob(`lib/capture.ts`, 한글 폰트 `fonts/`).
+- 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`) — 교육 안내 값과 관리자 PIN 기록만 쓴다.
 - 문서는 `docs/` 아래에 둔다. root에는 `README.md` · `AGENTS.md` · `CLAUDE.md` 와 웹앱 설정 파일만 둔다. 예외: impeccable 디자인 기록 `PRODUCT.md` · `DESIGN.md` 는 도구가 root에서 찾으므로 root에 둔다. 화면 디자인 방향은 `.impeccable/surfaces/` 에 있다.
 
 ## 2. 교육생 배포 파일 (`docs/교육생_배포/`)
@@ -48,7 +48,7 @@
 - Next.js 16은 예전 버전과 다르다. 확실하지 않은 API는 `node_modules/next/dist/docs/` 를 먼저 읽는다 (바뀐 점: `01-app/02-guides/upgrading/version-16.md`).
 - `middleware.ts` 는 `proxy.ts` 로 바뀌었다. 기본이 Node 런타임이고 `runtime` 설정은 쓸 수 없다.
 - `lib/` 의 순수 함수에는 vitest 테스트를 붙인다 (`npm test`). 화면 테스트는 요청할 때만 쓴다.
-- 배포는 Vercel(Pro), 리전 `icn1` (`vercel.json`). 명단 · 설문 · 업로드 데이터는 DB · Blob에만 두고 저장소에 넣지 않는다.
+- 배포는 Vercel(Pro), 리전 `icn1` (`vercel.json`). 교육 안내 값 · 예전 명단 · 설문 데이터는 DB에만 두고 저장소에 넣지 않는다.
 
 ## 7. 확인은 가볍게
 

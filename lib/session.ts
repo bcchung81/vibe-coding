@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-// Who a signed cookie belongs to: a trainee (students.id) or the admin. No session table — the signature is the proof.
-export type Session = { kind: "student" | "admin"; id: number };
+// Who a signed cookie belongs to: the admin (the hub has no trainee login). No session table — the signature is the proof.
+export type Session = { kind: "admin"; id: number };
 
 const sign = (secret: string, body: string) => createHmac("sha256", secret).update(body).digest("base64url");
 
@@ -17,7 +17,7 @@ export function readToken(secret: string, token: string | undefined, now: number
   const body = token.slice(0, dot);
   if (!same(token.slice(dot + 1), sign(secret, body))) return null;
   const [kind, id, expires] = body.split(":");
-  if ((kind !== "student" && kind !== "admin") || !Number.isInteger(Number(id)) || !(Number(expires) > now)) return null;
+  if (kind !== "admin" || !Number.isInteger(Number(id)) || !(Number(expires) > now)) return null;
   return { kind, id: Number(id) };
 }
 
