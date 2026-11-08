@@ -17,6 +17,10 @@
   --on-nav: #c9d8e5;
   --red: #b3261e;
   --live: #a56921; /* second data series (live picks); the first is navy, so blue against orange */
+  /* map demo carriers SKT · KT · LGU+ (dataviz reference slots 1-3; all-pairs colour-blind check passes). Others: --muted */
+  --carrier-1: #2a78d6;
+  --carrier-2: #eb6834;
+  --carrier-3: #1baf7a;
   --radius: 8px;
   --radius-sm: 6px;
   --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
@@ -257,6 +261,70 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 .danger-btn { min-height: 44px; padding: 0 16px; border: 1px solid var(--red); border-radius: var(--radius); background: var(--red); color: var(--paper); font-size: var(--fs-label); font-weight: 700; cursor: pointer; }
 .danger-btn:disabled { border-style: dashed; border-color: var(--muted); background: transparent; color: var(--muted); cursor: not-allowed; }
 
+/* map demo (/topics/map): a tilted 3D map on paper with the station list beside it, using the whole width of the screen.
+   Column colours come from the tokens (components/emf-map.tsx); ochre marks the searched address, navy the picked station. */
+.band:has(+ .content > .emf), .content:has(> .emf) { max-width: none; }
+.emf-search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+.emf-search label { flex: 1 1 360px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-label); font-weight: 700; color: var(--ink); }
+.emf-examples { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.emf-examples button { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.emf-examples button:disabled { color: var(--muted); cursor: not-allowed; }
+.emf { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
+.emf .panel { padding: 0; gap: 0; overflow: hidden; }
+.emf-stage { position: relative; }
+.emf-canvas { height: clamp(480px, calc(100dvh - 160px), 1000px); background: var(--soft); }
+.emf-canvas .maplibregl-map, .emf-canvas .maplibregl-ctrl { font-family: var(--sans); }
+.emf-canvas .maplibregl-ctrl-group { border: 1px solid var(--line); border-radius: var(--radius-sm); box-shadow: none; }
+.emf-fail { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--soft); color: var(--muted); font-weight: 700; text-align: center; }
+/* loading panel over the map: one row per call — chip word, what is called, seconds or result; an ochre sweep while it runs */
+.emf-loading { position: absolute; top: 12px; left: 12px; z-index: 2; width: min(380px, calc(100% - 72px)); padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-size: var(--fs-meta); transition: opacity 400ms var(--ease-out) 1200ms; }
+.emf-loading[data-settled] { opacity: 0; }
+.emf-loading-head { margin-bottom: 8px; color: var(--ink); font-size: var(--fs-label); font-weight: 700; }
+.emf-loading ol { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.emf-loading li { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.emf-loading .status { min-height: 24px; padding: 1px 6px; font-size: 12px; }
+.emf-loading .status[data-state="fail"] { border-style: solid; border-color: var(--red); color: var(--red); font-weight: 700; }
+.emf-loading-name { display: flex; flex-direction: column; min-width: 0; }
+.emf-loading-name b { color: var(--ink); }
+.emf-loading-name span { color: var(--muted); overflow-wrap: anywhere; }
+.emf-loading-detail { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.emf-sweep { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-bar), transparent) no-repeat; background-size: 40% 100%; animation: emf-sweep 1100ms linear infinite; }
+@keyframes emf-sweep { from { background-position: -40% 0; } to { background-position: 140% 0; } }
+.emf-legend { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px 0; border-top: 1px solid var(--line); font-size: var(--fs-meta); color: var(--text); }
+.emf-legend ul { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 18px; margin: 0; padding: 0; list-style: none; }
+.emf-legend li { display: inline-flex; align-items: flex-end; gap: 6px; line-height: 1.2; }
+.emf-legend .emf-legend-head { min-width: 128px; color: var(--muted); font-weight: 700; }
+.emf-bar { flex: none; width: 6px; border-radius: 2px 2px 0 0; background: var(--ink-2); }
+.emf-source { padding: 8px 18px 14px; font-size: var(--fs-meta); color: var(--muted); }
+.emf-dot { flex: none; width: 12px; height: 12px; border: 1px solid var(--paper); border-radius: 50%; }
+.emf-legend li .emf-dot { align-self: center; }
+.emf-dot[data-wifi] { width: 9px; height: 9px; background: var(--muted); }
+.emf-toggle { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; transition: background 150ms; }
+.emf-toggle[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.emf-dot[data-here] { border: 2px solid var(--accent-bar); background: var(--accent); }
+.emf-side-head { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.emf-side-head h2 { font-size: var(--fs-label); color: var(--muted); }
+.emf-side-head .tabs { flex-wrap: wrap; }
+.emf-side-head .tabs button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; font-size: var(--fs-meta); }
+.emf-list { position: relative; max-height: calc(clamp(480px, calc(100dvh - 160px), 1000px) + 40px); margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.emf-list li + li { border-top: 1px solid var(--line); }
+.emf-list button { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 12px 18px; border: 0; background: var(--paper); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background 150ms; }
+.emf-list button:hover, .emf-list button[data-hover] { background: var(--soft); }
+.emf-list button[aria-pressed="true"] { background: var(--soft); outline: 2px solid var(--ink); outline-offset: -2px; }
+.emf-name { display: flex; flex-direction: column; min-width: 0; }
+.emf-name b { overflow: hidden; color: var(--ink); font-size: var(--fs-label); text-overflow: ellipsis; white-space: nowrap; }
+.emf-name span { font-size: var(--fs-meta); color: var(--muted); }
+.emf-value { font-size: var(--fs-meta); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.emf-detail { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 12px; margin: 0; padding: 4px 18px 14px 42px; background: var(--soft); font-size: var(--fs-meta); }
+.emf-detail dt { color: var(--muted); }
+.emf-detail dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.emf-empty { padding: 16px 18px; }
+@media (max-width: 1000px) {
+  .emf { grid-template-columns: minmax(0, 1fr); }
+  .emf-canvas { height: 420px; }
+  .emf-list { max-height: 420px; }
+}
+
 /* reduced motion: state changes stay, the travel goes */
 @media (prefers-reduced-motion: reduce) {
   .task-progress > span, .prep li .choice { transition: none; }
@@ -265,4 +333,6 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   .topic, .status { transition: none; }
   .read-progress { transition: none; }
   .tick, .tick svg { transition: none; }
+  .emf-sweep { animation: none; background: var(--accent-bar); opacity: 0.5; }
+  .emf-loading { transition: opacity 160ms linear 1200ms; }
 }

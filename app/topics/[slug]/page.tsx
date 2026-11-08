@@ -35,6 +35,11 @@ export default async function TopicPage({ params }: { params: Promise<Params> })
             ← 주제 목록
           </Link>
           <TopicPick slug={slug} />
+          {slug === "07" && (
+            <Link className="ghost" href="/topics/map">
+              지도 시연 보기
+            </Link>
+          )}
         </div>
         <Handout body={topicBody(readFileSync(topic.path, "utf8"))} readKey={`topics/${slug}`} />
       </div>

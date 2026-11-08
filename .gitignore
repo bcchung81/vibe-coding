@@ -6,6 +6,8 @@ node_modules/
 .next/
 .vercel/
 next-env.d.ts
+# MapLibre worker, copied from node_modules before dev and build (scripts/maplibre-worker.mjs)
+/public/maplibre/
 *.tsbuildinfo
 
 # impeccable working files (screenshots, sketches, scratch)
