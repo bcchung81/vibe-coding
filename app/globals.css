@@ -96,7 +96,7 @@ button { font: inherit; color: inherit; }
 /* work area */
 .content { max-width: var(--page); margin: 0 auto; padding: 24px var(--gutter) 64px; display: flex; flex-direction: column; gap: 24px; }
 /* the deck (/slides): 16:9 in the content area, sized so the whole slide fits the window below the title */
-.deck-frame { display: block; width: min(100%, calc((100svh - 266px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.deck-frame { display: block; width: min(100%, calc((100svh - 160px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 .panel { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); padding: 26px clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 16px; }
 .panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
