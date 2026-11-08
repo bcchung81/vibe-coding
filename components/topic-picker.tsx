@@ -62,13 +62,13 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
             <div>
               <h2 id="start-title">시작 폴더 준비</h2>
               <p className="selection">{chosen ? `고른 주제 ${chosen.slug} · ${chosen.title}` : "주제를 먼저 고르세요"}</p>
-              <p className="meta">Windows PowerShell · C:\workspace\vibe — 사전설치(setup.ps1)가 미리 만들어 둔 폴더입니다. 규칙 · 명령 · 주제 카드 · Next.js 뼈대가 들어 있습니다.</p>
+              <p className="meta">Orca 터미널 · C:\workspace\vibe — 사전설치(setup.ps1)가 미리 만들어 둔 폴더입니다. 규칙 · 명령 · 주제 카드 · Next.js 뼈대가 들어 있습니다.</p>
             </div>
           </div>
           <ol className="start-steps">
             <li>
-              <p>PowerShell에서 폴더로 가서 에이전트를 열고, 첫 메시지로 <code>시작하기.md 대로 준비해줘</code> 라고 말합니다.</p>
-              <CodeBlock>{`cd C:\\workspace\\vibe; codex`}</CodeBlock>
+              <p>Orca 터미널에서 폴더로 가서 에이전트를 열고, 첫 메시지로 <code>시작하기.md 대로 준비해줘</code> 라고 말합니다.</p>
+              <CodeBlock>{`cd C:\\workspace\\vibe; codex --yolo`}</CodeBlock>
             </li>
             <li>
               <p>이어서 API 명세부터 조사합니다.</p>

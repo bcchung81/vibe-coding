@@ -14,8 +14,9 @@
 #   7. MCP                             sequential-thinking, kordoc - registered and downloaded (kordoc about 600 MB)
 #   8. skills                          impeccable (and its engine), think, slop-rewrite, aimotion
 #   9. Codex global rules              AGENTS.global.md
-#  10. trial run                       build the day-1 web app, make a 1-second day-2 video, look for ego lite
-# ego lite (the agent browser) is installed by hand - see the pre-course notice.
+#  10. trial run                       build the day-1 web app, make a 1-second day-2 video, look for ego lite and Orca
+# ego lite (the agent browser) and Orca (the app the course runs "codex --yolo" in) are installed by hand -
+# see the pre-course notice.
 #
 # Save setup.ps1 and AGENTS.global.md in the SAME folder (Downloads), open "Windows PowerShell"
 # from the Start menu (a NORMAL window, not "Run as administrator") and run:
@@ -76,6 +77,7 @@ $CourseSites = @(
     @{ Host = 'vercel.com';          Use = 'day 1 deploy' },
     @{ Host = 'api.vercel.com';      Use = 'day 1 deploy' },
     @{ Host = 'lite.ego.app';        Use = 'ego lite' },
+    @{ Host = 'release-assets.githubusercontent.com'; Use = 'Orca download' },
     @{ Host = 'kca-vibe.vercel.app'; Use = 'course hub' }
 )
 
@@ -1067,7 +1069,7 @@ if ($config -match '(?m)^\s*\[agents\]') {
 }
 
 # ---------------------------------------------------------------- 10
-Write-Step '10. Trial run - day-1 web app, 1-second day-2 video, ego lite'
+Write-Step '10. Trial run - day-1 web app, 1-second day-2 video, ego lite, Orca'
 
 # Day 1: build the start web app once (shows today whether an antivirus blocks the Next.js compiler)
 $vibeDir = Join-Path $Workspace 'vibe'
@@ -1116,6 +1118,16 @@ if ($HaveEgo) {
     Add-Result 'ego lite' 'WARN' 'not installed yet - install it (pre-course notice 3-3), then run setup.ps1 again'
 }
 
+# Orca is installed by hand too (pre-course notice 3-3). Its installer registers this id (the winget ProductCode);
+# the id is checked, not the name, because Microsoft's MSI table editor is also called Orca.
+$OrcaKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\2b325ec9-0ed1-575f-ad70-e08307aee879'
+$HaveOrca = (Test-Path "HKCU:\$OrcaKey") -or (Test-Path "HKLM:\$OrcaKey") -or (Test-Path (Join-Path $env:LOCALAPPDATA 'Programs\Orca\Orca.exe'))
+if ($HaveOrca) {
+    Add-Result 'Orca' 'OK' 'installed'
+} else {
+    Add-Result 'Orca' 'WARN' 'not installed yet - install it (pre-course notice 3-3), then run setup.ps1 again'
+}
+
 # ---------------------------------------------------------------- Result
 Write-Step 'Result'
 $Results | Format-Table -AutoSize | Out-String | Write-Host
@@ -1147,6 +1159,11 @@ if ($PathChanged) {
 }
 if (-not $HaveEgo) {
     Write-Host '   Install ego lite (the agent browser) yourself - on first launch answer NO to importing Chrome data.' -ForegroundColor Yellow
+}
+if (-not $HaveOrca) {
+    Write-Host '   Install Orca yourself: https://github.com/stablyai/orca/releases/latest/download/orca-windows-setup.exe' -ForegroundColor Yellow
+}
+if (-not $HaveEgo -or -not $HaveOrca) {
     Write-Host '   Then run setup.ps1 once more (a few minutes - finished items are skipped) and send that RESULT box.' -ForegroundColor Yellow
 }
-Write-Host '   Codex login comes on the course day, with the account you get there.'
+Write-Host '   Codex login comes on the course day, with the account you get there - in an Orca terminal.'
