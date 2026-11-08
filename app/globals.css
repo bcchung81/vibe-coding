@@ -229,33 +229,14 @@ input[aria-invalid="true"] { border-color: var(--red); }
 textarea[aria-invalid="true"] { border-color: var(--red); }
 
 /* course */
-.course-overview { display: grid; grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.6fr); gap: 24px; align-items: start; }
-.course-overview .facts { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-.prep-progress { display: grid; gap: 10px; }
-.prep li .choice { transition: background 220ms var(--ease-out), border-color 220ms; }
-.prep li[data-done="true"] .choice { background: var(--soft); }
-@media (max-width: 1000px) {
-  .course-overview { grid-template-columns: minmax(0, 1fr); }
-  .course-overview .facts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
-}
-.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 24px; margin: 0; }
-.facts div { display: flex; flex-direction: column; gap: 4px; }
-.facts dt { font-size: var(--fs-meta); font-weight: 700; color: var(--muted); }
-.facts dd { margin: 0; font-weight: 700; }
-.facts dd.todo { font-weight: 400; color: var(--muted); }
-.outline th, .outline td:first-child, td.who { white-space: nowrap; }
-.outline td:first-child, td.who { font-weight: 700; }
+.outline th, .outline td:first-child { white-space: nowrap; }
+.outline td:first-child { font-weight: 700; }
 .outline tr.rest td { color: var(--muted); font-weight: 400; }
 .outline .gain { display: none; }
 @media (max-width: 640px) {
   .outline th:nth-child(4), .outline td:nth-child(4) { display: none; }
   .outline .gain { display: block; }
 }
-.prep { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.prep li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; }
-@media (min-width: 641px) { .prep .ghost { min-width: 128px; justify-content: center; } }
-.prep-go { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-@media (max-width: 640px) { .prep li:has(.prep-go a + a) { grid-template-columns: 1fr; } .prep li:has(.prep-go a + a) .prep-go { justify-content: flex-start; } }
 
 /* login */
 .login-panel { max-width: 560px; }
