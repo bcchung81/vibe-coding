@@ -17,7 +17,7 @@ export function Handout({ body, readKey }: { body: string; readKey: string }) {
       <DocNav readKey={readKey} toc={toc} />
       <article className="prose">
         <Markdown
-          // "13:30~17:00" is a time range, not strikethrough: only ~~ strikes
+          // "13:30~17:30" is a time range, not strikethrough: only ~~ strikes
           remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
           components={{
             h2: ({ node, ...props }) => <h2 id={sectionId(node?.position?.start.line ?? 0)} {...props} />,

@@ -34,13 +34,14 @@
     <div class="cover-fallback" aria-hidden="true"><span>말로 시키면</span><b>웹앱 · 보고서 · 발표 · 영상</b><p>내 업무에 쓸 결과물로.</p></div>
     <figcaption>하나의 지시에서, 쓸 수 있는 결과물까지.</figcaption>
   </figure>
-  <footer class="cover-foot"><span>교육 허브 <b>kca-vibe.vercel.app</b></span><span>날짜 선택 <kbd>1</kbd> <kbd>2</kbd><i></i>전체 화면 <kbd>F</kbd></span></footer>
+  <footer class="cover-foot"><span>교육 허브 <b>kca-vibe.vercel.app</b><i></i>양일 13:30–17:30</span><span>날짜 선택 <kbd>1</kbd> <kbd>2</kbd><i></i>전체 화면 <kbd>F</kbd></span></footer>
 </section>
 
 <!-- 1일차 1장 · 구조 그림 -->
 <section class="slide" data-day="1" aria-label="1일차 1장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages numbered">
       <li><i>1</i>조사</li><li><i>2</i>API 시험</li><li><i>3</i>화면 구성</li><li><i>4</i>디자인</li><li><i>5</i>기능</li><li><i>6</i>공개</li>
     </ol>
@@ -75,6 +76,7 @@
 <section class="slide" data-day="1" aria-label="1일차 2장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li>조사</li><li>API 시험</li><li>화면 구성</li><li>디자인</li><li>기능</li><li>공개</li>
     </ol>
@@ -125,6 +127,7 @@
 <section class="slide" data-day="1" aria-label="1일차 3장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="now" aria-current="step">조사</li><li>API 시험</li><li>화면 구성</li><li>디자인</li><li>기능</li><li>공개</li>
     </ol>
@@ -140,7 +143,7 @@
       <ol class="steps">
         <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>사전설치가 만든 시작 폴더 → <b>C:\workspace\vibe</b></p></li>
         <li><span class="no">2</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><kbd class="say">cd C:\workspace\vibe; codex</kbd></p></li>
-        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">ego-browser 스킬로 topics 폴더의 02 카드에 있는 API 상세 페이지를 열어서 요청 주소, 요청 변수(필수 여부), 응답 항목을 api-notes.md 표로 저장해줘. 로그인 화면은 열지 마</kbd></p></li>
+        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">ego-browser 스킬로 topics 폴더의 02 카드에 있는 API 상세 페이지를 열어서 요청 주소, 요청 변수(필수 여부), 응답 항목을 api-notes.md 표로 저장해줘. 로그인 화면은 열지 마</kbd><br>→ 02 자리에 <b>내 주제 번호</b></p></li>
         <li><span class="no">4</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><b>api-notes.md</b> 를 주제 카드와 비교</p></li>
       </ol>
     </div>
@@ -170,6 +173,7 @@
 <section class="slide" data-day="1" aria-label="1일차 4장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="now" aria-current="step">API 시험</li><li>화면 구성</li><li>디자인</li><li>기능</li><li>공개</li>
@@ -185,8 +189,8 @@
     <div class="tile">
       <ol class="steps two">
         <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>공공데이터포털에서 <b>Decoding</b> 키 복사</p></li>
-        <li><span class="no">2</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>메모장으로 <b>.env.local</b> 에 붙이기</p></li>
-        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">vibe-plan 스킬로 주제 02 API 시험해줘</kbd></p></li>
+        <li><span class="no">2</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>새 PowerShell 창 <kbd class="say">cd C:\workspace\vibe; if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }; notepad .env.local</kbd> → <b>DATA_GO_KR_KEY=</b> 뒤에 붙이고 저장</p></li>
+        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say" style="display:inline-block">vibe-plan 스킬로 주제 02 API 시험해줘</kbd><br>→ 02 자리에 <b>내 주제 번호</b> · 키가 없으면 예시 데이터로 진행</p></li>
         <li><span class="no">4</span><span class="who ai">AI가</span><p>5건을 불러 <b>api-test.md</b> 표로 저장</p></li>
       </ol>
     </div>
@@ -216,6 +220,7 @@
 <section class="slide" data-day="1" aria-label="1일차 5장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -259,6 +264,7 @@
 <section class="slide" data-day="1" aria-label="1일차 6장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -275,7 +281,7 @@
     <div class="tile">
       <h2>입력하고 확인하기</h2>
       <ol class="steps">
-        <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>새 창에서 <kbd class="say">npm.cmd run dev</kbd></p></li>
+        <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>새 창에서 <kbd class="say">cd C:\workspace\vibe; npm.cmd run dev</kbd></p></li>
         <li><span class="no">2</span><span class="who ai">AI에게</span><p><kbd class="say">vibe-develop 스킬로 다음 단계 해줘</kbd> → <b>1 연결</b></p></li>
         <li><span class="no">3</span><span class="who ai">AI에게</span><p>같은 말 한 번 더 → <b>2 화면</b></p></li>
         <li><span class="no">4</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>브라우저 <b>localhost:3000</b> 새로고침</p></li>
@@ -295,6 +301,7 @@
 <section class="slide" data-day="1" aria-label="1일차 7장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -328,6 +335,7 @@
 <section class="slide" data-day="1" aria-label="1일차 8장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -371,6 +379,7 @@
 <section class="slide" data-day="1" aria-label="1일차 9장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -422,6 +431,7 @@
 <section class="slide" data-day="1" aria-label="1일차 10장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -471,6 +481,7 @@
 <section class="slide" data-day="1" aria-label="1일차 11장">
   <nav class="bar" aria-label="1일차 단계">
     <b class="day"><span>1</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>API 시험</li>
@@ -522,6 +533,7 @@
 <section class="slide video-slide" data-day="2" aria-label="2일차 오프닝 영상">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages numbered">
       <li><i>1</i>조사</li><li><i>2</i>보고서 초안</li><li><i>3</i>윤문 · hwpx</li><li><i>4</i>덱 구성 · 3D</li><li><i>5</i>영상</li>
     </ol>
@@ -542,6 +554,7 @@
 <section class="slide" data-day="2" aria-label="2일차 1장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages numbered">
       <li><i>1</i>조사</li><li><i>2</i>보고서 초안</li><li><i>3</i>윤문 · hwpx</li><li><i>4</i>덱 구성 · 3D</li><li><i>5</i>영상</li>
     </ol>
@@ -558,6 +571,7 @@
 <section class="slide" data-day="2" aria-label="2일차 2장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="now" aria-current="step">조사</li>
       <li>보고서 초안</li>
@@ -575,7 +589,7 @@
     <div class="tile">
       <h2>입력하고 확인하기</h2>
       <ol class="steps">
-        <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><kbd class="say">mkdir C:\workspace\report</kbd></p></li>
+        <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><kbd class="say">mkdir C:\workspace\report -Force</kbd></p></li>
         <li><span class="no">2</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>자료 팩 한 줄을 붙이고 <kbd class="say">cd C:\workspace\report; codex</kbd></p></li>
         <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">ego-browser 스킬로 「강사 주제」 공개자료를 2건 더 찾아 research 폴더에 받고, 제목 · 기관 · 날짜 · 주소를 출처.md 표로 정리해줘</kbd></p></li>
         <li><span class="no">4</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><b>출처.md</b> 를 열어 표 확인</p></li>
@@ -610,6 +624,7 @@
 <section class="slide" data-day="2" aria-label="2일차 3장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="now" aria-current="step">보고서 초안</li>
@@ -651,6 +666,7 @@
 <section class="slide" data-day="2" aria-label="2일차 4장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="now" aria-current="step">보고서 초안</li>
@@ -710,6 +726,7 @@
 <section class="slide" data-day="2" aria-label="2일차 5장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>
@@ -756,6 +773,7 @@
 <section class="slide" data-day="2" aria-label="2일차 6장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>
@@ -774,8 +792,8 @@
       <ol class="steps two" style="grid-template-columns:1.2fr 1fr">
         <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>결과에서 마음에 안 드는 점 하나를 지적</p></li>
         <li><span class="no">2</span><span class="who ai">AI에게</span><p><kbd class="say">방금 지적을 AGENTS.md 규칙으로 올려줘</kbd></p></li>
-        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">초안2.taste.md를 규칙대로 고쳐 최종.md로 저장하고, kordoc으로 1쪽 보고서 hwpx로 만들어줘</kbd></p></li>
-        <li><span class="no">4</span><span class="who ai">AI가</span><p><b>최종.md</b> · <b>.hwpx</b> 생성</p></li>
+        <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">초안2.taste.md를 규칙대로 고쳐 최종.md로 저장해줘. 끝의 작성자 확인 부분은 보여 주고 지워줘</kbd></p></li>
+        <li><span class="no">4</span><span class="who ai">AI에게</span><p><kbd class="say">kordoc 보고서 preset · h2_marker box로 1쪽 hwpx를 만들고, render_document PNG로 1쪽인지 확인해줘</kbd></p></li>
       </ol>
     </div>
     <div class="tile">
@@ -797,7 +815,7 @@
     </div>
   </div>
   <footer class="foot">
-    <p class="help"><b>강사 시연</b> computer use로 한글 뷰어에서 1쪽 · 표 확인</p>
+    <p class="help"><b>강사 시연</b> computer use로 한글 뷰어에서 1쪽 · 표 확인 · 한글이 없으면 PNG로 확인</p>
   </footer>
 </section>
 
@@ -805,6 +823,7 @@
 <section class="slide" data-day="2" aria-label="2일차 7장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>
@@ -824,7 +843,7 @@
       <h2>입력하고 확인하기</h2>
       <ol class="steps">
         <li><span class="no">1</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p>사전설치가 만든 폴더에서 <kbd class="say">cd C:\workspace\deck; codex</kbd></p></li>
-        <li><span class="no">2</span><span class="who ai">AI에게</span><p><kbd class="say" style="display:inline-block">시작하기.md 대로 준비해줘</kbd><br>→ 안내대로 새 창 <kbd class="say" style="display:inline-block">npm.cmd run dev</kbd> · 예시 덱</p></li>
+        <li><span class="no">2</span><span class="who ai">AI에게</span><p><kbd class="say" style="display:inline-block">시작하기.md 대로 준비해줘</kbd><br>→ 안내대로 새 창 <kbd class="say" style="display:inline-block">cd C:\workspace\deck; npm.cmd run dev</kbd> · 예시 덱</p></li>
         <li><span class="no">3</span><span class="who ai">AI에게</span><p><kbd class="say">deck-plan 스킬로 C:\workspace\report\최종.md 를 6장 발표 줄거리로 만들어줘</kbd></p></li>
         <li><span class="no">4</span><span class="who me"><svg><use href="#i-person"/></svg>내가</span><p><b>deck-plan.md</b> 를 열어 순서 · 제목 수정</p></li>
       </ol>
@@ -842,6 +861,7 @@
 <section class="slide" data-day="2" aria-label="2일차 8장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>
@@ -880,6 +900,7 @@
 <section class="slide" data-day="2" aria-label="2일차 9장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>
@@ -920,6 +941,7 @@
 <section class="slide" data-day="2" aria-label="2일차 10장">
   <nav class="bar" aria-label="2일차 단계">
     <b class="day"><span>2</span>일차</b>
+    <span class="session-hours">13:30–17:30</span>
     <ol class="stages">
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>조사</li>
       <li class="done"><svg class="ic-s"><use href="#i-check"/></svg>보고서 초안</li>

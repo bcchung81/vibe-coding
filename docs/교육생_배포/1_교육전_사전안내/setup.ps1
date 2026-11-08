@@ -1,17 +1,20 @@
-# Vibe Coding Intermediate Course - setup script, run once BEFORE the course (about 40 minutes)
+# Vibe Coding Intermediate Course - setup script, run once BEFORE the course (about 50 minutes)
 # Windows PowerShell 5.1 or later. ASCII only, so it survives mail, download and re-saving.
 #
-# Installs everything both course days use - there is nothing to install on the day:
-#   1. this PC and C:\workspace       execution policy, workspace folder, course files
+# Installs AND downloads everything both course days use - nothing is installed or downloaded on the day:
+#   1. this PC and C:\workspace       execution policy, workspace folder, course files (latest from the course hub),
+#                                      sites the course uses (a blocked one shows up now)
 #   2. Node.js and Codex CLI           winget / the official Codex installer
 #   3. Git, GitHub CLI, Python, FFmpeg
 #   4. Git user name and e-mail        the only questions it asks
-#   5. Vercel CLI
+#   5. Vercel CLI                      updated if older than the version the course was checked with
 #   6. course repositories             slop-rewrite, cokacmotion (aimotion), vibe-coding-start
-#      start folders                   C:\workspace\vibe (day 1) and C:\workspace\deck (day 2), copied only if missing
-#   7. MCP                             sequential-thinking, kordoc
-#   8. skills                          impeccable, think, slop-rewrite, aimotion
+#      start folders                   C:\workspace\vibe (day 1) and C:\workspace\deck (day 2): copied if missing,
+#                                      otherwise only the course's own files are refreshed; npm packages downloaded
+#   7. MCP                             sequential-thinking, kordoc - registered and downloaded (kordoc about 600 MB)
+#   8. skills                          impeccable (and its engine), think, slop-rewrite, aimotion
 #   9. Codex global rules              AGENTS.global.md
+#  10. trial run                       build the day-1 web app, make a 1-second day-2 video, look for ego lite
 # ego lite (the agent browser) is installed by hand - see the pre-course notice.
 #
 # Save setup.ps1 and AGENTS.global.md in the SAME folder (Downloads), open "Windows PowerShell"
@@ -52,6 +55,29 @@ $PythonVersion = '3.14.8'
 
 # kordoc version pinned for the course (day 2: read hwpx/pdf, make the 1-page hwpx)
 $KordocPackage = 'kordoc@4.15.3'
+
+# Course hub: the latest rules (AGENTS.global.md) and the day-of guide (00_...md) are downloaded from here
+$HubUrl = 'https://kca-vibe.vercel.app'
+$HubFiles = @('/materials/1/AGENTS.global/download', '/materials/2/00/download')
+
+# An older Vercel CLI is updated: scripts\vercel.mjs (day 1 deploy) was checked with versions 63 and 65
+$VercelMinMajor = 63
+
+# Sites the course days use. Any HTTP answer counts as reachable; no answer usually means a firewall or proxy block.
+$CourseSites = @(
+    @{ Host = 'registry.npmjs.org';  Use = 'npm packages' },
+    @{ Host = 'github.com';          Use = 'course repositories' },
+    @{ Host = 'nodejs.org';          Use = 'Node.js when winget fails' },
+    @{ Host = 'chatgpt.com';         Use = 'Codex' },
+    @{ Host = 'auth.openai.com';     Use = 'Codex login' },
+    @{ Host = 'www.data.go.kr';      Use = 'day 1 API key' },
+    @{ Host = 'apis.data.go.kr';     Use = 'day 1 API (topic 02)' },
+    @{ Host = 'api.odcloud.kr';      Use = 'day 1 API (topics 01, 03)' },
+    @{ Host = 'vercel.com';          Use = 'day 1 deploy' },
+    @{ Host = 'api.vercel.com';      Use = 'day 1 deploy' },
+    @{ Host = 'lite.ego.app';        Use = 'ego lite' },
+    @{ Host = 'kca-vibe.vercel.app'; Use = 'course hub' }
+)
 
 # Course repositories, each cloned to C:\workspace\<Name>
 $CourseRepos = @(
@@ -176,6 +202,13 @@ function Get-FirstLine([scriptblock]$Block) {
     return ''
 }
 
+# Last line of a command's output, short enough for the result table
+function Get-LastLine([string[]]$Lines) {
+    $last = "$(@($Lines) | Select-Object -Last 1)"
+    if ($last.Length -gt 80) { $last = $last.Substring(0, 80) }
+    return $last
+}
+
 # A real Python, not the Microsoft Store shortcut that prints "Python was not found"
 function Get-PythonVersion {
     if (-not (Test-Command 'python')) { return '' }
@@ -216,6 +249,45 @@ function Install-PythonLocal {
         '/quiet', 'InstallAllUsers=0', 'PrependPath=1', 'Include_launcher=1', 'InstallLauncherAllUsers=0', 'Include_test=0')
     Remove-Item $installer -ErrorAction SilentlyContinue
     if ($proc.ExitCode -ne 0) { return "installer exit code $($proc.ExitCode)" }
+    return ''
+}
+
+# Node.js LTS for the current user from the official zip, when winget is missing or fails (no admin needed).
+# Checked against the SHA-256 list nodejs.org publishes next to it. Returns '' or an error.
+function Install-NodeZip {
+    $arch = 'x64'
+    if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { $arch = 'arm64' }
+    try {
+        # Assigned first: PowerShell 5.1 passes a whole JSON array down a pipe as one object
+        $releases = (Invoke-WebRequest -Uri 'https://nodejs.org/dist/index.json' -UseBasicParsing -TimeoutSec 60).Content | ConvertFrom-Json
+        $lts = @($releases) | Where-Object { $_.lts -and (@($_.files) -contains "win-$arch-zip") } | Select-Object -First 1
+        if (-not $lts) { return 'no LTS release found on nodejs.org' }
+        $name = "node-$($lts.version)-win-$arch"
+        $base = "https://nodejs.org/dist/$($lts.version)"
+        $zip = Join-Path $env:TEMP "$name.zip"
+        Invoke-WebRequest -Uri "$base/$name.zip" -OutFile $zip -UseBasicParsing
+        $sums = "$((Invoke-WebRequest -Uri "$base/SHASUMS256.txt" -UseBasicParsing).Content)"
+    } catch {
+        return 'download from nodejs.org failed'
+    }
+    $want = [regex]::Match($sums, '(?m)^([0-9a-fA-F]{64})\s+' + [regex]::Escape("$name.zip") + '\s*$').Groups[1].Value
+    if (-not $want -or (Get-FileHash $zip -Algorithm SHA256).Hash -ne $want) {
+        Remove-Item $zip -ErrorAction SilentlyContinue
+        return 'zip checksum check failed'
+    }
+    $dest = Join-Path $env:LOCALAPPDATA 'Programs\nodejs'
+    try {
+        if (Test-Path $dest) { Remove-Item $dest -Recurse -Force -ErrorAction Stop }
+        # %LOCALAPPDATA%\Programs is missing on a new Windows account
+        New-Item -ItemType Directory -Path (Split-Path $dest) -Force -ErrorAction Stop | Out-Null
+        Expand-Archive -Path $zip -DestinationPath $env:TEMP -Force -ErrorAction Stop
+        Move-Item (Join-Path $env:TEMP $name) $dest -ErrorAction Stop
+    } catch {
+        return "unzip failed: $($_.Exception.Message)"
+    } finally {
+        Remove-Item $zip -ErrorAction SilentlyContinue
+    }
+    Add-UserPath $dest $true
     return ''
 }
 
@@ -451,9 +523,112 @@ function Test-Elevated {
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-Write-Host 'Vibe Coding course - setup before the course. Takes about 40 minutes.' -ForegroundColor Cyan
+# TLS 1.2, and the Windows login for proxies that ask for it, for Invoke-WebRequest in PowerShell 5.1
+function Initialize-Web {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    if ([Net.WebRequest]::DefaultWebProxy) { [Net.WebRequest]::DefaultWebProxy.Credentials = [Net.CredentialCache]::DefaultNetworkCredentials }
+}
+
+# Save a course file from the hub in the workspace, under the name the hub gives (a UTF-8 name such as 00_<Korean>.md,
+# so this file stays ASCII). Returns the saved name, or '' if it could not be downloaded.
+function Save-HubFile([string]$Path) {
+    $tmp = Join-Path $env:TEMP ('hub-{0}.tmp' -f [guid]::NewGuid())
+    try {
+        $r = Invoke-WebRequest -Uri ($HubUrl + $Path) -OutFile $tmp -PassThru -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
+        $cd = "$($r.Headers.Keys | Where-Object { $_ -eq 'Content-Disposition' } | ForEach-Object { $r.Headers[$_] })"
+        if ($cd -notmatch "filename\*=UTF-8''([^;\s]+)") { return '' }
+        $name = [uri]::UnescapeDataString($Matches[1])
+        if ($name -notmatch '^[^\\/:*?"<>|]+$') { return '' }
+        Move-Item $tmp (Join-Path $Workspace $name) -Force
+        return $name
+    } catch {
+        return ''
+    } finally {
+        Remove-Item $tmp -ErrorAction SilentlyContinue
+    }
+}
+
+# True if the site answers at all (any HTTP status, even an error page). False: no answer - blocked, DNS or proxy.
+function Test-Site([string]$HostName) {
+    try {
+        $null = Invoke-WebRequest -Uri "https://$HostName/" -Method Head -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
+        return $true
+    } catch {
+        return ($null -ne $_.Exception.Response)
+    }
+}
+
+# Major version of the Vercel CLI, 0 if missing
+function Get-VercelMajor {
+    if (-not (Test-Command 'vercel')) { return 0 }
+    if (((Get-Lines { vercel.cmd --version }) -join ' ') -match '(\d+)\.\d+\.\d+') { return [int]$Matches[1] }
+    return 0
+}
+
+# Items of a start folder that belong to the course: rules, guides, skills, scripts, topic cards.
+# Root .md files are the course's guides, except deck-plan.md, which the trainee rewrites on day 2.
+# Everything else (app\, data\, src\, package.json, the trainee's PRD.md ...) is the trainee's.
+function Test-CourseOwned($Item) {
+    if (@('.agents', 'scripts', 'topics', '.env.example', '.gitignore', '.vercelignore') -contains $Item.Name) { return $true }
+    return (-not $Item.PSIsContainer -and $Item.Extension -eq '.md' -and $Item.Name -ne 'deck-plan.md')
+}
+
+# Relative path and hash of every file under a file or folder, to compare two copies ('' if missing)
+function Get-TreeHash([string]$Path) {
+    if (-not (Test-Path $Path)) { return '' }
+    $base = (Get-Item $Path -Force).FullName
+    $lines = Get-ChildItem $Path -Recurse -File -Force | Sort-Object FullName | ForEach-Object {
+        $_.FullName.Substring($base.Length) + '=' + (Get-FileHash $_.FullName).Hash
+    }
+    return ($lines -join "`n")
+}
+
+# Replace the course-owned items of an existing start folder that differ from the course copy; returns their names
+function Update-StartFolder([string]$From, [string]$To) {
+    foreach ($src in @(Get-ChildItem $From -Force | Where-Object { Test-CourseOwned $_ })) {
+        $dest = Join-Path $To $src.Name
+        if ((Get-TreeHash $src.FullName) -eq (Get-TreeHash $dest)) { continue }
+        if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+        Copy-Item $src.FullName $dest -Recurse -Force
+        $src.Name
+    }
+}
+
+# Codex waits 10 seconds for an MCP server to start by default; give a slow one longer.
+# "codex mcp add" has no option for it, so add the key to the server's table in config.toml (read and written as UTF-8).
+function Set-McpStartupTimeout([string]$Name, [int]$Seconds) {
+    $item = "Codex MCP $Name start time"
+    $cfg = Join-Path $CodexHome 'config.toml'
+    if (-not (Test-Path $cfg)) {
+        Add-Result $item 'WARN' 'config.toml not found'
+        return
+    }
+    $text = [IO.File]::ReadAllText($cfg)
+    $m = [regex]::Match($text, '(?m)^\[mcp_servers\.("?)' + [regex]::Escape($Name) + '\1\][ \t]*(?=\r?$)')
+    if (-not $m.Success) {
+        Add-Result $item 'WARN' "[mcp_servers.$Name] not found in config.toml"
+        return
+    }
+    # The table runs to the next [header] or the end of the file
+    $rest = $text.Substring($m.Index + $m.Length)
+    $next = [regex]::Match($rest, '(?m)^\[')
+    $body = $rest
+    if ($next.Success) { $body = $rest.Substring(0, $next.Index) }
+    if ($body -match '(?m)^\s*startup_timeout_sec\s*=') {
+        Add-Result $item 'SKIP' 'already set'
+        return
+    }
+    $nl = "`n"
+    if ($text.Contains("`r`n")) { $nl = "`r`n" }
+    $text = $text.Insert($m.Index + $m.Length, "$($nl)startup_timeout_sec = $Seconds")
+    [IO.File]::WriteAllText($cfg, $text, (New-Object System.Text.UTF8Encoding $false))
+    Add-Result $item 'OK' "$Seconds seconds"
+}
+
+Write-Host 'Vibe Coding course - setup before the course. Takes about 50 minutes.' -ForegroundColor Cyan
 Write-Host 'Keep this window open until "Result" appears. If a Windows permission window (UAC) appears, click "Yes".' -ForegroundColor Cyan
 Update-SessionPath
+Initialize-Web
 
 # ---------------------------------------------------------------- 1
 Write-Step '1. This PC and C:\workspace'
@@ -478,6 +653,14 @@ if ($PSScriptRoot -and (Resolve-Path $PSScriptRoot).Path.TrimEnd('\') -ne $Works
     $files = @(Get-ChildItem $PSScriptRoot -File | Where-Object $isCourseFile)
     foreach ($f in $files) { Copy-Item $f.FullName (Join-Path $Workspace $f.Name) -Force }
     Add-Result 'Course files' 'OK' "copied $($files.Count) file(s) to $Workspace"
+}
+# The latest rules and the day-of guide from the course hub (they replace the copies next to setup.ps1),
+# so the agent finds the day-of guide in the workspace on the course day
+$saved = @($HubFiles | ForEach-Object { Save-HubFile $_ } | Where-Object { $_ })
+if ($saved.Count -eq $HubFiles.Count) {
+    Add-Result 'Hub files' 'OK' "downloaded $($saved.Count) file(s) from $HubUrl"
+} else {
+    Add-Result 'Hub files' 'WARN' "downloaded $($saved.Count) of $($HubFiles.Count) - is $HubUrl blocked? the copies next to setup.ps1 are used"
 }
 # Downloaded files carry a "from the internet" mark. Under a RemoteSigned policy set by IT
 # that mark stops setup.ps1 from running again, so clear it.
@@ -519,6 +702,11 @@ try {
     }
 } catch { }
 
+# Sites the course uses: a blocked one shows up today, not on the course day
+$blockedSites = @($CourseSites | Where-Object { -not (Test-Site $_.Host) })
+if ($blockedSites.Count -eq 0) { Add-Result 'Sites' 'OK' "all $($CourseSites.Count) answer" }
+foreach ($s in $blockedSites) { Add-Result "Site $($s.Host)" 'WARN' "no answer - needed for $($s.Use); ask IT to allow it" }
+
 # npm.ps1 / npx.ps1 need RemoteSigned or looser in normal windows
 $ep = Get-EffectivePolicy
 if (@('RemoteSigned', 'Unrestricted', 'Bypass') -contains $ep.Policy) {
@@ -551,8 +739,10 @@ if (-not $HaveWinget) {
     Add-Result 'winget' 'WARN' 'not found - update "App Installer" in Microsoft Store; tools that need it are skipped'
 }
 
-# Node.js 22 or later. Missing or older: install the LTS (installer with UAC first, per-user zip if that fails).
+# Node.js 22 or later, before Codex CLI. Missing or older: install the LTS - winget first (installer with UAC,
+# then per-user), then the per-user zip from nodejs.org when winget is missing or fails.
 $nodeNote = ''
+$nodeError = ''
 if ((Get-NodeMajor) -lt 22) { Add-UserPath (Join-Path $env:ProgramFiles 'nodejs') }
 if ((Get-NodeMajor) -lt 22 -and $HaveWinget) {
     Write-Host '   Installing Node.js LTS...'
@@ -561,13 +751,19 @@ if ((Get-NodeMajor) -lt 22 -and $HaveWinget) {
     Add-UserPath (Join-Path $env:ProgramFiles 'nodejs')
     $nodeNote = ' (installed now)'
 }
+if ((Get-NodeMajor) -lt 22) {
+    Write-Host '   Installing Node.js LTS for this user (nodejs.org zip)...'
+    $nodeError = Install-NodeZip
+    $nodeNote = ' (installed now, this user only)'
+}
 if ((Get-NodeMajor) -ge 22) {
     Add-Result 'Node.js' 'OK' ((Get-FirstLine { node -v }) + $nodeNote)
 } elseif (Test-Command 'node') {
+    # an older all-users Node.js on the system PATH comes before the user PATH
     Add-Result 'Node.js' 'FAIL' "$(Get-FirstLine { node -v }) at $((Get-Command node).Source) - v22 or later needed; install the LTS from https://nodejs.org and run setup.ps1 again"
     $blocked = $true
 } else {
-    Add-Result 'Node.js' 'FAIL' 'not found - install the LTS from https://nodejs.org and run setup.ps1 again'
+    Add-Result 'Node.js' 'FAIL' "not found ($nodeError) - install the LTS from https://nodejs.org and run setup.ps1 again"
     $blocked = $true
 }
 
@@ -698,7 +894,21 @@ if (Test-Command 'git') {
 # ---------------------------------------------------------------- 5
 Write-Step '5. Vercel CLI'
 
-Install-NpmGlobal 'Vercel CLI' 'vercel' 'vercel'
+$vercelMajor = Get-VercelMajor
+if ((Test-Command 'vercel') -and $vercelMajor -lt $VercelMinMajor) {
+    # An older CLI may miss commands scripts\vercel.mjs uses (project create, env add --force)
+    Write-Host '   Updating Vercel CLI...'
+    npm.cmd install -g vercel@latest
+    Update-SessionPath
+    $vercelMajor = Get-VercelMajor
+    if ($vercelMajor -ge $VercelMinMajor) {
+        Add-Result 'Vercel CLI' 'OK' "updated to $(Get-FirstLine { vercel.cmd --version })"
+    } else {
+        Add-Result 'Vercel CLI' 'WARN' "version $vercelMajor is older than $VercelMinMajor - run: npm.cmd install -g vercel@latest"
+    }
+} else {
+    Install-NpmGlobal 'Vercel CLI' 'vercel' 'vercel'
+}
 
 # ---------------------------------------------------------------- 6
 Write-Step '6. Course repositories - slop-rewrite, cokacmotion, vibe-coding-start'
@@ -710,20 +920,43 @@ if (Test-Command 'git') {
     Add-Result 'Course repositories' 'FAIL' 'Git not found'
 }
 
-# Start folders: copy vibe and deck into C:\workspace only when they are not there yet,
-# so a trainee's own work is never overwritten. The copies have no .git - each becomes the trainee's own folder.
+# Start folders: copy vibe and deck into C:\workspace when they are not there yet. When they are (an earlier run),
+# refresh only the course-owned items (Test-CourseOwned), so the course's fixes arrive and a trainee's own work is
+# never overwritten. The copies have no .git - each becomes the trainee's own folder.
 $StartDir = Join-Path $Workspace 'vibe-coding-start'
+$StartVersion = 'version ' + (Get-FirstLine { git -C $StartDir rev-parse --short HEAD })
 foreach ($f in @('vibe', 'deck')) {
     $from = Join-Path $StartDir $f
     $to = Join-Path $Workspace $f
     $item = "Start folder $f"
-    if (Test-Path $to) {
-        Add-Result $item 'SKIP' "$to already exists - kept"
-    } elseif (Test-Path (Join-Path $from 'AGENTS.md')) {
-        Copy-Item $from $to -Recurse -Force
-        if (Test-Path (Join-Path $to 'AGENTS.md')) { Add-Result $item 'OK' $to } else { Add-Result $item 'FAIL' "copy to $to failed" }
-    } else {
+    if (-not (Test-Path (Join-Path $from 'AGENTS.md'))) {
         Add-Result $item 'FAIL' 'vibe-coding-start not cloned'
+    } elseif (-not (Test-Path $to)) {
+        Copy-Item $from $to -Recurse -Force
+        if (Test-Path (Join-Path $to 'AGENTS.md')) { Add-Result $item 'OK' "$to ($StartVersion)" } else { Add-Result $item 'FAIL' "copy to $to failed" }
+    } else {
+        $changed = @(Update-StartFolder $from $to)
+        if ($changed.Count -gt 0) {
+            Add-Result $item 'OK' "refreshed $($changed.Count) course item(s), your work kept ($StartVersion)"
+        } else {
+            Add-Result $item 'SKIP' "up to date ($StartVersion)"
+        }
+    }
+}
+
+# npm packages for both start folders now, not on the day (day 1 alone is about 350 MB)
+foreach ($f in @('vibe', 'deck')) {
+    $dir = Join-Path $Workspace $f
+    if (-not (Test-Path (Join-Path $dir 'package.json'))) { continue }
+    Write-Host "   Downloading npm packages for $f..."
+    Push-Location $dir
+    npm.cmd install --no-audit --no-fund --loglevel=error
+    $code = $LASTEXITCODE
+    Pop-Location
+    if ($code -eq 0) {
+        Add-Result "npm packages $f" 'OK' 'downloaded'
+    } else {
+        Add-Result "npm packages $f" 'FAIL' "npm exit code $code - run setup.ps1 again"
     }
 }
 
@@ -731,6 +964,21 @@ foreach ($f in @('vibe', 'deck')) {
 Write-Step '7. MCP - sequential-thinking, kordoc'
 
 foreach ($s in $McpServers) { Register-CodexMcp $s }
+
+# Download each MCP package now. npx keeps a package in its cache by name and version, so on the day Codex starts
+# the server without downloading. "-p <package> node -e 0" fills that cache without starting the server.
+foreach ($s in $McpServers) {
+    Write-Host "   Downloading MCP $($s.Name)..."
+    npx.cmd -y -p $s.Cmd[2] node -e 0
+    $code = $LASTEXITCODE
+    if ($code -eq 0) {
+        Add-Result "MCP $($s.Name) package" 'OK' 'downloaded'
+    } else {
+        Add-Result "MCP $($s.Name) package" 'FAIL' "npx exit code $code - run setup.ps1 again"
+    }
+}
+# kordoc loads a large engine when it starts, even from the cache
+Set-McpStartupTimeout 'kordoc' 60
 
 # ---------------------------------------------------------------- 8
 Write-Step '8. Skills - impeccable, think, slop-rewrite, aimotion'
@@ -744,6 +992,18 @@ if (Test-Path (Join-Path $impPath 'SKILL.md')) {
         Add-Result 'impeccable' 'OK' 'installed'
     } else {
         Add-Result 'impeccable' 'FAIL' "$impPath not found"
+    }
+}
+# impeccable runs an engine program that its launcher downloads on the first run.
+# Run it now: the download happens today, and an antivirus or SmartScreen block shows up today.
+$impCmd = Join-Path $impPath 'scripts\impeccable.cmd'
+if (Test-Path $impCmd) {
+    $impOut = @(Get-Lines { & $impCmd --version })
+    $impVersion = @($impOut | Where-Object { $_ -match '^v?\d+\.\d+\.\d+' })
+    if ($impVersion.Count -gt 0) {
+        Add-Result 'impeccable engine' 'OK' $impVersion[0]
+    } else {
+        Add-Result 'impeccable engine' 'WARN' "did not start: $(@($impOut | Select-Object -Last 1)) - ask an assistant"
     }
 }
 
@@ -806,6 +1066,56 @@ if ($config -match '(?m)^\s*\[agents\]') {
     }
 }
 
+# ---------------------------------------------------------------- 10
+Write-Step '10. Trial run - day-1 web app, 1-second day-2 video, ego lite'
+
+# Day 1: build the start web app once (shows today whether an antivirus blocks the Next.js compiler)
+$vibeDir = Join-Path $Workspace 'vibe'
+if (Test-Path (Join-Path $vibeDir 'node_modules')) {
+    Write-Host '   Building the day-1 web app...'
+    Push-Location $vibeDir
+    $out = @(Get-Lines { npm.cmd run build })
+    $code = $LASTEXITCODE
+    Pop-Location
+    if ($code -eq 0) { Add-Result 'Trial web app' 'OK' 'built' } else { Add-Result 'Trial web app' 'WARN' "build failed: $(Get-LastLine $out)" }
+} else {
+    Add-Result 'Trial web app' 'FAIL' 'npm packages for vibe missing - run setup.ps1 again'
+}
+
+# Day 2: a 1-second video from the deck (Edge draws it headless, FFmpeg joins the frames).
+# Skipped when the trainee already made out\deck.mp4, so a real video is never replaced.
+$deckDir = Join-Path $Workspace 'deck'
+$video = Join-Path $deckDir 'out\deck.mp4'
+if (Test-Path $video) {
+    Add-Result 'Trial video' 'SKIP' 'out\deck.mp4 already exists - kept'
+} elseif (-not (Test-Path (Join-Path $deckDir 'node_modules'))) {
+    Add-Result 'Trial video' 'FAIL' 'npm packages for deck missing - run setup.ps1 again'
+} else {
+    Write-Host '   Making a 1-second test video...'
+    Push-Location $deckDir
+    # The script prints Korean in UTF-8; read it as UTF-8 so an error line stays readable
+    $consoleEncoding = [Console]::OutputEncoding
+    try { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding $false } catch { }
+    $out = @(Get-Lines { node scripts\export.mjs --slides 1 --sec 1 --light })
+    $code = $LASTEXITCODE
+    try { [Console]::OutputEncoding = $consoleEncoding } catch { }
+    Pop-Location
+    if ($code -eq 0 -and (Test-Path $video)) {
+        Remove-Item $video   # only a test; the trainee makes the real one on day 2
+        Add-Result 'Trial video' 'OK' 'Edge and FFmpeg made a 1-second video'
+    } else {
+        Add-Result 'Trial video' 'WARN' "failed: $(Get-LastLine $out) - ask an assistant"
+    }
+}
+
+# ego lite is installed by hand (pre-course notice 3-3); its command comes with the app
+$HaveEgo = Test-Command 'ego-browser'
+if ($HaveEgo) {
+    Add-Result 'ego lite' 'OK' 'ego-browser found'
+} else {
+    Add-Result 'ego lite' 'WARN' 'not installed yet - install it (pre-course notice 3-3), then run setup.ps1 again'
+}
+
 # ---------------------------------------------------------------- Result
 Write-Step 'Result'
 $Results | Format-Table -AutoSize | Out-String | Write-Host
@@ -835,5 +1145,8 @@ Write-Host 'Next (pre-course notice, section 3):' -ForegroundColor Cyan
 if ($PathChanged) {
     Write-Host '   PATH was updated. Close ALL PowerShell and Terminal windows.' -ForegroundColor Yellow
 }
-Write-Host '   Install ego lite (the agent browser) yourself - on first launch answer NO to importing Chrome data.'
+if (-not $HaveEgo) {
+    Write-Host '   Install ego lite (the agent browser) yourself - on first launch answer NO to importing Chrome data.' -ForegroundColor Yellow
+    Write-Host '   Then run setup.ps1 once more (a few minutes - finished items are skipped) and send that RESULT box.' -ForegroundColor Yellow
+}
 Write-Host '   Codex login comes on the course day, with the account you get there.'

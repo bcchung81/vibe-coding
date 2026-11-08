@@ -13,10 +13,17 @@ describe("the outline in docs/00_전체목차.md", () => {
     expect(days[0].slots.filter((s) => s.period).map((s) => s.period)).toEqual([1, 2, 3, 4]);
     expect(days[1].slots.filter((s) => s.period).map((s) => s.period)).toEqual([1, 2, 3, 4, 5]);
     expect(days[0].title).toBe("기관 업무 웹앱을 만들어 인터넷에 올린다");
-    expect(days[0].hours).toBe("13:30–17:00");
+    expect(days.map((d) => d.hours)).toEqual(["13:30–17:30", "13:30–17:30"]);
+    for (const day of days) {
+      expect(day.slots[0].time.split("–")[0]).toBe("13:30");
+      expect(day.slots.at(-1)?.time.split("–")[1]).toBe("17:30");
+      for (let i = 1; i < day.slots.length; i++) {
+        expect(day.slots[i].time.split("–")[0]).toBe(day.slots[i - 1].time.split("–")[1]);
+      }
+    }
   });
   test("keeps breaks as rows without a period and drops the code marks", () => {
-    expect(days[1].slots.some((s) => s.period === null && s.title.includes("점심"))).toBe(true);
+    expect(days[1].slots.filter((s) => s.period === null).map((s) => s.title)).toEqual(["휴식", "휴식", "휴식", "휴식"]);
     expect(days[0].slots[0].gain).toBe("환경점검결과.md · api-notes.md · api-test.md");
   });
   test("lists the three ways to take part", () => {

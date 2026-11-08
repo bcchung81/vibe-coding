@@ -27,6 +27,7 @@
   --fs-display: clamp(30px, 3.4vw, 46px);
   --gutter: clamp(18px, 3vw, 36px);
   --page: 1440px;
+  --content-page: 1200px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 * { box-sizing: border-box; }
@@ -73,7 +74,7 @@ button { font: inherit; color: inherit; }
 }
 
 /* page title after the deck's slide head: ochre kicker, sentence title, lead with an ochre bar, hairline below; the one next action on the right */
-.band { max-width: var(--page); margin: 0 auto; padding: 36px var(--gutter) 0; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; }
+.band { max-width: var(--content-page); margin: 0 auto; padding: 36px var(--gutter) 0; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; }
 .band::after { content: ""; flex-basis: 100%; height: 1px; background: var(--line); }
 .band-text { flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .band h1 { font-size: var(--fs-display); font-weight: 800; line-height: 1.22; letter-spacing: -0.03em; }
@@ -94,7 +95,8 @@ button { font: inherit; color: inherit; }
 .ghost[data-done="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 
 /* work area */
-.content { max-width: var(--page); margin: 0 auto; padding: 24px var(--gutter) 64px; display: flex; flex-direction: column; gap: 24px; }
+.content { max-width: var(--content-page); margin: 0 auto; padding: 24px var(--gutter) 64px; display: flex; flex-direction: column; gap: 24px; }
+.content:has(> .deck-frame) { max-width: var(--page); }
 /* the deck (/slides): 16:9 in the content area, sized so the whole slide fits the window below the title */
 .deck-frame { display: block; width: min(100%, calc((100svh - 160px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 .panel { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); padding: 26px clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 16px; }
@@ -207,7 +209,7 @@ input[aria-invalid="true"] { border-color: var(--red); }
 .hint.error { color: var(--red); font-weight: 700; }
 .form .btn-primary { align-self: flex-start; }
 
-.materials-page { max-width: 1200px; margin: 0 auto; }
+.materials-page { max-width: var(--content-page); margin: 0 auto; }
 .progress-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; font-size: var(--fs-label); color: var(--muted); }
 .progress-label b { color: var(--ink); }
 .task-progress { height: 6px; overflow: hidden; border-radius: 3px; background: var(--line); }

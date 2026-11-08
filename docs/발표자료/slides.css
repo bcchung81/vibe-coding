@@ -571,3 +571,29 @@ kbd.say { padding: 3px 8px; border-radius: 8px; box-shadow: none; }
 .kit .note { margin-top: auto; padding-top: 14px; font-size: 20px; }
 .kit > .tile > .kit-list { flex: 1; }
 .kit > .tile > .kit-list li { flex: 1; align-items: center; }
+
+/* 운영 교육안내(/course)의 남색 상단띠·오커 강조를 발표 헤더에 적용. */
+.bar { position: relative; isolation: isolate; border-bottom: none; color: #c9d8e5; }
+.bar::before { content: none; }
+.bar .day { color: #fff; }
+.bar .day > span { background: #fff; color: #193957; border-radius: 8px; }
+.stages .done { color: #c9d8e5; }
+.stages .now { color: #fff; background: #2d5574; border-radius: 8px; box-shadow: inset 0 -3px #f0c38a; }
+.stages.numbered i { background: #2d5574; color: #fff; border-radius: 6px; }
+.bar .page { color: #c9d8e5; background: #2d5574; border-radius: 8px; }
+.bar .page b { color: #fff; }
+.bar .page > span { color: #c9d8e5; }
+.bar .session-hours { flex: none; font-size: 18px; font-weight: 600; color: #c9d8e5; white-space: nowrap; }
+.bar { gap: 20px; width: calc(100% + 192px); margin-inline: -96px; padding-inline: 96px; background: #193957; }
+.stages { gap: 8px; }
+.stages li { padding-inline: 12px; }
+.stages.numbered { gap: 6px; }
+.stages.numbered li { padding-inline: 8px; }
+.bar .page { min-width: 86px; margin-left: 4px; }
+.head h1 { color: #193957; font-weight: 800; }
+.head h1 .title-focus { color: #8a5617; }
+.head > .lead { position: relative; padding-left: 20px; color: #202f3d; }
+.head > .lead::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 4px; background: #a56921; }
+.head .tools > b { color: #536675; }
+.head .tools > span { color: #193957; background: #edf3f7; border-radius: 6px; }
+.head .tools > span.mcp { outline-color: #536675; }

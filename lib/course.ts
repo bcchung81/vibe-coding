@@ -22,7 +22,7 @@ export function tableAfter(md: string, heading: (line: string) => boolean): stri
   return rows.slice(2);
 }
 
-// "## 1일차 — 내 웹앱을 만들어 인터넷에 올린다 (13:30~17:00)" and its table: 시간 | 교시 | 제목 | 남는 것 | …; a break has — for 교시
+// "## 1일차 — 내 웹앱을 만들어 인터넷에 올린다 (13:30~17:30)" and its table: 시간 | 교시 | 제목 | 남는 것 | …; a break has — for 교시
 export function parseOutline(md: string): CourseDay[] {
   return ([1, 2] as const).flatMap((day) => {
     const line = md.split("\n").find((l) => l.startsWith(`## ${day}일차`));
@@ -61,7 +61,7 @@ export function sectionLines(md: string): Record<number, number> {
 
 // What the admin types in; empty fields show as 확정되면 안내
 export const COURSE_FIELDS = [
-  { key: "when", label: "일시", example: "11월 19일(수) 13:30–17:00 · 11월 20일(목) 09:30–17:00" },
+  { key: "when", label: "일시", example: "1일차 날짜 13:30–17:30 · 2일차 날짜 13:30–17:30" },
   { key: "place", label: "장소", example: "본사 ○층 교육장" },
   { key: "prepDue", label: "사전 준비 회신", example: "11월 17일(월)까지 · 담당 부서" },
   { key: "contact", label: "문의", example: "○○팀 담당자 · 내선" },
