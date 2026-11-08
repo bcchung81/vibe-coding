@@ -261,25 +261,43 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 .danger-btn { min-height: 44px; padding: 0 16px; border: 1px solid var(--red); border-radius: var(--radius); background: var(--red); color: var(--paper); font-size: var(--fs-label); font-weight: 700; cursor: pointer; }
 .danger-btn:disabled { border-style: dashed; border-color: var(--muted); background: transparent; color: var(--muted); cursor: not-allowed; }
 
-/* map demo (/topics/map): a tilted 3D map on paper with the station list beside it, using the whole width of the screen.
-   Column colours come from the tokens (components/emf-map.tsx); ochre marks the searched address, navy the picked station. */
+/* map demo (/topics/map): map first. The page uses the full width; the map and the list share one height that fits the
+   screen under the page head. The address bar, the answer (or the loading rows) and the legend float on the map as paper
+   cards with a 1px line (no shadow). Column colours come from the tokens (components/emf-map.tsx). */
 .band:has(+ .content > .emf), .content:has(> .emf) { max-width: none; }
-.emf-search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
-.emf-search label { flex: 1 1 360px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-label); font-weight: 700; color: var(--ink); }
-.emf-examples { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
-.emf-examples button { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.emf-examples button:disabled { color: var(--muted); cursor: not-allowed; }
-.emf { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
+/* a compact page head for this screen: the kicker and a smaller title share a line, the answer runs as one line under
+   them on a wide screen; its height is kept so the map does not jump when "finding…" turns into the answer */
+.band:has(+ .content > .emf) { padding-top: 16px; gap: 12px 24px; }
+.band:has(+ .content > .emf) .band-text { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 12px; }
+.band:has(+ .content > .emf) .kicker { align-self: center; }
+.band:has(+ .content > .emf) h1 { font-size: clamp(24px, 2.2vw, 32px); line-height: 1.25; }
+.band:has(+ .content > .emf) .band-text > p:not(.kicker) { grid-column: 1 / -1; max-width: none; min-height: calc(1lh + 8px); }
+@media (max-width: 900px) { .band:has(+ .content > .emf) .band-text > p:not(.kicker) { min-height: calc(2lh + 8px); } }
+.emf { --emf-h: clamp(520px, calc(100dvh - 210px), 1000px); display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
 .emf .panel { padding: 0; gap: 0; overflow: hidden; }
-.emf-stage { position: relative; }
-.emf-canvas { height: clamp(480px, calc(100dvh - 160px), 1000px); background: var(--soft); }
+.emf-map { display: flex; flex-direction: column; height: var(--emf-h); }
+.emf-stage { position: relative; flex: 1; min-height: 0; }
+.emf-canvas { height: 100%; background: var(--soft); isolation: isolate; } /* markers stack inside the map, under the floating cards */
 .emf-canvas .maplibregl-map, .emf-canvas .maplibregl-ctrl { font-family: var(--sans); }
 .emf-canvas .maplibregl-ctrl-group { border: 1px solid var(--line); border-radius: var(--radius-sm); box-shadow: none; }
 .emf-fail { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--soft); color: var(--muted); font-weight: 700; text-align: center; }
-/* loading panel over the map: one row per call — chip word, what is called, seconds or result; an ochre sweep while it runs */
-.emf-loading { position: absolute; top: 12px; left: 12px; z-index: 2; width: min(380px, calc(100% - 72px)); padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-size: var(--fs-meta); transition: opacity 400ms var(--ease-out) 1200ms; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* floating cards: the address bar on top, then the loading rows or the answer */
+.emf-float { position: absolute; top: 12px; left: 12px; z-index: 2; display: flex; flex-direction: column; gap: 8px; width: min(440px, calc(100% - 72px)); }
+.emf-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-size: var(--fs-meta); }
+.emf-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--ink); font-size: var(--fs-label); font-weight: 700; }
+.emf-search { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.emf-search input { min-height: 42px; }
+.emf-search .btn-primary { min-height: 42px; }
+.emf-examples { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--muted); font-size: var(--fs-meta); }
+.emf-examples button { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.emf-examples button:disabled { color: var(--muted); cursor: not-allowed; }
+
+/* loading rows: chip word, what is called, seconds or result; an ochre sweep while it runs */
+.emf-loading { padding: 12px 14px; transition: opacity 400ms var(--ease-out) 1200ms; }
 .emf-loading[data-settled] { opacity: 0; }
-.emf-loading-head { margin-bottom: 8px; color: var(--ink); font-size: var(--fs-label); font-weight: 700; }
+.emf-loading .emf-card-head { margin-bottom: 8px; }
 .emf-loading ol { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .emf-loading li { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
 .emf-loading .status { min-height: 24px; padding: 1px 6px; font-size: 12px; }
@@ -290,39 +308,96 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 .emf-loading-detail { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .emf-sweep { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-bar), transparent) no-repeat; background-size: 40% 100%; animation: emf-sweep 1100ms linear infinite; }
 @keyframes emf-sweep { from { background-position: -40% 0; } to { background-position: 140% 0; } }
-.emf-legend { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px 0; border-top: 1px solid var(--line); font-size: var(--fs-meta); color: var(--text); }
-.emf-legend ul { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 18px; margin: 0; padding: 0; list-style: none; }
-.emf-legend li { display: inline-flex; align-items: flex-end; gap: 6px; line-height: 1.2; }
-.emf-legend .emf-legend-head { min-width: 128px; color: var(--muted); font-weight: 700; }
-.emf-bar { flex: none; width: 6px; border-radius: 2px 2px 0 0; background: var(--ink-2); }
-.emf-source { padding: 8px 18px 14px; font-size: var(--fs-meta); color: var(--muted); }
+
+/* list head: title and order on one line, then the answer's scale (0-100% with the protection limit as a navy rule at the
+   end — the strongest station is a sliver, which is the point), then the carriers as one row of joined buttons */
+.emf-side-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.emf-scale-box { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-meta); }
+.emf-scale-labels { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); }
+.emf-scale-labels > span:first-child { display: inline-flex; align-items: center; gap: 8px; }
+.emf-scale-labels b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.emf-scale-labels .status { min-height: 22px; padding: 0 6px; font-size: 12px; }
+.emf-scale { position: relative; height: 8px; border: 1px solid var(--line); border-radius: 2px; background: var(--soft); }
+.emf-scale::after { content: ""; position: absolute; right: -1px; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.emf-scale-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px 0 0 2px; background: var(--ink-2); }
+.emf-seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); overflow: hidden; }
+.emf-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 30px; padding: 0 10px; border: 0; border-left: 1px solid var(--line); background: none; color: var(--ink); font: inherit; font-size: var(--fs-meta); font-weight: 700; white-space: nowrap; cursor: pointer; transition: background 150ms, color 150ms; }
+.emf-seg button:first-child { border-left: 0; }
+.emf-seg button:hover { background: var(--soft); }
+.emf-seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.emf-seg button:focus-visible { outline-offset: -3px; }
+.emf-seg-wide { display: flex; }
+.emf-seg-wide button { flex: 1 1 auto; padding: 0 6px; }
+.emf-seg .emf-dot { width: 8px; height: 8px; border: 0; }
+
+/* legend: a summary strip under the map — one line per meaning, wrapping on narrow screens */
+.emf-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 22px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: var(--fs-meta); color: var(--text); }
+.emf-legend p { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 4px 10px; }
+.emf-legend b { color: var(--muted); font-weight: 700; }
+.emf-key { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.emf-size { flex: none; border: 2px solid var(--ink-2); border-radius: 50%; background: var(--paper); }
 .emf-dot { flex: none; width: 12px; height: 12px; border: 1px solid var(--paper); border-radius: 50%; }
-.emf-legend li .emf-dot { align-self: center; }
-.emf-dot[data-wifi] { width: 9px; height: 9px; background: var(--muted); }
-.emf-toggle { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; transition: background 150ms; }
+.emf-dot[data-wifi] { border: 2px solid var(--muted); background: var(--paper); }
+.emf-toggle { min-height: 26px; padding: 0 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; transition: background 150ms; }
 .emf-toggle[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-.emf-dot[data-here] { border: 2px solid var(--accent-bar); background: var(--accent); }
-.emf-side-head { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
-.emf-side-head h2 { font-size: var(--fs-label); color: var(--muted); }
-.emf-side-head .tabs { flex-wrap: wrap; }
-.emf-side-head .tabs button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; font-size: var(--fs-meta); }
-.emf-list { position: relative; max-height: calc(clamp(480px, calc(100dvh - 160px), 1000px) + 40px); margin: 0; padding: 0; overflow-y: auto; list-style: none; }
-.emf-list li + li { border-top: 1px solid var(--line); }
-.emf-list button { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 12px 18px; border: 0; background: var(--paper); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background 150ms; }
+
+/* spot markers (one per list row, about 20m): a donut of the spot's carriers around a paper disc with the station count.
+   Size = the strongest station's band (LEVELS). Opened or picked = navy ring ("chosen"); pointed at = a slight lift. */
+.emf-spot { display: grid; place-items: center; width: var(--size); height: var(--size); padding: 0; border: 0; border-radius: 50%; background: var(--mix); cursor: pointer; transition: transform 150ms var(--ease-out); }
+.emf-spot span { display: grid; place-items: center; width: calc(100% - 8px); height: calc(100% - 8px); border-radius: 50%; background: var(--paper); color: var(--ink); font: 800 calc(var(--size) * 0.42)/1 var(--sans); font-variant-numeric: tabular-nums; }
+.emf-spot[data-single] { border: 2px solid var(--paper); }
+.emf-spot[data-hover] { transform: scale(1.15); }
+.emf-spot[data-on] { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* the searched address: an ochre label on a stem, standing on its spot */
+.emf-pin { display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.emf-pin span { padding: 3px 9px; border-radius: var(--radius-sm); background: var(--accent); color: var(--paper); font: 700 13px/1.4 var(--sans); white-space: nowrap; }
+.emf-pin::after { content: ""; width: 2px; height: 16px; background: var(--accent); }
+
+/* first-visit hint: how to move the map, gone after a few seconds or the first drag */
+.emf-hint { position: absolute; right: 12px; bottom: 40px; z-index: 2; max-width: calc(100% - 24px); padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--text); font-size: var(--fs-meta); font-weight: 600; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out); }
+.emf-hint[data-show] { opacity: 1; transform: none; }
+
+/* the list: one row per spot (about 20m), opening to its stations */
+.emf-side { display: flex; flex-direction: column; height: var(--emf-h); }
+.emf-side-head { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.emf-side-head h2 { color: var(--ink); font-size: var(--fs-label); }
+.emf-list { position: relative; flex: 1; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.emf-group + .emf-group { border-top: 1px solid var(--line); }
+.emf-list button { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 12px 18px; border: 0; background: var(--paper); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background 150ms; }
 .emf-list button:hover, .emf-list button[data-hover] { background: var(--soft); }
-.emf-list button[aria-pressed="true"] { background: var(--soft); outline: 2px solid var(--ink); outline-offset: -2px; }
+.emf-group-head[aria-expanded="true"] { background: var(--soft); }
+.emf-mix { display: flex; flex-wrap: wrap; gap: 2px; width: 30px; }
+.emf-mix .emf-dot { width: 10px; height: 10px; }
+.emf-stations { margin: 0; padding: 0 0 6px; list-style: none; background: var(--soft); }
+.emf-stations button { grid-template-columns: 12px minmax(0, 1fr) auto; padding: 8px 18px 8px 36px; background: var(--soft); }
+.emf-stations button:hover, .emf-stations button[data-hover] { background: var(--paper); }
+.emf-stations button[aria-pressed="true"] { background: var(--paper); outline: 2px solid var(--ink); outline-offset: -2px; }
 .emf-name { display: flex; flex-direction: column; min-width: 0; }
 .emf-name b { overflow: hidden; color: var(--ink); font-size: var(--fs-label); text-overflow: ellipsis; white-space: nowrap; }
 .emf-name span { font-size: var(--fs-meta); color: var(--muted); }
 .emf-value { font-size: var(--fs-meta); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.emf-detail { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 12px; margin: 0; padding: 4px 18px 14px 42px; background: var(--soft); font-size: var(--fs-meta); }
+.emf-detail { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 12px; margin: 0; padding: 4px 18px 12px 58px; background: var(--paper); font-size: var(--fs-meta); }
 .emf-detail dt { color: var(--muted); }
 .emf-detail dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .emf-empty { padding: 16px 18px; }
+
 @media (max-width: 1000px) {
-  .emf { grid-template-columns: minmax(0, 1fr); }
-  .emf-canvas { height: 420px; }
-  .emf-list { max-height: 420px; }
+  .emf { --emf-h: 76svh; grid-template-columns: minmax(0, 1fr); }
+  .emf-side { height: auto; max-height: 80svh; }
+}
+/* phone: the cards leave the map — the address bar above it, the loading rows and the legend below — so the map
+   stays visible and does not jump when the loading rows go */
+@media (max-width: 760px) {
+  .emf-stage { display: flex; flex-direction: column; }
+  .emf-float { display: contents; }
+  .emf-search { order: -1; margin: 10px; }
+  .emf-loading { order: 1; margin: 10px; }
+  .emf-hint { display: none; }
+  .emf-map { height: auto; }
+  .emf-canvas { height: 60svh; }
+  .band:has(+ .content > .emf) .band-text > p:not(.kicker) { min-height: calc(3lh + 8px); }
+  .band:has(+ .content > .emf) h1 { min-height: 2lh; }
 }
 
 /* reduced motion: state changes stay, the travel goes */
@@ -335,4 +410,7 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   .tick, .tick svg { transition: none; }
   .emf-sweep { animation: none; background: var(--accent-bar); opacity: 0.5; }
   .emf-loading { transition: opacity 160ms linear 1200ms; }
+  .emf-hint { transition: none; transform: none; }
+  .emf-spot { transition: none; }
+  .emf-spot[data-hover] { transform: none; outline: 2px solid var(--ink-2); }
 }
