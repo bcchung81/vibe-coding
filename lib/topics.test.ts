@@ -22,8 +22,8 @@ describe("topicBody", () => {
 describe("listTopics", () => {
   const topics = listTopics();
 
-  test("lists the three topic cards in number order", () => {
-    expect(topics.map((t) => t.slug)).toEqual(["01", "02", "03"]);
+  test("lists the eight topic cards in number order", () => {
+    expect(topics.map((t) => t.slug)).toEqual(["01", "02", "03", "04", "05", "06", "07", "08"]);
   });
 
   test("gives every card a title and a summary with its difficulty", () => {

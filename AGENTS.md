@@ -11,7 +11,7 @@
 | 위치 | 내용 | 기준 |
 |---|---|---|
 | `README.md` (root) · `docs/00_전체목차.md` · `docs/01_1일차_계획.md` · `docs/02_2일차_계획.md` · `docs/03_추천_명령어_스킬.md` · `docs/04_교육운영_웹앱_기획.md` | 과정 안내 · 목차 · 일차별 계획 · 추천 명령/스킬 · 웹앱 기획 | 비개발자용 쉬운 한국어 |
-| `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (교육 전 `00_사전안내.md` · `setup.ps1` · `AGENTS.global.md`, 교육 당일 `00_환경설정.md` — 1 · 2일차 구분 없음). 번호 없는 `웹앱_주제/` 는 주제 카드 3개(기관 데이터)로 `/topics` 가 읽는다. 카드 원본은 여기다 — 카드를 고치면 `vibe-coding-start/vibe/topics/` 에도 복사한다. 1 · 2일차 시작 폴더 `vibe` · `deck` 은 별도 공개 저장소 `github.com/bcchung81/vibe-coding-start` 에 있고, `setup.ps1` 이 받아서 `C:\workspace` 에 복사한다(명령은 `.agents/skills` 에 쓴다 — 수강생 코드 에이전트는 Codex CLI 하나다) | **Windows 11 · PowerShell** |
+| `docs/교육생_배포/` | 수강생에게 주는 파일 — 웹앱 `/materials` 가 그대로 읽어 보여 준다 (교육 전 `00_사전안내.md` · `setup.ps1` · `AGENTS.global.md`, 교육 당일 `00_환경설정.md` — 1 · 2일차 구분 없음). 번호 없는 `웹앱_주제/` 는 주제 카드 8개(기관 데이터)로 `/topics` 가 읽는다. 카드 원본은 여기다 — 카드를 고치면 `vibe-coding-start/vibe/topics/` 에도 복사한다. 1 · 2일차 시작 폴더 `vibe` · `deck` 은 별도 공개 저장소 `github.com/bcchung81/vibe-coding-start` 에 있고, `setup.ps1` 이 받아서 `C:\workspace` 에 복사한다(명령은 `.agents/skills` 에 쓴다 — 수강생 코드 에이전트는 Codex CLI 하나다) | **Windows 11 · PowerShell** |
 | `package.json` · `tsconfig.json` · `vercel.json` | 교육 운영 허브 웹앱 — Next.js 16.4.2 · React 19.3.1 · TypeScript · vitest 5.0.5 | macOS에서 개발, Vercel 배포 |
 
 - 웹앱 코드: `app/` · `components/` · `lib/` · `db/schema.sql` · `next.config.ts`. 기능과 만드는 순서는 `docs/04_교육운영_웹앱_기획.md` 를 따른다. DB는 Neon Postgres(`lib/db.ts` · `db/schema.sql`) — 교육 안내 값과 관리자 PIN 기록만 쓴다.
