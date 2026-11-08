@@ -594,6 +594,16 @@ function Update-StartFolder([string]$From, [string]$To) {
         Copy-Item $src.FullName $dest -Recurse -Force
         $src.Name
     }
+    # Topic example data (data\01.json ...) for cards added later: copy only the missing files, never overwrite one
+    $data = Join-Path $From 'data'
+    if (-not (Test-Path $data)) { return }
+    foreach ($src in @(Get-ChildItem $data -File | Where-Object { $_.Name -match '^\d\d\.json$' })) {
+        $dest = Join-Path (Join-Path $To 'data') $src.Name
+        if (Test-Path $dest) { continue }
+        New-Item -ItemType Directory -Path (Split-Path $dest) -Force | Out-Null
+        Copy-Item $src.FullName $dest
+        "data\$($src.Name)"
+    }
 }
 
 # Codex waits 10 seconds for an MCP server to start by default; give a slow one longer.
@@ -923,8 +933,8 @@ if (Test-Command 'git') {
 }
 
 # Start folders: copy vibe and deck into C:\workspace when they are not there yet. When they are (an earlier run),
-# refresh only the course-owned items (Test-CourseOwned), so the course's fixes arrive and a trainee's own work is
-# never overwritten. The copies have no .git - each becomes the trainee's own folder.
+# refresh only the course-owned items (Test-CourseOwned) and add missing topic example data, so the course's fixes
+# arrive and a trainee's own work is never overwritten. The copies have no .git - each becomes the trainee's own folder.
 $StartDir = Join-Path $Workspace 'vibe-coding-start'
 $StartVersion = 'version ' + (Get-FirstLine { git -C $StartDir rev-parse --short HEAD })
 foreach ($f in @('vibe', 'deck')) {
