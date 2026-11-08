@@ -9,6 +9,9 @@ const NOTICE = join(process.cwd(), "docs", "교육생_배포", "1_교육전_사�
 // The handout page of the pre-course notice (lib/materials.ts: stage 1, slug 00)
 export const NOTICE_HREF = "/materials/1/00";
 
+// The pre-install script, downloaded straight from the guide (lib/materials.ts: stage 1, slug setup)
+export const SETUP_HREF = "/materials/1/setup/download";
+
 export function courseGuide() {
   const outline = readFileSync(OUTLINE, "utf8");
   const notice = readFileSync(NOTICE, "utf8");

@@ -1,7 +1,8 @@
-// 1일차 주제 카드 3개의 예시 데이터(시작 폴더 vibe/data/01.json · 02.json · 03.json)를 실제 API로 받는다.
+// 1일차 주제 카드 3개의 예시 데이터(시작 저장소 vibe-coding-start 의 vibe/data/01.json · 02.json · 03.json)를 실제 API로 받는다.
+// 시작 저장소를 이 저장소 옆 폴더(../vibe-coding-start)에 받아 두고 실행한 뒤, 그 저장소에서 커밋 · 푸시한다.
 // 실행: npm run snapshots — 키는 .env.local 의 DATA_GO_KR_KEY(Decoding 키)를 읽고, 화면에는 내지 않는다.
 // 공공데이터(이용허락범위 제한 없음)라 공개 저장소에 둔다. 요청 주소는 주제 카드(docs/교육생_배포/웹앱_주제/)와 같다.
-import { writeFileSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const key = process.env.DATA_GO_KR_KEY;
@@ -10,7 +11,11 @@ if (!key) {
   process.exit(1);
 }
 const hide = (text) => String(text).split(key).join("***").split(encodeURIComponent(key)).join("***");
-const OUT = join(process.cwd(), "docs", "교육생_배포", "vibe", "data");
+const OUT = join(process.cwd(), "..", "vibe-coding-start", "vibe", "data");
+if (!existsSync(OUT)) {
+  console.error(`${OUT} 가 없습니다. github.com/bcchung81/vibe-coding-start 를 이 저장소 옆 폴더에 받아 두세요.`);
+  process.exit(1);
+}
 const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
 async function getJson(base, params) {

@@ -15,12 +15,7 @@ const split = (summary: string) => summary.split(" · 난이도 ");
 // The day-1 topics, then the start folder in three steps. Picking one marks it "내 주제" in this browser.
 export function TopicPicker({ items }: { items: TopicItem[] }) {
   const [mine, setMine] = useState<string | null>(null);
-  // the download command names this site's own address, so it works from whichever URL the page was opened at
-  const [origin, setOrigin] = useState("https://kca-vibe.vercel.app");
-  useEffect(() => {
-    setMine(myTopic());
-    setOrigin(location.origin);
-  }, []);
+  useEffect(() => setMine(myTopic()), []);
   const chosen = items.find((t) => t.slug === mine);
   const no = chosen?.slug ?? "번호";
 
@@ -67,25 +62,21 @@ export function TopicPicker({ items }: { items: TopicItem[] }) {
             <div>
               <h2 id="start-title">시작 폴더 준비</h2>
               <p className="selection">{chosen ? `고른 주제 ${chosen.slug} · ${chosen.title}` : "주제를 먼저 고르세요"}</p>
-              <p className="meta">Windows PowerShell · C:\workspace\vibe — 규칙 · 명령 · 주제 카드 · Next.js 뼈대가 들어 있습니다.</p>
+              <p className="meta">Windows PowerShell · C:\workspace\vibe — 사전설치(setup.ps1)가 미리 만들어 둔 폴더입니다. 규칙 · 명령 · 주제 카드 · Next.js 뼈대가 들어 있습니다.</p>
             </div>
-            <a className="ghost" href="/vibe.zip" download="vibe.zip">
-              <Icon name="download" size={16} />
-              vibe.zip 내려받기
-            </a>
           </div>
           <ol className="start-steps">
             <li>
-              <p>PowerShell에 한 줄을 붙여 넣어 내려받고 풉니다.</p>
-              <CodeBlock>{`Invoke-WebRequest ${origin}/vibe.zip -OutFile $env:TEMP\\vibe.zip; Expand-Archive $env:TEMP\\vibe.zip C:\\workspace\\vibe`}</CodeBlock>
+              <p>PowerShell에서 폴더로 가서 에이전트를 열고, 첫 메시지로 <code>시작하기.md 대로 준비해줘</code> 라고 말합니다.</p>
+              <CodeBlock>{`cd C:\\workspace\\vibe; codex`}</CodeBlock>
             </li>
             <li>
-              <p>그 폴더에서 에이전트를 열고 말합니다.</p>
-              <code>시작하기.md 대로 준비해줘</code>
+              <p>이어서 API 명세부터 조사합니다.</p>
+              <code>ego-browser 스킬로 topics 폴더의 {no} 카드에 있는 API 상세 페이지를 열어서 요청 주소, 요청 변수(필수 여부), 응답 항목을 api-notes.md 표로 저장하고, 카드의 표와 다른 점이 있으면 아래에 적어줘. 로그인 화면은 열지 마</code>
             </li>
             <li>
-              <p>고른 주제 번호로 시작합니다.</p>
-              <code>vibe-plan 스킬로 주제 {no} 시작해줘</code>
+              <p>키를 넣고 5건만 불러 봅니다. 다음 명령은 폴더의 시작하기.md 2번 표에 있습니다.</p>
+              <code>vibe-plan 스킬로 주제 {no} API 시험해줘</code>
             </li>
           </ol>
         </section>

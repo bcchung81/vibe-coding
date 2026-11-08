@@ -17,7 +17,7 @@ describe("the outline in docs/00_전체목차.md", () => {
   });
   test("keeps breaks as rows without a period and drops the code marks", () => {
     expect(days[1].slots.some((s) => s.period === null && s.title.includes("점심"))).toBe(true);
-    expect(days[0].slots[0].gain).toBe("환경점검결과.md · api-notes.md");
+    expect(days[0].slots[0].gain).toBe("환경점검결과.md · api-notes.md · api-test.md");
   });
   test("lists the three ways to take part", () => {
     expect(parseParticipation(outline).map((p) => p.who)).toEqual(["1일차만", "2일차만", "이틀 모두"]);

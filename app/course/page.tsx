@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import { Band } from "../../components/band";
 import { PrepChecklist, type PrepRow } from "../../components/prep-checklist";
 import { COURSE_FIELDS } from "../../lib/course";
-import { courseGuide } from "../../lib/course-files";
+import { courseGuide, SETUP_HREF } from "../../lib/course-files";
 import { courseInfo } from "../../lib/db";
 
 export const metadata = { title: "교육 안내" };
@@ -16,7 +16,7 @@ export default async function CoursePage() {
   const items: PrepRow[] = prep.map((p) =>
     p.label.includes("웹앱 주제")
       ? { key: p.ref + p.label, label: p.label + " 고르기", day1: p.day1, day2: p.day2, href: "/topics", go: "주제 보기" }
-      : { key: p.ref + p.label, label: p.label, day1: p.day1, day2: p.day2, href: p.href, go: `사전안내 ${p.ref}` },
+      : { key: p.ref + p.label, label: p.label, day1: p.day1, day2: p.day2, href: p.href, go: `사전안내 ${p.ref}`, download: p.label.includes("setup.ps1") ? SETUP_HREF : undefined },
   );
 
   return (

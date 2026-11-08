@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon } from "./icon";
 
-export type PrepRow = { key: string; label: string; day1: boolean; day2: boolean; href: string; go: string };
+export type PrepRow = { key: string; label: string; day1: boolean; day2: boolean; href: string; go: string; download?: string };
 type Day = "day1" | "day2" | "both";
 
 const DAYS: { key: Day; label: string }[] = [
@@ -70,9 +70,17 @@ export function PrepChecklist({ items }: { items: PrepRow[] }) {
                 {day === "both" && i.day1 !== i.day2 && <span className="note">{i.day1 ? "1일차" : "2일차"}만</span>}
               </span>
             </label>
-            <Link className="ghost" href={i.href}>
-              {i.go}
-            </Link>
+            <span className="prep-go">
+              {i.download && (
+                <a className="ghost" href={i.download} download="setup.ps1">
+                  <Icon name="download" size={16} />
+                  내려받기
+                </a>
+              )}
+              <Link className="ghost" href={i.href}>
+                {i.go}
+              </Link>
+            </span>
           </li>
         ))}
       </ul>

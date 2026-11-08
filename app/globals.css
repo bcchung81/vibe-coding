@@ -95,6 +95,8 @@ button { font: inherit; color: inherit; }
 
 /* work area */
 .content { max-width: var(--page); margin: 0 auto; padding: 24px var(--gutter) 64px; display: flex; flex-direction: column; gap: 24px; }
+/* the deck (/slides): 16:9 in the content area, sized so the whole slide fits the window below the title */
+.deck-frame { display: block; width: min(100%, calc((100svh - 266px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 .panel { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); padding: 26px clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 16px; }
 .panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
@@ -174,7 +176,7 @@ button { font: inherit; color: inherit; }
 @media (min-width: 761px) and (max-width: 940px) { .topics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .topics { grid-template-columns: minmax(0, 1fr); } .topic { min-height: 0; } }
 
-/* start folder: three steps side by side, the download command takes the most room */
+/* start folder: three steps side by side, the first step (open the folder) takes the most room */
 .setup { scroll-margin-top: 24px; }
 .setup-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
 .setup-head .selection { margin-top: 6px; color: var(--accent); font-weight: 700; }
@@ -252,6 +254,8 @@ textarea[aria-invalid="true"] { border-color: var(--red); }
 .prep { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .prep li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; }
 @media (min-width: 641px) { .prep .ghost { min-width: 128px; justify-content: center; } }
+.prep-go { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+@media (max-width: 640px) { .prep li:has(.prep-go a + a) { grid-template-columns: 1fr; } .prep li:has(.prep-go a + a) .prep-go { justify-content: flex-start; } }
 
 /* login */
 .login-panel { max-width: 560px; }

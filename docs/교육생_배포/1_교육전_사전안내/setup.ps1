@@ -7,9 +7,10 @@
 #   3. Git, GitHub CLI, Python, FFmpeg
 #   4. Git user name and e-mail        the only questions it asks
 #   5. Vercel CLI
-#   6. course repositories             im-not-ai (humanize-korean), report-harness (report skill)
+#   6. course repositories             slop-rewrite, cokacmotion (aimotion), vibe-coding-start
+#      start folders                   C:\workspace\vibe (day 1) and C:\workspace\deck (day 2), copied only if missing
 #   7. MCP                             sequential-thinking, kordoc
-#   8. skills                          impeccable, humanize-korean, think, kca-report-hwpx
+#   8. skills                          impeccable, think, slop-rewrite, aimotion
 #   9. Codex global rules              AGENTS.global.md
 # ego lite (the agent browser) is installed by hand - see the pre-course notice.
 #
@@ -49,13 +50,14 @@ if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
 # Pinned to one stable release so every PC gets the same version. Change it here to update.
 $PythonVersion = '3.14.8'
 
-# kordoc version tested by report-harness (its .mcp.json)
+# kordoc version pinned for the course (day 2: read hwpx/pdf, make the 1-page hwpx)
 $KordocPackage = 'kordoc@4.15.3'
 
 # Course repositories, each cloned to C:\workspace\<Name>
 $CourseRepos = @(
-    @{ Name = 'im-not-ai';      Url = 'https://github.com/epoko77-ai/im-not-ai.git' },      # humanize-korean skill (MIT)
-    @{ Name = 'report-harness'; Url = 'https://github.com/bcchung81/report-harness.git' }   # kca-report-hwpx skill (day 2 report)
+    @{ Name = 'slop-rewrite'; Url = 'https://github.com/byungjunjang/slop-rewrite.git' },  # day 2: rewrite and check the report (Python standard library)
+    @{ Name = 'cokacmotion';  Url = 'https://github.com/kstost/cokacmotion.git' },         # day 2: aimotion skill, motion technique notes (MIT, about 52 MB)
+    @{ Name = 'vibe-coding-start'; Url = 'https://github.com/bcchung81/vibe-coding-start.git' }  # start folders: vibe (day 1 web app), deck (day 2 3D deck)
 )
 
 # MCP servers registered in Codex (wrapped in "cmd /c" on Windows). Registering needs no Codex login.
@@ -342,24 +344,26 @@ function Sync-Repo([string]$Name, [string]$Url) {
     if ($LASTEXITCODE -eq 0) { Add-Result $item 'OK' $dir } else { Add-Result $item 'FAIL' "git clone failed: $Url" }
 }
 
-# Unzip a skill package into the skill folder. A hash marker skips it when nothing changed.
-function Install-ZipSkill([string]$Item, [string]$Zip, [string]$SkillName) {
-    if (-not (Test-Path $Zip)) {
-        Add-Result $Item 'FAIL' "$(Split-Path $Zip -Leaf) not found - report-harness not cloned?"
+# A global skill entry that points at a skill kept inside its own repository (its commands run from there).
+# The front matter (name, description) is copied from the repository's entry at run time, so this file stays ASCII.
+function Install-PointerSkill([string]$Item, [string]$Entry, [string]$RepoDir, [string]$SkillName) {
+    if (-not (Test-Path $Entry)) {
+        Add-Result $Item 'FAIL' "$(Split-Path $RepoDir -Leaf) not cloned"
         return
     }
-    $hash = (Get-FileHash $Zip).Hash
-    $dest = Join-Path $SkillRoot $SkillName
-    $marker = Join-Path $dest '.source-sha256'
-    if ((Test-Path $marker) -and ((Get-Content $marker -Raw).Trim() -eq $hash)) {
+    $src = [IO.File]::ReadAllText($Entry)
+    if ($src -notmatch '(?s)^\s*(---\r?\n.*?\r?\n---)') {
+        Add-Result $Item 'FAIL' "no front matter in $Entry"
+        return
+    }
+    $text = $Matches[1] + "`n`nThe skill lives in its repository. Read $Entry first and follow it exactly. Run its commands from $RepoDir.`n"
+    $dest = Join-Path (Join-Path $SkillRoot $SkillName) 'SKILL.md'
+    if ((Test-Path $dest) -and ([IO.File]::ReadAllText($dest) -eq $text)) {
         Add-Result $Item 'SKIP' 'already up to date'
         return
     }
-    if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-    if (-not (Test-Path $SkillRoot)) { New-Item -ItemType Directory -Path $SkillRoot -Force | Out-Null }
-    Expand-Archive -Path $Zip -DestinationPath $SkillRoot -Force
-    Set-Content -Path $marker -Value $hash -Encoding ASCII
-    if (Test-Path (Join-Path $dest 'SKILL.md')) { Add-Result $Item 'OK' $dest } else { Add-Result $Item 'FAIL' "$dest\SKILL.md not found after unzip" }
+    Write-Utf8 $dest $text
+    Add-Result $Item 'OK' $dest
 }
 
 function Copy-SkillFolder([string]$Item, [string]$From, [string]$SkillName, [string[]]$Roots) {
@@ -669,17 +673,6 @@ if (Test-PythonOk) {
     }
 }
 
-# humanize-korean and the kca-report-hwpx scripts call "python3"; on Windows that name is only the Store shortcut
-if ((Test-PythonOk) -and ((Get-FirstLine { python3 --version }) -notmatch '^Python 3')) {
-    $pyDir = Split-Path (Get-Command python).Source
-    Copy-Item (Join-Path $pyDir 'python.exe') (Join-Path $pyDir 'python3.exe') -Force
-    if ((Get-FirstLine { python3 --version }) -match '^Python 3') {
-        Add-Result 'python3 command' 'OK' 'python3.exe added'
-    } else {
-        Add-Result 'python3 command' 'WARN' 'python3 still not working - tell the instructor'
-    }
-}
-
 # ---------------------------------------------------------------- 4
 Write-Step '4. Git user name and e-mail'
 
@@ -708,7 +701,7 @@ Write-Step '5. Vercel CLI'
 Install-NpmGlobal 'Vercel CLI' 'vercel' 'vercel'
 
 # ---------------------------------------------------------------- 6
-Write-Step '6. Course repositories - im-not-ai, report-harness'
+Write-Step '6. Course repositories - slop-rewrite, cokacmotion, vibe-coding-start'
 
 if (Test-Command 'git') {
     $env:GIT_TERMINAL_PROMPT = '0'   # public repositories: never wait for a password prompt
@@ -717,13 +710,30 @@ if (Test-Command 'git') {
     Add-Result 'Course repositories' 'FAIL' 'Git not found'
 }
 
+# Start folders: copy vibe and deck into C:\workspace only when they are not there yet,
+# so a trainee's own work is never overwritten. The copies have no .git - each becomes the trainee's own folder.
+$StartDir = Join-Path $Workspace 'vibe-coding-start'
+foreach ($f in @('vibe', 'deck')) {
+    $from = Join-Path $StartDir $f
+    $to = Join-Path $Workspace $f
+    $item = "Start folder $f"
+    if (Test-Path $to) {
+        Add-Result $item 'SKIP' "$to already exists - kept"
+    } elseif (Test-Path (Join-Path $from 'AGENTS.md')) {
+        Copy-Item $from $to -Recurse -Force
+        if (Test-Path (Join-Path $to 'AGENTS.md')) { Add-Result $item 'OK' $to } else { Add-Result $item 'FAIL' "copy to $to failed" }
+    } else {
+        Add-Result $item 'FAIL' 'vibe-coding-start not cloned'
+    }
+}
+
 # ---------------------------------------------------------------- 7
 Write-Step '7. MCP - sequential-thinking, kordoc'
 
 foreach ($s in $McpServers) { Register-CodexMcp $s }
 
 # ---------------------------------------------------------------- 8
-Write-Step '8. Skills - impeccable, humanize-korean, think, kca-report-hwpx'
+Write-Step '8. Skills - impeccable, think, slop-rewrite, aimotion'
 
 $impPath = Join-Path $SkillRoot 'impeccable'
 if (Test-Path (Join-Path $impPath 'SKILL.md')) {
@@ -737,14 +747,6 @@ if (Test-Path (Join-Path $impPath 'SKILL.md')) {
     }
 }
 
-# humanize-korean (natural Korean wording): a copy of the Codex edition. Its scripts need python3 (step 2).
-$HumanizeSkill = Join-Path $Workspace 'im-not-ai\codex\skills\humanize-korean'
-if (Test-Path (Join-Path $HumanizeSkill 'SKILL.md')) {
-    Copy-SkillFolder 'humanize-korean' $HumanizeSkill 'humanize-korean' @($SkillRoot)
-} else {
-    Add-Result 'humanize-korean' 'FAIL' 'im-not-ai not cloned'
-}
-
 $thinkFile = Join-Path $SkillRoot 'think\SKILL.md'
 if ((Test-Path $thinkFile) -and ((Get-Content $thinkFile -Raw -Encoding UTF8) -eq $ThinkSkill)) {
     Add-Result 'think' 'SKIP' 'already up to date'
@@ -753,8 +755,25 @@ if ((Test-Path $thinkFile) -and ((Get-Content $thinkFile -Raw -Encoding UTF8) -e
     Add-Result 'think' 'OK' $thinkFile
 }
 
-# kca-report-hwpx (day-2 report in the institution's hwpx form): the Codex package built in report-harness
-Install-ZipSkill 'kca-report-hwpx' (Join-Path $Workspace 'report-harness\dist\kca-report-hwpx-codex.zip') 'kca-report-hwpx'
+# slop-rewrite (day 2: rewrite the report and check it): a global entry pointing at the repository's Codex entry.
+# Its rewriting and checks use only the Python standard library.
+$SlopDir = Join-Path $Workspace 'slop-rewrite'
+Install-PointerSkill 'slop-rewrite' (Join-Path $SlopDir '.agents\skills\slop-rewrite\SKILL.md') $SlopDir 'slop-rewrite'
+
+# aimotion (day 2: motion technique notes for the deck): the skill folder copied as its README says. Its search script needs Node 18+.
+$AimotionSkill = Join-Path $Workspace 'cokacmotion\skills\aimotion'
+if (Test-Path (Join-Path $AimotionSkill 'SKILL.md')) {
+    Copy-SkillFolder 'aimotion' $AimotionSkill 'aimotion' @($SkillRoot)
+} else {
+    Add-Result 'aimotion' 'FAIL' 'cokacmotion not cloned'
+}
+
+# kca-report-hwpx came with an earlier setup.ps1; the course no longer uses it, and it would answer day-2 report requests
+$OldReportSkill = Join-Path $SkillRoot 'kca-report-hwpx'
+if (Test-Path $OldReportSkill) {
+    Remove-Item $OldReportSkill -Recurse -Force
+    Add-Result 'kca-report-hwpx' 'OK' 'removed (no longer used)'
+}
 
 # ---------------------------------------------------------------- 9
 Write-Step '9. Codex global rules'
